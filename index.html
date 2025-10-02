@@ -494,14 +494,14 @@
                     <div class="clicker-stats">
                         <div class="stat-item">
                             <span class="stat-label">Доход за клик</span>
-                            <span class="stat-value">+1 ₮</span>
+                            <span class="stat-value">+1 DREVO</span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-label">Лимит сегодня</span>
-                            <span class="stat-value" id="today-limit">2000/2000</span>
+                            <span class="stat-value" id="today-limit">0/2000</span>
                         </div>
                         <div class="progress-bar">
-                            <div class="progress-fill" id="progress-fill" style="width: 100%"></div>
+                            <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
                         </div>
                     </div>
                     
@@ -514,7 +514,7 @@
                     <div class="clicker-stats">
                         <div class="stat-item">
                             <span class="stat-label">Всего заработано</span>
-                            <span class="stat-value" id="total-earned">0 ₮</span>
+                            <span class="stat-value" id="total-earned">0 DREVO</span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-label">Уровень</span>
@@ -543,7 +543,7 @@
                             <div class="task-item" id="task-channel1">
                                 <div class="task-info">
                                     <div class="task-title">Подпишись на DREVO Coin</div>
-                                    <div class="task-reward">+2000 ₮</div>
+                                    <div class="task-reward">+2000 DREVO</div>
                                 </div>
                                 <button class="task-btn" onclick="completeTask('channel1')">Подписаться</button>
                             </div>
@@ -551,7 +551,7 @@
                             <div class="task-item" id="task-channel2">
                                 <div class="task-info">
                                     <div class="task-title">Подпишись на OneSK</div>
-                                    <div class="task-reward">+2000 ₮</div>
+                                    <div class="task-reward">+2000 DREVO</div>
                                 </div>
                                 <button class="task-btn" onclick="completeTask('channel2')">Подписаться</button>
                             </div>
@@ -559,7 +559,7 @@
                             <div class="task-item" id="task-chat">
                                 <div class="task-info">
                                     <div class="task-title">Вступи в DREVO Community</div>
-                                    <div class="task-reward">+2000 ₮</div>
+                                    <div class="task-reward">+2000 DREVO</div>
                                 </div>
                                 <button class="task-btn" onclick="completeTask('chat')">Вступить</button>
                             </div>
@@ -708,7 +708,7 @@
             const clickerBtn = document.getElementById('click-btn');
             const coin = document.createElement('div');
             coin.className = 'click-coin coin-pop';
-            coin.textContent = '+1 ₮';
+            coin.textContent = '+1 DREVO';
             coin.style.left = '50%';
             coin.style.top = '50%';
             
