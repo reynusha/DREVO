@@ -1,580 +1,144 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DREVO</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
-            --tg-theme-bg-color: #0f0f0f;
-            --tg-theme-text-color: #ffffff;
-            --tg-theme-hint-color: #7f8a96;
-            --tg-theme-link-color: #5ac8fb;
-            --tg-theme-button-color: #2ea6ff;
-            --tg-theme-button-text-color: #ffffff;
-            --tg-theme-secondary-bg-color: #1a1a1a;
-            --primary-accent: #00d4aa;
-            --primary-dark: #00b894;
-            --card-bg: #1a1a1a;
-            --border-color: #2a2a2a;
+            --primary: #00B894; --light: #00D4AA; --dark: #009975;
+            --bg: #0A0A0A; --card: #1A1A1A; --text: #FFFFFF; --secondary: #A0A0A0;
         }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--tg-theme-bg-color);
-            color: var(--tg-theme-text-color);
-            height: 100vh;
-            overflow: hidden;
-            line-height: 1.5;
-        }
-
-        .app {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
-        }
-
+        body { font-family: 'Roboto', sans-serif; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; }
+        .app { height: 100vh; display: flex; flex-direction: column; }
+        
         /* Header */
-        .header {
-            background: rgba(26, 26, 26, 0.95);
-            backdrop-filter: blur(20px);
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, var(--primary-accent) 0%, var(--primary-dark) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 14px;
-            color: #000;
-        }
-
-        .logo-text {
-            font-size: 18px;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--primary-accent) 0%, var(--primary-dark) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .balance-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .balance-icon {
-            color: var(--primary-accent);
-            font-weight: 600;
-        }
-
-        .balance-amount {
-            font-size: 16px;
-            font-weight: 600;
-        }
-
+        .header { background: var(--card); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 700; color: var(--primary); }
+        .balance-section { display: flex; align-items: center; gap: 12px; }
+        .balance-card, .energy-section { background: var(--bg); padding: 8px 12px; border-radius: 12px; display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; }
+        
         /* Navigation */
-        .tabs {
-            display: flex;
-            background: var(--card-bg);
-            margin: 12px;
-            border-radius: 16px;
-            border: 1px solid var(--border-color);
-            overflow: hidden;
-        }
-
-        .tab-btn {
-            flex: 1;
-            padding: 14px;
-            background: none;
-            border: none;
-            color: var(--tg-theme-hint-color);
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .tab-btn.active {
-            color: var(--tg-theme-text-color);
-            background: rgba(0, 212, 170, 0.1);
-        }
-
-        .tab-btn.active::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 40%;
-            height: 2px;
-            background: var(--primary-accent);
-            border-radius: 2px;
-        }
-
+        .tabs { display: flex; background: var(--card); margin: 0 12px; border-radius: 12px; overflow: hidden; }
+        .tab-btn { flex: 1; padding: 14px; background: none; border: none; color: var(--secondary); font-size: 14px; font-weight: 500; cursor: pointer; }
+        .tab-btn.active { background: var(--primary); color: white; }
+        
         /* Content */
-        .content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 0 12px 20px;
-        }
-
-        .tab-content {
-            display: none;
-            height: 100%;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
+        .content { flex: 1; overflow-y: auto; padding: 0 12px 20px; }
+        .tab-content { display: none; height: 100%; }
+        .tab-content.active { display: block; }
+        
         /* Clicker Section */
-        .clicker-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            text-align: center;
-            position: relative;
-        }
-
-        .clicker-stats {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 20px;
-            width: 100%;
-            max-width: 300px;
-            margin-bottom: 30px;
-        }
-
-        .stat-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-        }
-
-        .stat-item:not(:last-child) {
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .stat-label {
-            color: var(--tg-theme-hint-color);
-            font-size: 14px;
-        }
-
-        .stat-value {
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .clicker-main {
-            position: relative;
-            margin: 20px 0;
-        }
-
-        .clicker-btn {
-            width: 180px;
-            height: 180px;
-            border: none;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-accent) 0%, var(--primary-dark) 100%);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-            box-shadow: 0 8px 32px rgba(0, 212, 170, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .clicker-btn:active {
-            transform: scale(0.95);
-            box-shadow: 0 4px 20px rgba(0, 212, 170, 0.5);
-        }
-
-        .clicker-btn::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
-            transform: rotate(45deg);
-            transition: all 0.3s ease;
-        }
-
-        .clicker-btn:active::before {
-            transform: rotate(45deg) translate(10px, 10px);
-        }
-
-        .clicker-image {
-            width: 80px;
-            height: 80px;
-            border-radius: 16px;
-            object-fit: cover;
-            border: 3px solid rgba(255,255,255,0.1);
-        }
-
-        .click-coin {
-            position: absolute;
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--primary-accent);
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        /* Profile Section */
-        .profile-container {
-            padding: 20px 0;
-        }
-
-        .profile-header {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 24px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .user-avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 20px;
-            background: linear-gradient(135deg, var(--primary-accent) 0%, var(--primary-dark) 100%);
-            margin: 0 auto 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: #000;
-            font-weight: 700;
-        }
-
-        .user-name {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .user-id {
-            font-size: 14px;
-            color: var(--tg-theme-hint-color);
-        }
-
-        .tasks-section {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 24px;
-        }
-
-        .section-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .task-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .task-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s ease;
-        }
-
-        .task-item.completed {
-            background: rgba(0, 212, 170, 0.1);
-            border-color: var(--primary-accent);
-        }
-
-        .task-info {
-            flex: 1;
-        }
-
-        .task-title {
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 4px;
-        }
-
-        .task-reward {
-            font-size: 12px;
-            color: var(--primary-accent);
-            font-weight: 600;
-        }
-
-        .task-btn {
-            padding: 8px 16px;
-            background: var(--primary-accent);
-            border: none;
-            border-radius: 8px;
-            color: #000;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .task-btn.completed {
-            background: var(--tg-theme-hint-color);
-            color: var(--tg-theme-text-color);
-        }
-
-        /* Listing Section */
-        .listing-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            text-align: center;
-            padding: 40px 20px;
-        }
-
-        .coming-soon {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 40px 32px;
-            max-width: 300px;
-        }
-
-        .soon-icon {
-            font-size: 48px;
-            margin-bottom: 20px;
-            opacity: 0.8;
-        }
-
-        .soon-title {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            background: linear-gradient(135deg, var(--primary-accent) 0%, var(--primary-dark) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .soon-text {
-            font-size: 14px;
-            color: var(--tg-theme-hint-color);
-            line-height: 1.5;
-        }
-
+        .clicker-section { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .daily-bonus { position: absolute; top: 20px; right: 16px; background: var(--primary); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .clicker-circle { width: 220px; height: 220px; border-radius: 50%; background: var(--card); display: flex; align-items: center; justify-content: center; margin: 40px 0; }
+        .clicker-btn { width: 180px; height: 180px; border-radius: 50%; background: var(--primary); border: none; cursor: pointer; transition: all 0.1s ease; display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: 700; color: white; }
+        .clicker-btn:active { transform: scale(0.95); }
+        .stats-section { background: var(--card); border-radius: 16px; padding: 16px; width: 100%; max-width: 320px; }
+        .stat-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; }
+        .progress-bar { width: 100%; height: 6px; background: #2A2A2A; border-radius: 3px; overflow: hidden; margin-top: 4px; }
+        .progress-fill { height: 100%; background: var(--primary); transition: width 0.3s ease; }
+        
+        /* Tasks Section */
+        .tasks-section { background: var(--card); border-radius: 16px; padding: 20px; margin-top: 20px; }
+        .section-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+        .tasks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .task-card { background: var(--bg); border-radius: 12px; padding: 16px; text-align: center; }
+        .task-title { font-size: 12px; color: var(--secondary); margin-bottom: 4px; }
+        .task-reward { font-size: 14px; font-weight: 700; color: var(--primary); }
+        .task-btn { width: 100%; padding: 8px; background: var(--primary); border: none; border-radius: 8px; color: white; font-size: 12px; font-weight: 600; cursor: pointer; margin-top: 8px; }
+        
+        /* Leaders Section */
+        .leaders-section { padding: 20px 0; }
+        .leaderboard { background: var(--card); border-radius: 16px; padding: 20px; }
+        .leader-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #2A2A2A; }
+        .leader-item:last-child { border-bottom: none; }
+        .leader-rank { width: 24px; font-weight: 600; margin-right: 12px; }
+        .leader-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 600; margin-right: 12px; }
+        .leader-info { flex: 1; }
+        .leader-name { font-size: 14px; font-weight: 500; }
+        .leader-score { font-size: 14px; font-weight: 600; color: var(--primary); }
+        
         /* Animations */
-        @keyframes coinPop {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-80px) scale(1.2); opacity: 0; }
-        }
-
-        .coin-pop {
-            animation: coinPop 1s ease-out forwards;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-
-        /* Progress bar */
-        .progress-bar {
-            width: 100%;
-            height: 4px;
-            background: var(--border-color);
-            border-radius: 2px;
-            overflow: hidden;
-            margin-top: 8px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: var(--primary-accent);
-            border-radius: 2px;
-            transition: width 0.3s ease;
-        }
-
-        /* Responsive */
-        @media (max-width: 480px) {
-            .header {
-                padding: 12px 16px;
-            }
-            
-            .clicker-btn {
-                width: 160px;
-                height: 160px;
-            }
-            
-            .clicker-image {
-                width: 70px;
-                height: 70px;
-            }
-        }
+        @keyframes coinPop { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-60px) scale(1.1); opacity: 0; } }
+        .coin-pop { animation: coinPop 0.8s ease-out forwards; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        .pulse { animation: pulse 2s infinite; }
     </style>
 </head>
 <body>
     <div class="app">
-        <!-- Header -->
         <div class="header">
-            <div class="logo">
-                <div class="logo-icon">D</div>
-                <div class="logo-text">DREVO</div>
-            </div>
-            <div class="balance-card">
-                <span class="balance-icon">₮</span>
-                <span class="balance-amount" id="balance">0</span>
+            <div class="logo">DREVO</div>
+            <div class="balance-section">
+                <div class="energy-section"><span id="energy">1000/1000</span></div>
+                <div class="balance-card"><span id="balance">0</span></div>
             </div>
         </div>
         
         <!-- Navigation -->
         <nav class="tabs">
-            <button class="tab-btn active" onclick="switchTab('main')">Главная</button>
-            <button class="tab-btn" onclick="switchTab('profile')">Профиль</button>
-            <button class="tab-btn" onclick="switchTab('listing')">Листинг</button>
+            <button class="tab-btn active" onclick="switchTab('clicker')">Clicker</button>
+            <button class="tab-btn" onclick="switchTab('tasks')">Tasks</button>
+            <button class="tab-btn" onclick="switchTab('leaders')">Leaders</button>
         </nav>
         
-        <!-- Content -->
         <main class="content">
-            <!-- Главная -->
-            <div id="main-tab" class="tab-content active">
-                <div class="clicker-container">
-                    <div class="clicker-stats">
-                        <div class="stat-item">
-                            <span class="stat-label">Доход за клик</span>
-                            <span class="stat-value">+1 DREVO</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Лимит сегодня</span>
-                            <span class="stat-value" id="today-limit">0/2000</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
-                        </div>
+            <!-- Clicker Tab -->
+            <div id="clicker-tab" class="tab-content active">
+                <div class="clicker-section">
+                    <div class="daily-bonus">Daily limit</div>
+                    <div class="clicker-circle">
+                        <button class="clicker-btn pulse" id="click-btn">D</button>
                     </div>
-                    
-                    <div class="clicker-main">
-                        <button class="clicker-btn pulse" id="click-btn">
-                            <img src="https://i.postimg.cc/0KxS0X1c/drevo.png" alt="DREVO" class="clicker-image" onerror="this.style.display='none'">
-                        </button>
+                    <div class="stats-section">
+                        <div class="stat-row"><span>Points per tap</span><span>+1</span></div>
+                        <div class="stat-row"><span>Daily limit</span><span id="today-limit">0/1000</span></div>
+                        <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width: 0%"></div></div>
                     </div>
-                    
-                    <div class="clicker-stats">
-                        <div class="stat-item">
-                            <span class="stat-label">Всего заработано</span>
-                            <span class="stat-value" id="total-earned">0 DREVO</span>
+                </div>
+            </div>
+            
+            <!-- Tasks Tab -->
+            <div id="tasks-tab" class="tab-content">
+                <div class="tasks-section">
+                    <div class="section-title">Tasks</div>
+                    <div class="tasks-grid">
+                        <div class="task-card" id="task-channel1">
+                            <div class="task-title">Join DREVO Coin</div>
+                            <div class="task-reward">+1000 D</div>
+                            <button class="task-btn" onclick="completeTask('channel1')">Join</button>
                         </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Уровень</span>
-                            <span class="stat-value">Новичок</span>
+                        <div class="task-card" id="task-channel2">
+                            <div class="task-title">Join OneSK</div>
+                            <div class="task-reward">+1000 D</div>
+                            <button class="task-btn" onclick="completeTask('channel2')">Join</button>
+                        </div>
+                        <div class="task-card" id="task-chat">
+                            <div class="task-title">Join DREVO Community</div>
+                            <div class="task-reward">+1000 D</div>
+                            <button class="task-btn" onclick="completeTask('chat')">Join</button>
+                        </div>
+                        <div class="task-card" id="task-invite">
+                            <div class="task-title">Invite Friends</div>
+                            <div class="task-reward">+500 D</div>
+                            <button class="task-btn" onclick="completeTask('invite')">Invite</button>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Профиль -->
-            <div id="profile-tab" class="tab-content">
-                <div class="profile-container">
-                    <div class="profile-header">
-                        <div class="user-avatar" id="user-avatar">U</div>
-                        <div class="user-name" id="user-name">Пользователь</div>
-                        <div class="user-id">ID: <span id="user-id">000000</span></div>
-                    </div>
-                    
-                    <div class="tasks-section">
-                        <div class="section-title">
-                            <span>🎯</span>
-                            <span>Задания</span>
+            <!-- Leaders Tab -->
+            <div id="leaders-tab" class="tab-content">
+                <div class="leaders-section">
+                    <div class="leaderboard">
+                        <div class="section-title">Top Players</div>
+                        <div id="leaders-list">
+                            <!-- Leaders will be loaded here -->
                         </div>
-                        
-                        <div class="task-list">
-                            <div class="task-item" id="task-channel1">
-                                <div class="task-info">
-                                    <div class="task-title">Подпишись на DREVO Coin</div>
-                                    <div class="task-reward">+2000 DREVO</div>
-                                </div>
-                                <button class="task-btn" onclick="completeTask('channel1')">Подписаться</button>
-                            </div>
-                            
-                            <div class="task-item" id="task-channel2">
-                                <div class="task-info">
-                                    <div class="task-title">Подпишись на OneSK</div>
-                                    <div class="task-reward">+2000 DREVO</div>
-                                </div>
-                                <button class="task-btn" onclick="completeTask('channel2')">Подписаться</button>
-                            </div>
-                            
-                            <div class="task-item" id="task-chat">
-                                <div class="task-info">
-                                    <div class="task-title">Вступи в DREVO Community</div>
-                                    <div class="task-reward">+2000 DREVO</div>
-                                </div>
-                                <button class="task-btn" onclick="completeTask('chat')">Вступить</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Листинг -->
-            <div id="listing-tab" class="tab-content">
-                <div class="listing-container">
-                    <div class="coming-soon">
-                        <div class="soon-icon">🚀</div>
-                        <div class="soon-title">Очень скоро</div>
-                        <div class="soon-text">Мы готовимся к листингу на ведущих биржах. Следите за обновлениями!</div>
                     </div>
                 </div>
             </div>
@@ -582,220 +146,177 @@
     </div>
 
     <script>
-        // Инициализация Telegram Web App
         const tg = window.Telegram.WebApp;
-        
-        // Состояние приложения
-        let state = {
-            balance: 0,
-            totalEarned: 0,
-            energy: 2000,
-            clicksToday: 0,
-            completedTasks: {
-                channel1: false,
-                channel2: false,
-                chat: false
-            }
+        let state = { 
+            balance: 0, 
+            energy: 1000, 
+            clicksToday: 0, 
+            completedTasks: { channel1: false, channel2: false, chat: false, invite: false },
+            userId: tg.initDataUnsafe.user?.id || Math.floor(Math.random() * 1000000),
+            username: tg.initDataUnsafe.user?.first_name || 'User'
         };
         
-        // Запуск приложения
+        // Mock leaderboard data
+        const mockLeaders = [
+            { id: 1, name: "CryptoKing", score: 15420 },
+            { id: 2, name: "BlockMaster", score: 12850 },
+            { id: 3, name: "TokenHunter", score: 11200 },
+            { id: 4, name: "DeFiExpert", score: 9850 },
+            { id: 5, name: "NFTGuru", score: 8760 },
+            { id: 6, name: "Web3Warrior", score: 7540 },
+            { id: 7, name: "CoinCollector", score: 6320 },
+            { id: 8, name: "DappDeveloper", score: 5210 },
+            { id: 9, name: "SmartContract", score: 4380 },
+            { id: 10, name: "You", score: 0 }
+        ];
+
         function init() {
             tg.expand();
-            tg.enableClosingConfirmation();
             loadState();
-            setupUserInfo();
             setupEventListeners();
             updateUI();
+            updateLeadersBoard();
         }
         
-        // Загрузка состояния
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            if (tabName === 'tasks') updateTasksUI();
+            if (tabName === 'leaders') updateLeadersBoard();
+        }
+        
         function loadState() {
             const saved = localStorage.getItem('drevoState');
             if (saved) {
                 const parsed = JSON.parse(saved);
-                
-                // Проверяем смену дня
                 const today = new Date().toDateString();
-                if (parsed.lastClickDate !== today) {
-                    state.clicksToday = 0;
-                    state.energy = 2000;
-                } else {
-                    state.clicksToday = parsed.clicksToday || 0;
-                    state.energy = 2000 - state.clicksToday;
+                if (parsed.lastClickDate !== today) { 
+                    state.clicksToday = 0; 
+                    state.energy = 1000; 
+                } else { 
+                    state.clicksToday = parsed.clicksToday; 
+                    state.energy = 1000 - state.clicksToday; 
                 }
-                
-                state.balance = parsed.balance || 0;
-                state.totalEarned = parsed.totalEarned || 0;
+                state.balance = parsed.balance || 0; 
                 state.completedTasks = parsed.completedTasks || state.completedTasks;
                 state.lastClickDate = today;
             }
             saveState();
         }
         
-        // Сохранение состояния
-        function saveState() {
-            state.lastClickDate = new Date().toDateString();
-            localStorage.setItem('drevoState', JSON.stringify(state));
+        function saveState() { 
+            state.lastClickDate = new Date().toDateString(); 
+            localStorage.setItem('drevoState', JSON.stringify(state)); 
         }
         
-        // Настройка информации пользователя
-        function setupUserInfo() {
-            const user = tg.initDataUnsafe.user;
-            if (user) {
-                document.getElementById('user-name').textContent = user.first_name || 'Пользователь';
-                document.getElementById('user-id').textContent = user.id || '000000';
-                
-                if (user.photo_url) {
-                    document.getElementById('user-avatar').style.backgroundImage = `url(${user.photo_url})`;
-                    document.getElementById('user-avatar').textContent = '';
-                } else {
-                    const initial = user.first_name ? user.first_name.charAt(0).toUpperCase() : 'U';
-                    document.getElementById('user-avatar').textContent = initial;
-                }
-            }
+        function setupEventListeners() { 
+            document.getElementById('click-btn').addEventListener('click', handleClick); 
         }
         
-        // Настройка обработчиков событий
-        function setupEventListeners() {
-            const clickBtn = document.getElementById('click-btn');
-            clickBtn.addEventListener('click', handleClick);
-        }
-        
-        // Переключение вкладок
-        function switchTab(tabName) {
-            // Обновляем кнопки
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-            
-            // Обновляем контент
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            document.getElementById(tabName + '-tab').classList.add('active');
-            
-            // Обновляем UI для профиля
-            if (tabName === 'profile') {
-                updateTasksUI();
-            }
-        }
-        
-        // Обработка клика
         function handleClick() {
-            if (state.energy <= 0) {
-                tg.showAlert('Лимит на сегодня исчерпан! Возвращайтесь завтра!');
-                return;
+            if (state.energy <= 0) { 
+                tg.showAlert('Daily limit reached!'); 
+                return; 
             }
-            
-            state.balance += 1;
-            state.totalEarned += 1;
-            state.energy -= 1;
-            state.clicksToday += 1;
-            
-            // Анимация монеты
-            showCoinAnimation();
-            
-            // Вибрация
-            tg.HapticFeedback.impactOccurred('light');
-            
-            saveState();
+            state.balance++; 
+            state.energy--; 
+            state.clicksToday++;
+            showCoinAnimation(); 
+            tg.HapticFeedback.impactOccurred('light'); 
+            saveState(); 
             updateUI();
+            updateLeadersBoard();
         }
         
-        // Анимация монеты
         function showCoinAnimation() {
-            const clickerBtn = document.getElementById('click-btn');
-            const coin = document.createElement('div');
-            coin.className = 'click-coin coin-pop';
-            coin.textContent = '+1 DREVO';
-            coin.style.left = '50%';
-            coin.style.top = '50%';
-            
-            clickerBtn.parentElement.appendChild(coin);
-            
-            setTimeout(() => {
-                coin.remove();
-            }, 1000);
+            const coin = document.createElement('div'); 
+            coin.className = 'coin-pop'; 
+            coin.textContent = '+1'; 
+            coin.style.cssText = 'position:absolute;font-size:16px;font-weight:700;color:#00B894;opacity:0;';
+            document.getElementById('click-btn').parentElement.appendChild(coin); 
+            setTimeout(() => coin.remove(), 800);
         }
         
-        // Выполнение задания
         function completeTask(taskId) {
-            if (state.completedTasks[taskId]) {
-                tg.showAlert('Это задание уже выполнено!');
-                return;
+            if (state.completedTasks[taskId]) { 
+                tg.showAlert('Task already completed!'); 
+                return; 
             }
-            
-            // Открываем канал/чат в Telegram
-            const urls = {
-                channel1: 'https://t.me/drevocoin',
+            const urls = { 
+                channel1: 'https://t.me/drevocoin', 
                 channel2: 'https://t.me/onesk', 
-                chat: 'https://t.me/drevocommunity'
+                chat: 'https://t.me/drevocommunity', 
+                invite: 'https://t.me/share/url?url=https://t.me/drevo_bot' 
             };
-            
-            tg.openLink(urls[taskId]);
-            
-            // Начисляем награду через 2 секунды (после перехода)
+            if (urls[taskId]) tg.openLink(urls[taskId]);
             setTimeout(() => {
-                state.balance += 2000;
-                state.totalEarned += 2000;
-                state.completedTasks[taskId] = true;
-                
-                // Вибрация успеха
+                const reward = taskId === 'invite' ? 500 : 1000;
+                state.balance += reward; 
+                state.completedTasks[taskId] = true; 
                 tg.HapticFeedback.impactOccurred('success');
-                
-                tg.showPopup({
-                    title: 'Задание выполнено! 🎉',
-                    message: 'Вы получили 2000 DREVO токенов!',
-                    buttons: [{ type: 'ok' }]
+                tg.showPopup({ 
+                    title: 'Task Completed!', 
+                    message: `You received ${reward} DREVO points!`, 
+                    buttons: [{ type: 'ok' }] 
                 });
-                
-                saveState();
-                updateUI();
+                saveState(); 
+                updateUI(); 
                 updateTasksUI();
+                updateLeadersBoard();
             }, 2000);
         }
         
-        // Обновление интерфейса
         function updateUI() {
-            // Баланс
-            document.getElementById('balance').textContent = state.balance.toLocaleString();
-            document.getElementById('total-earned').textContent = state.totalEarned.toLocaleString();
-            
-            // Лимиты
-            document.getElementById('today-limit').textContent = state.clicksToday + '/2000';
-            
-            // Прогресс бар
-            const progressPercent = (state.clicksToday / 2000) * 100;
-            document.getElementById('progress-fill').style.width = progressPercent + '%';
-            
-            // Анимация кнопки
+            document.getElementById('balance').textContent = state.balance;
+            document.getElementById('energy').textContent = state.energy + '/1000';
+            document.getElementById('today-limit').textContent = state.clicksToday + '/1000';
+            document.getElementById('progress-fill').style.width = (state.clicksToday / 1000) * 100 + '%';
             const clickBtn = document.getElementById('click-btn');
-            if (state.energy <= 0) {
-                clickBtn.classList.remove('pulse');
-                clickBtn.style.opacity = '0.5';
-            } else {
-                clickBtn.classList.add('pulse');
-                clickBtn.style.opacity = '1';
+            if (state.energy <= 0) { 
+                clickBtn.classList.remove('pulse'); 
+                clickBtn.style.opacity = '0.6'; 
+            } else { 
+                clickBtn.classList.add('pulse'); 
+                clickBtn.style.opacity = '1'; 
             }
         }
         
-        // Обновление заданий
         function updateTasksUI() {
             Object.keys(state.completedTasks).forEach(taskId => {
                 if (state.completedTasks[taskId]) {
-                    const taskItem = document.getElementById('task-' + taskId);
-                    const btn = taskItem.querySelector('.task-btn');
-                    
-                    taskItem.classList.add('completed');
-                    btn.textContent = '✅ Выполнено';
-                    btn.disabled = true;
-                    btn.classList.add('completed');
+                    const taskCard = document.getElementById('task-' + taskId); 
+                    const btn = taskCard.querySelector('.task-btn');
+                    btn.textContent = 'Completed'; 
+                    btn.disabled = true; 
+                    btn.style.background = '#A0A0A0';
                 }
             });
         }
         
-        // Запуск при загрузке
+        function updateLeadersBoard() {
+            // Update user score in mock data
+            mockLeaders[9].score = state.balance;
+            mockLeaders[9].name = state.username;
+            
+            // Sort by score descending
+            const sortedLeaders = [...mockLeaders].sort((a, b) => b.score - a.score);
+            
+            const leadersList = document.getElementById('leaders-list');
+            leadersList.innerHTML = sortedLeaders.map((leader, index) => `
+                <div class="leader-item">
+                    <div class="leader-rank">${index + 1}</div>
+                    <div class="leader-avatar">${leader.name.charAt(0)}</div>
+                    <div class="leader-info">
+                        <div class="leader-name">${leader.name}</div>
+                    </div>
+                    <div class="leader-score">${leader.score.toLocaleString()} D</div>
+                </div>
+            `).join('');
+        }
+        
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
