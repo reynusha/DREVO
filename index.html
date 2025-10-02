@@ -11,6 +11,7 @@
         :root {
             --primary: #00B894; --light: #00D4AA; --dark: #009975;
             --bg: #0A0A0A; --card: #1A1A1A; --text: #FFFFFF; --secondary: #A0A0A0;
+            --gold: #FFD700; --silver: #C0C0C0; --bronze: #CD7F32;
         }
         body { font-family: 'Roboto', sans-serif; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; }
         .app { height: 100vh; display: flex; flex-direction: column; }
@@ -34,7 +35,7 @@
         /* Clicker Section */
         .clicker-section { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .daily-bonus { position: absolute; top: 20px; right: 16px; background: var(--primary); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-        .clicker-circle { width: 220px; height: 220px; border-radius: 50%; background: var(--card); display: flex; align-items: center; justify-content: center; margin: 40px 0; }
+        .clicker-circle { width: 220px; height: 220px; border-radius: 50%; background: var(--card); display: flex; align-items: center; justify-content: center; margin: 40px 0; position: relative; }
         .clicker-btn { width: 180px; height: 180px; border-radius: 50%; background: var(--primary); border: none; cursor: pointer; transition: all 0.1s ease; display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: 700; color: white; }
         .clicker-btn:active { transform: scale(0.95); }
         .stats-section { background: var(--card); border-radius: 16px; padding: 16px; width: 100%; max-width: 320px; }
@@ -50,17 +51,27 @@
         .task-title { font-size: 12px; color: var(--secondary); margin-bottom: 4px; }
         .task-reward { font-size: 14px; font-weight: 700; color: var(--primary); }
         .task-btn { width: 100%; padding: 8px; background: var(--primary); border: none; border-radius: 8px; color: white; font-size: 12px; font-weight: 600; cursor: pointer; margin-top: 8px; }
+        .task-btn.completed { background: var(--secondary); cursor: not-allowed; }
         
         /* Leaders Section */
         .leaders-section { padding: 20px 0; }
         .leaderboard { background: var(--card); border-radius: 16px; padding: 20px; }
         .leader-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #2A2A2A; }
         .leader-item:last-child { border-bottom: none; }
-        .leader-rank { width: 24px; font-weight: 600; margin-right: 12px; }
-        .leader-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 600; margin-right: 12px; }
+        .leader-rank { width: 24px; font-weight: 600; margin-right: 12px; text-align: center; }
+        .rank-1 { color: var(--gold); }
+        .rank-2 { color: var(--silver); }
+        .rank-3 { color: var(--bronze); }
+        .leader-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 600; margin-right: 12px; font-size: 14px; }
         .leader-info { flex: 1; }
         .leader-name { font-size: 14px; font-weight: 500; }
         .leader-score { font-size: 14px; font-weight: 600; color: var(--primary); }
+        .current-user { background: rgba(0, 184, 148, 0.1); border-radius: 8px; margin: 0 -8px; padding: 0 8px; }
+        
+        /* Loading */
+        .loading { text-align: center; padding: 40px; color: var(--secondary); }
+        .loading-spinner { width: 20px; height: 20px; border: 2px solid var(--secondary); border-top: 2px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 10px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
         /* Animations */
         @keyframes coinPop { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-60px) scale(1.1); opacity: 0; } }
@@ -137,7 +148,10 @@
                     <div class="leaderboard">
                         <div class="section-title">Top Players</div>
                         <div id="leaders-list">
-                            <!-- Leaders will be loaded here -->
+                            <div class="loading">
+                                <div class="loading-spinner"></div>
+                                <div>Loading leaderboard...</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -147,35 +161,94 @@
 
     <script>
         const tg = window.Telegram.WebApp;
+        
+        // Online leaderboard storage simulation (using localStorage as "server")
+        const LEADERBOARD_KEY = 'drevo_global_leaderboard';
+        
+        // Initialize state
         let state = { 
             balance: 0, 
             energy: 1000, 
             clicksToday: 0, 
-            completedTasks: { channel1: false, channel2: false, chat: false, invite: false },
-            userId: tg.initDataUnsafe.user?.id || Math.floor(Math.random() * 1000000),
-            username: tg.initDataUnsafe.user?.first_name || 'User'
+            completedTasks: {
+                channel1: false,
+                channel2: false, 
+                chat: false, 
+                invite: false
+            },
+            userId: null,
+            username: 'User',
+            lastClickDate: null
         };
-        
-        // Mock leaderboard data
-        const mockLeaders = [
-            { id: 1, name: "CryptoKing", score: 15420 },
-            { id: 2, name: "BlockMaster", score: 12850 },
-            { id: 3, name: "TokenHunter", score: 11200 },
-            { id: 4, name: "DeFiExpert", score: 9850 },
-            { id: 5, name: "NFTGuru", score: 8760 },
-            { id: 6, name: "Web3Warrior", score: 7540 },
-            { id: 7, name: "CoinCollector", score: 6320 },
-            { id: 8, name: "DappDeveloper", score: 5210 },
-            { id: 9, name: "SmartContract", score: 4380 },
-            { id: 10, name: "You", score: 0 }
-        ];
 
         function init() {
             tg.expand();
+            setupUser();
             loadState();
             setupEventListeners();
             updateUI();
             updateLeadersBoard();
+        }
+        
+        function setupUser() {
+            const user = tg.initDataUnsafe.user;
+            state.userId = user?.id || Math.floor(Math.random() * 1000000000);
+            state.username = user?.first_name || 'User' + state.userId.toString().slice(-4);
+            
+            // Initialize user in global leaderboard
+            initializeUserInLeaderboard();
+        }
+        
+        function initializeUserInLeaderboard() {
+            const globalLeaderboard = getGlobalLeaderboard();
+            const existingUser = globalLeaderboard.find(u => u.id === state.userId);
+            
+            if (!existingUser) {
+                globalLeaderboard.push({
+                    id: state.userId,
+                    name: state.username,
+                    score: 0,
+                    lastActive: Date.now()
+                });
+                saveGlobalLeaderboard(globalLeaderboard);
+            } else {
+                // Update username if changed
+                existingUser.name = state.username;
+                existingUser.lastActive = Date.now();
+                saveGlobalLeaderboard(globalLeaderboard);
+            }
+        }
+        
+        function getGlobalLeaderboard() {
+            try {
+                return JSON.parse(localStorage.getItem(LEADERBOARD_KEY)) || [];
+            } catch {
+                return [];
+            }
+        }
+        
+        function saveGlobalLeaderboard(leaderboard) {
+            // Clean up inactive users (older than 30 days)
+            const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+            const activeLeaderboard = leaderboard.filter(user => user.lastActive > thirtyDaysAgo);
+            
+            // Sort by score
+            activeLeaderboard.sort((a, b) => b.score - a.score);
+            
+            localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(activeLeaderboard));
+            return activeLeaderboard;
+        }
+        
+        function updateUserScore() {
+            const globalLeaderboard = getGlobalLeaderboard();
+            const userIndex = globalLeaderboard.findIndex(u => u.id === state.userId);
+            
+            if (userIndex !== -1) {
+                globalLeaderboard[userIndex].score = state.balance;
+                globalLeaderboard[userIndex].lastActive = Date.now();
+                globalLeaderboard[userIndex].name = state.username;
+                saveGlobalLeaderboard(globalLeaderboard);
+            }
         }
         
         function switchTab(tabName) {
@@ -189,27 +262,60 @@
         }
         
         function loadState() {
-            const saved = localStorage.getItem('drevoState');
+            const userKey = `drevoState_${state.userId}`;
+            const saved = localStorage.getItem(userKey);
+            
             if (saved) {
-                const parsed = JSON.parse(saved);
-                const today = new Date().toDateString();
-                if (parsed.lastClickDate !== today) { 
-                    state.clicksToday = 0; 
-                    state.energy = 1000; 
-                } else { 
-                    state.clicksToday = parsed.clicksToday; 
-                    state.energy = 1000 - state.clicksToday; 
+                try {
+                    const parsed = JSON.parse(saved);
+                    const today = new Date().toDateString();
+                    
+                    if (parsed.lastClickDate !== today) { 
+                        state.clicksToday = 0; 
+                        state.energy = 1000; 
+                    } else { 
+                        state.clicksToday = parsed.clicksToday || 0; 
+                        state.energy = 1000 - state.clicksToday; 
+                    }
+                    
+                    state.balance = parsed.balance || 0;
+                    state.completedTasks = parsed.completedTasks || {
+                        channel1: false,
+                        channel2: false, 
+                        chat: false, 
+                        invite: false
+                    };
+                    state.lastClickDate = today;
+                    
+                } catch (e) {
+                    console.error('Error loading state:', e);
+                    resetState();
                 }
-                state.balance = parsed.balance || 0; 
-                state.completedTasks = parsed.completedTasks || state.completedTasks;
-                state.lastClickDate = today;
+            } else {
+                resetState();
             }
+            
             saveState();
         }
         
+        function resetState() {
+            state.balance = 0;
+            state.energy = 1000;
+            state.clicksToday = 0;
+            state.completedTasks = {
+                channel1: false,
+                channel2: false, 
+                chat: false, 
+                invite: false
+            };
+            state.lastClickDate = new Date().toDateString();
+        }
+        
         function saveState() { 
+            const userKey = `drevoState_${state.userId}`;
             state.lastClickDate = new Date().toDateString(); 
-            localStorage.setItem('drevoState', JSON.stringify(state)); 
+            localStorage.setItem(userKey, JSON.stringify(state));
+            updateUserScore();
         }
         
         function setupEventListeners() { 
@@ -245,23 +351,30 @@
                 tg.showAlert('Task already completed!'); 
                 return; 
             }
+            
             const urls = { 
                 channel1: 'https://t.me/drevocoin', 
                 channel2: 'https://t.me/onesk', 
                 chat: 'https://t.me/drevocommunity', 
                 invite: 'https://t.me/share/url?url=https://t.me/drevo_bot' 
             };
-            if (urls[taskId]) tg.openLink(urls[taskId]);
+            
+            if (urls[taskId]) {
+                tg.openLink(urls[taskId]);
+            }
+            
             setTimeout(() => {
                 const reward = taskId === 'invite' ? 500 : 1000;
                 state.balance += reward; 
                 state.completedTasks[taskId] = true; 
                 tg.HapticFeedback.impactOccurred('success');
+                
                 tg.showPopup({ 
                     title: 'Task Completed!', 
                     message: `You received ${reward} DREVO points!`, 
                     buttons: [{ type: 'ok' }] 
                 });
+                
                 saveState(); 
                 updateUI(); 
                 updateTasksUI();
@@ -270,10 +383,11 @@
         }
         
         function updateUI() {
-            document.getElementById('balance').textContent = state.balance;
+            document.getElementById('balance').textContent = state.balance.toLocaleString();
             document.getElementById('energy').textContent = state.energy + '/1000';
             document.getElementById('today-limit').textContent = state.clicksToday + '/1000';
             document.getElementById('progress-fill').style.width = (state.clicksToday / 1000) * 100 + '%';
+            
             const clickBtn = document.getElementById('click-btn');
             if (state.energy <= 0) { 
                 clickBtn.classList.remove('pulse'); 
@@ -286,35 +400,47 @@
         
         function updateTasksUI() {
             Object.keys(state.completedTasks).forEach(taskId => {
+                const taskCard = document.getElementById('task-' + taskId); 
+                const btn = taskCard.querySelector('.task-btn');
+                
                 if (state.completedTasks[taskId]) {
-                    const taskCard = document.getElementById('task-' + taskId); 
-                    const btn = taskCard.querySelector('.task-btn');
                     btn.textContent = 'Completed'; 
                     btn.disabled = true; 
-                    btn.style.background = '#A0A0A0';
+                    btn.classList.add('completed');
+                } else {
+                    btn.textContent = taskId === 'invite' ? 'Invite' : 'Join';
+                    btn.disabled = false;
+                    btn.classList.remove('completed');
                 }
             });
         }
         
         function updateLeadersBoard() {
-            // Update user score in mock data
-            mockLeaders[9].score = state.balance;
-            mockLeaders[9].name = state.username;
-            
-            // Sort by score descending
-            const sortedLeaders = [...mockLeaders].sort((a, b) => b.score - a.score);
+            const globalLeaderboard = getGlobalLeaderboard();
+            const topPlayers = globalLeaderboard.slice(0, 10); // Get top 10
             
             const leadersList = document.getElementById('leaders-list');
-            leadersList.innerHTML = sortedLeaders.map((leader, index) => `
-                <div class="leader-item">
-                    <div class="leader-rank">${index + 1}</div>
-                    <div class="leader-avatar">${leader.name.charAt(0)}</div>
-                    <div class="leader-info">
-                        <div class="leader-name">${leader.name}</div>
+            
+            if (topPlayers.length === 0) {
+                leadersList.innerHTML = '<div class="loading">No players yet</div>';
+                return;
+            }
+            
+            leadersList.innerHTML = topPlayers.map((player, index) => {
+                const isCurrentUser = player.id === state.userId;
+                const rankClass = index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : '';
+                
+                return `
+                    <div class="leader-item ${isCurrentUser ? 'current-user' : ''}">
+                        <div class="leader-rank ${rankClass}">${index + 1}</div>
+                        <div class="leader-avatar">${player.name.charAt(0).toUpperCase()}</div>
+                        <div class="leader-info">
+                            <div class="leader-name">${player.name} ${isCurrentUser ? '(You)' : ''}</div>
+                        </div>
+                        <div class="leader-score">${player.score.toLocaleString()} D</div>
                     </div>
-                    <div class="leader-score">${leader.score.toLocaleString()} D</div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
         
         document.addEventListener('DOMContentLoaded', init);
