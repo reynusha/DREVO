@@ -33,9 +33,9 @@
         .tab-content.active { display: block; }
         
         /* Clicker Section */
-        .clicker-section { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .daily-bonus { position: absolute; top: 20px; right: 16px; background: var(--primary); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-        .clicker-circle { width: 220px; height: 220px; border-radius: 50%; background: var(--card); display: flex; align-items: center; justify-content: center; margin: 40px 0; position: relative; }
+        .clicker-section { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+        .daily-bonus { background: var(--primary); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-bottom: 20px; }
+        .clicker-circle { width: 220px; height: 220px; border-radius: 50%; background: var(--card); display: flex; align-items: center; justify-content: center; margin: 20px 0; position: relative; }
         .clicker-btn { width: 180px; height: 180px; border-radius: 50%; background: var(--primary); border: none; cursor: pointer; transition: all 0.1s ease; display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: 700; color: white; }
         .clicker-btn:active { transform: scale(0.95); }
         .stats-section { background: var(--card); border-radius: 16px; padding: 16px; width: 100%; max-width: 320px; }
@@ -56,6 +56,12 @@
         /* Leaders Section */
         .leaders-section { padding: 20px 0; }
         .leaderboard { background: var(--card); border-radius: 16px; padding: 20px; }
+        .leader-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #2A2A2A; }
+        .leader-avatar-large { width: 48px; height: 48px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 18px; }
+        .leader-user-info { flex: 1; }
+        .leader-username { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+        .leader-stats { font-size: 12px; color: var(--secondary); }
+        .leader-motivation { background: rgba(0, 184, 148, 0.1); border-radius: 12px; padding: 16px; margin-bottom: 20px; text-align: center; font-size: 14px; line-height: 1.4; }
         .leader-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #2A2A2A; }
         .leader-item:last-child { border-bottom: none; }
         .leader-rank { width: 24px; font-weight: 600; margin-right: 12px; text-align: center; }
@@ -67,6 +73,23 @@
         .leader-name { font-size: 14px; font-weight: 500; }
         .leader-score { font-size: 14px; font-weight: 600; color: var(--primary); }
         .current-user { background: rgba(0, 184, 148, 0.1); border-radius: 8px; margin: 0 -8px; padding: 0 8px; }
+        
+        /* Investments Section */
+        .investments-section { padding: 20px 0; }
+        .investments-info { background: rgba(255, 193, 7, 0.1); border: 1px solid #FFC107; border-radius: 12px; padding: 16px; margin-bottom: 20px; font-size: 12px; line-height: 1.4; }
+        .investments-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        .investment-card { background: var(--card); border-radius: 16px; padding: 20px; }
+        .investment-header { display: flex; justify-content: between; align-items: center; margin-bottom: 16px; }
+        .investment-icon { width: 40px; height: 40px; border-radius: 10px; background: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 600; margin-right: 12px; }
+        .investment-info { flex: 1; }
+        .investment-name { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+        .investment-details { font-size: 12px; color: var(--secondary); }
+        .investment-stats { display: flex; justify-content: space-between; margin-bottom: 16px; }
+        .stat { text-align: center; }
+        .stat-value { font-size: 18px; font-weight: 700; color: var(--primary); }
+        .stat-label { font-size: 10px; color: var(--secondary); margin-top: 4px; }
+        .buy-btn { width: 100%; padding: 12px; background: var(--primary); border: none; border-radius: 8px; color: white; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .buy-btn:disabled { background: var(--secondary); cursor: not-allowed; }
         
         /* Loading */
         .loading { text-align: center; padding: 40px; color: var(--secondary); }
@@ -94,6 +117,7 @@
         <nav class="tabs">
             <button class="tab-btn active" onclick="switchTab('clicker')">Clicker</button>
             <button class="tab-btn" onclick="switchTab('tasks')">Tasks</button>
+            <button class="tab-btn" onclick="switchTab('investments')">Investments</button>
             <button class="tab-btn" onclick="switchTab('leaders')">Leaders</button>
         </nav>
         
@@ -128,6 +152,11 @@
                             <div class="task-reward">+1000 D</div>
                             <button class="task-btn" onclick="completeTask('channel2')">Join</button>
                         </div>
+                        <div class="task-card" id="task-channel3">
+                            <div class="task-title">Join BioSprutEl</div>
+                            <div class="task-reward">+1000 D</div>
+                            <button class="task-btn" onclick="completeTask('channel3')">Join</button>
+                        </div>
                         <div class="task-card" id="task-chat">
                             <div class="task-title">Join DREVO Community</div>
                             <div class="task-reward">+1000 D</div>
@@ -142,10 +171,95 @@
                 </div>
             </div>
             
+            <!-- Investments Tab -->
+            <div id="investments-tab" class="tab-content">
+                <div class="investments-section">
+                    <div class="investments-info">
+                        ⚠️ Important: Investments generate coins only while you are actively in the game. When you exit, income stops.
+                    </div>
+                    <div class="investments-grid">
+                        <div class="investment-card">
+                            <div class="investment-header">
+                                <div class="investment-icon">T</div>
+                                <div class="investment-info">
+                                    <div class="investment-name">Telegram</div>
+                                    <div class="investment-details">Social platform</div>
+                                </div>
+                            </div>
+                            <div class="investment-stats">
+                                <div class="stat">
+                                    <div class="stat-value">2600</div>
+                                    <div class="stat-label">Cost</div>
+                                </div>
+                                <div class="stat">
+                                    <div class="stat-value">1/min</div>
+                                    <div class="stat-label">Income</div>
+                                </div>
+                            </div>
+                            <button class="buy-btn" onclick="buyInvestment('telegram')" id="buy-telegram">Buy Telegram</button>
+                        </div>
+                        
+                        <div class="investment-card">
+                            <div class="investment-header">
+                                <div class="investment-icon">Y</div>
+                                <div class="investment-info">
+                                    <div class="investment-name">YouTube</div>
+                                    <div class="investment-details">Video platform</div>
+                                </div>
+                            </div>
+                            <div class="investment-stats">
+                                <div class="stat">
+                                    <div class="stat-value">3300</div>
+                                    <div class="stat-label">Cost</div>
+                                </div>
+                                <div class="stat">
+                                    <div class="stat-value">1/min</div>
+                                    <div class="stat-label">Income</div>
+                                </div>
+                            </div>
+                            <button class="buy-btn" onclick="buyInvestment('youtube')" id="buy-youtube">Buy YouTube</button>
+                        </div>
+                        
+                        <div class="investment-card">
+                            <div class="investment-header">
+                                <div class="investment-icon">T</div>
+                                <div class="investment-info">
+                                    <div class="investment-name">Twitch</div>
+                                    <div class="investment-details">Streaming platform</div>
+                                </div>
+                            </div>
+                            <div class="investment-stats">
+                                <div class="stat">
+                                    <div class="stat-value">4200</div>
+                                    <div class="stat-label">Cost</div>
+                                </div>
+                                <div class="stat">
+                                    <div class="stat-value">2/min</div>
+                                    <div class="stat-label">Income</div>
+                                </div>
+                            </div>
+                            <button class="buy-btn" onclick="buyInvestment('twitch')" id="buy-twitch">Buy Twitch</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <!-- Leaders Tab -->
             <div id="leaders-tab" class="tab-content">
                 <div class="leaders-section">
                     <div class="leaderboard">
+                        <div class="leader-header">
+                            <div class="leader-avatar-large" id="user-avatar-large">U</div>
+                            <div class="leader-user-info">
+                                <div class="leader-username" id="leader-username">User</div>
+                                <div class="leader-stats" id="leader-stats">0 coins • Just started</div>
+                            </div>
+                        </div>
+                        
+                        <div class="leader-motivation">
+                            It's never too late to enter the top rankings, hurry up to take your place in the rating. After listing, when the coin is listed on the exchange, top players will have a special advantage.
+                        </div>
+                        
                         <div class="section-title">Top Players</div>
                         <div id="leaders-list">
                             <div class="loading">
@@ -173,19 +287,30 @@
             completedTasks: {
                 channel1: false,
                 channel2: false, 
+                channel3: false,
                 chat: false, 
                 invite: false
             },
+            investments: {
+                telegram: false,
+                youtube: false,
+                twitch: false
+            },
             userId: null,
             username: 'User',
+            registrationDate: null,
             lastClickDate: null
         };
+
+        // Investment income interval
+        let incomeInterval = null;
 
         function init() {
             tg.expand();
             setupUser();
             loadState();
             setupEventListeners();
+            startIncomeGeneration();
             updateUI();
             updateLeadersBoard();
         }
@@ -204,17 +329,23 @@
             const existingUser = globalLeaderboard.find(u => u.id === state.userId);
             
             if (!existingUser) {
+                state.registrationDate = Date.now();
                 globalLeaderboard.push({
                     id: state.userId,
                     name: state.username,
                     score: 0,
-                    lastActive: Date.now()
+                    lastActive: Date.now(),
+                    registrationDate: state.registrationDate
                 });
                 saveGlobalLeaderboard(globalLeaderboard);
             } else {
                 // Update username if changed
                 existingUser.name = state.username;
                 existingUser.lastActive = Date.now();
+                if (!existingUser.registrationDate) {
+                    existingUser.registrationDate = Date.now();
+                }
+                state.registrationDate = existingUser.registrationDate;
                 saveGlobalLeaderboard(globalLeaderboard);
             }
         }
@@ -258,6 +389,7 @@
             document.getElementById(tabName + '-tab').classList.add('active');
             
             if (tabName === 'tasks') updateTasksUI();
+            if (tabName === 'investments') updateInvestmentsUI();
             if (tabName === 'leaders') updateLeadersBoard();
         }
         
@@ -282,9 +414,16 @@
                     state.completedTasks = parsed.completedTasks || {
                         channel1: false,
                         channel2: false, 
+                        channel3: false,
                         chat: false, 
                         invite: false
                     };
+                    state.investments = parsed.investments || {
+                        telegram: false,
+                        youtube: false,
+                        twitch: false
+                    };
+                    state.registrationDate = parsed.registrationDate || Date.now();
                     state.lastClickDate = today;
                     
                 } catch (e) {
@@ -305,9 +444,16 @@
             state.completedTasks = {
                 channel1: false,
                 channel2: false, 
+                channel3: false,
                 chat: false, 
                 invite: false
             };
+            state.investments = {
+                telegram: false,
+                youtube: false,
+                twitch: false
+            };
+            state.registrationDate = Date.now();
             state.lastClickDate = new Date().toDateString();
         }
         
@@ -320,6 +466,38 @@
         
         function setupEventListeners() { 
             document.getElementById('click-btn').addEventListener('click', handleClick); 
+        }
+        
+        function startIncomeGeneration() {
+            // Clear existing interval
+            if (incomeInterval) {
+                clearInterval(incomeInterval);
+            }
+            
+            // Start income generation every minute
+            incomeInterval = setInterval(() => {
+                let income = 0;
+                
+                if (state.investments.telegram) income += 1;
+                if (state.investments.youtube) income += 1;
+                if (state.investments.twitch) income += 2;
+                
+                if (income > 0) {
+                    state.balance += income;
+                    saveState();
+                    updateUI();
+                    updateLeadersBoard();
+                    
+                    // Show notification for income
+                    if (income > 0) {
+                        tg.showPopup({
+                            title: 'Investment Income!',
+                            message: `You earned ${income} coins from your investments!`,
+                            buttons: [{ type: 'ok' }]
+                        });
+                    }
+                }
+            }, 60000); // Every minute
         }
         
         function handleClick() {
@@ -355,6 +533,7 @@
             const urls = { 
                 channel1: 'https://t.me/drevocoin', 
                 channel2: 'https://t.me/onesk', 
+                channel3: 'https://t.me/biosprutel',
                 chat: 'https://t.me/drevocommunity', 
                 invite: 'https://t.me/share/url?url=https://t.me/drevo_bot' 
             };
@@ -363,23 +542,56 @@
                 tg.openLink(urls[taskId]);
             }
             
-            setTimeout(() => {
-                const reward = taskId === 'invite' ? 500 : 1000;
-                state.balance += reward; 
-                state.completedTasks[taskId] = true; 
-                tg.HapticFeedback.impactOccurred('success');
-                
-                tg.showPopup({ 
-                    title: 'Task Completed!', 
-                    message: `You received ${reward} DREVO points!`, 
-                    buttons: [{ type: 'ok' }] 
-                });
-                
-                saveState(); 
-                updateUI(); 
-                updateTasksUI();
-                updateLeadersBoard();
-            }, 2000);
+            // Give reward immediately (simplified for demo)
+            const reward = taskId === 'invite' ? 500 : 1000;
+            state.balance += reward; 
+            state.completedTasks[taskId] = true; 
+            tg.HapticFeedback.impactOccurred('success');
+            
+            tg.showPopup({ 
+                title: 'Task Completed!', 
+                message: `You received ${reward} DREVO points!`, 
+                buttons: [{ type: 'ok' }] 
+            });
+            
+            saveState(); 
+            updateUI(); 
+            updateTasksUI();
+            updateLeadersBoard();
+        }
+        
+        function buyInvestment(investmentId) {
+            const prices = {
+                telegram: 2600,
+                youtube: 3300,
+                twitch: 4200
+            };
+            
+            const price = prices[investmentId];
+            
+            if (state.balance < price) {
+                tg.showAlert(`Not enough coins! You need ${price} coins.`);
+                return;
+            }
+            
+            if (state.investments[investmentId]) {
+                tg.showAlert('You already own this investment!');
+                return;
+            }
+            
+            state.balance -= price;
+            state.investments[investmentId] = true;
+            
+            tg.showPopup({
+                title: 'Investment Purchased!',
+                message: `You successfully bought ${investmentId.charAt(0).toUpperCase() + investmentId.slice(1)}!`,
+                buttons: [{ type: 'ok' }]
+            });
+            
+            saveState();
+            updateUI();
+            updateInvestmentsUI();
+            updateLeadersBoard();
         }
         
         function updateUI() {
@@ -401,16 +613,34 @@
         function updateTasksUI() {
             Object.keys(state.completedTasks).forEach(taskId => {
                 const taskCard = document.getElementById('task-' + taskId); 
-                const btn = taskCard.querySelector('.task-btn');
-                
-                if (state.completedTasks[taskId]) {
-                    btn.textContent = 'Completed'; 
-                    btn.disabled = true; 
-                    btn.classList.add('completed');
-                } else {
-                    btn.textContent = taskId === 'invite' ? 'Invite' : 'Join';
-                    btn.disabled = false;
-                    btn.classList.remove('completed');
+                if (taskCard) {
+                    const btn = taskCard.querySelector('.task-btn');
+                    
+                    if (state.completedTasks[taskId]) {
+                        btn.textContent = 'Completed'; 
+                        btn.disabled = true; 
+                        btn.classList.add('completed');
+                    } else {
+                        btn.textContent = taskId === 'invite' ? 'Invite' : 'Join';
+                        btn.disabled = false;
+                        btn.classList.remove('completed');
+                    }
+                }
+            });
+        }
+        
+        function updateInvestmentsUI() {
+            const investments = ['telegram', 'youtube', 'twitch'];
+            investments.forEach(investment => {
+                const btn = document.getElementById(`buy-${investment}`);
+                if (btn) {
+                    if (state.investments[investment]) {
+                        btn.textContent = 'Owned';
+                        btn.disabled = true;
+                    } else {
+                        btn.textContent = `Buy ${investment.charAt(0).toUpperCase() + investment.slice(1)}`;
+                        btn.disabled = state.balance < (investment === 'telegram' ? 2600 : investment === 'youtube' ? 3300 : 4200);
+                    }
                 }
             });
         }
@@ -419,6 +649,28 @@
             const globalLeaderboard = getGlobalLeaderboard();
             const topPlayers = globalLeaderboard.slice(0, 10); // Get top 10
             
+            // Update user info in leader header
+            document.getElementById('user-avatar-large').textContent = state.username.charAt(0).toUpperCase();
+            document.getElementById('leader-username').textContent = state.username;
+            
+            // Calculate time since registration
+            const timeDiff = Date.now() - state.registrationDate;
+            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            
+            let timeText = '';
+            if (days > 0) {
+                timeText = `${days} day${days > 1 ? 's' : ''}`;
+            } else if (hours > 0) {
+                timeText = `${hours} hour${hours > 1 ? 's' : ''}`;
+            } else {
+                timeText = `${minutes} minute${minutes > 1 ? 's' : ''}`;
+            }
+            
+            document.getElementById('leader-stats').textContent = 
+                `${state.balance.toLocaleString()} coins • Playing for ${timeText}`;
+
             const leadersList = document.getElementById('leaders-list');
             
             if (topPlayers.length === 0) {
