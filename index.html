@@ -97,7 +97,7 @@
         .investments-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
         .investment-card { background: var(--card); border-radius: 16px; padding: 20px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .investment-header { display: flex; align-items: center; margin-bottom: 16px; }
-        .investment-icon { width: 40px; height: 40px; border-radius: 10px; background: var(--autumn-gradient); display: flex; align-items: center; justify-content: center; font-weight: 600; margin-right: 12px; overflow: hidden; }
+        .investment-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 600; margin-right: 12px; overflow: hidden; }
         .investment-icon img { width: 100%; height: 100%; object-fit: cover; }
         .investment-info { flex: 1; }
         .investment-name { font-size: 16px; font-weight: 600; margin-bottom: 4px; color: var(--primary); }
@@ -120,11 +120,17 @@
         .profile-stats { font-size: 14px; color: var(--secondary); }
         
         /* Referral Section */
-        .referral-section { background: var(--gradient); border-radius: 12px; padding: 16px; margin-bottom: 20px; border: 1px solid var(--border); }
+        .referral-section { background: var(--card); border-radius: 16px; padding: 20px; margin-bottom: 20px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .referral-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; color: var(--primary); }
-        .referral-stats { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; }
-        .referral-link { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-size: 12px; margin-bottom: 12px; word-break: break-all; }
-        .copy-btn { width: 100%; padding: 10px; background: var(--autumn-gradient); border: none; border-radius: 8px; color: white; font-size: 14px; font-weight: 600; cursor: pointer; }
+        .referral-stats { display: flex; justify-content: space-between; margin-bottom: 16px; }
+        .referral-stat { text-align: center; }
+        .referral-value { font-size: 18px; font-weight: 700; color: var(--primary); }
+        .referral-label { font-size: 12px; color: var(--secondary); }
+        .referral-link { background: var(--gradient); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 12px; font-size: 12px; word-break: break-all; }
+        .referral-history { max-height: 200px; overflow-y: auto; }
+        .referral-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+        .referral-user { font-size: 12px; }
+        .referral-reward { font-size: 12px; color: var(--primary); font-weight: 600; }
         
         /* Theme Switcher */
         .theme-switcher { background: var(--gradient); border-radius: 12px; padding: 16px; margin-bottom: 20px; border: 1px solid var(--border); }
@@ -153,7 +159,7 @@
         <div class="header">
             <div class="logo">DREVO</div>
             <div class="balance-section">
-                <div class="energy-section"><span id="energy">10000/10000</span></div>
+                <div class="energy-section"><span id="energy">1000/1000</span></div>
                 <div class="balance-card"><span class="balance-icon">D</span><span id="balance">0</span></div>
             </div>
         </div>
@@ -178,7 +184,7 @@
                     </div>
                     <div class="stats-section">
                         <div class="stat-row"><span>Points per tap</span><span id="points-per-tap">+1</span></div>
-                        <div class="stat-row"><span>Daily limit</span><span id="today-limit">0/10000</span></div>
+                        <div class="stat-row"><span>Daily limit</span><span id="today-limit">0/1000</span></div>
                         <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width: 0%"></div></div>
                     </div>
                 </div>
@@ -206,7 +212,7 @@
                         </div>
                         <div class="task-card" id="task-invite">
                             <div class="task-title">Invite Friends</div>
-                            <div class="task-reward">+500 D per referral</div>
+                            <div class="task-reward">+500 D</div>
                             <button class="task-btn" onclick="completeTask('invite')" id="btn-invite">Invite</button>
                         </div>
                     </div>
@@ -223,7 +229,7 @@
                         <div class="investment-card">
                             <div class="investment-header">
                                 <div class="investment-icon">
-                                    <img src="https://i.postimg.cc/X7744By9/efdf7126cd8f8ab435c15bf22be460dd.jpg" alt="Telegram" onerror="this.style.display='none'">
+                                    <img src="https://i.postimg.cc/X7744By9/efdf7126cd8f8ab435c15bf22be460dd.jpg" alt="Telegram">
                                 </div>
                                 <div class="investment-info">
                                     <div class="investment-name">Telegram</div>
@@ -246,7 +252,7 @@
                         <div class="investment-card">
                             <div class="investment-header">
                                 <div class="investment-icon">
-                                    <img src="https://i.postimg.cc/wMMfbz7L/E3-Bi-AE9y-FKj-T-ij-Niqt-Lj-CXavtb6x-Is-EHI43-WLcy6-Be-XFY6-G7e-Ol-Shn-M-pxu-Svt-H8-Koz-Iu-To-s900-c-k-c0x00ffffff-no-rj.jpg" alt="YouTube" onerror="this.style.display='none'">
+                                    <img src="https://i.postimg.cc/wMMfbz7L/E3-Bi-AE9y-FKj-T-ij-Niqt-Lj-CXavtb6x-Is-EHI43-WLcy6-Be-XFY6-G7e-Ol-Shn-M-pxu-Svt-H8-Koz-Iu-To-s900-c-k-c0x00ffffff-no-rj.jpg" alt="YouTube">
                                 </div>
                                 <div class="investment-info">
                                     <div class="investment-name">YouTube</div>
@@ -269,7 +275,7 @@
                         <div class="investment-card">
                             <div class="investment-header">
                                 <div class="investment-icon">
-                                    <img src="https://i.postimg.cc/5tJPWLXf/392c156408ee049437b3341290dd64cf.jpg" alt="Twitch" onerror="this.style.display='none'">
+                                    <img src="https://i.postimg.cc/5tJPWLXf/392c156408ee049437b3341290dd64cf.jpg" alt="Twitch">
                                 </div>
                                 <div class="investment-info">
                                     <div class="investment-name">Twitch</div>
@@ -292,11 +298,11 @@
                         <div class="investment-card">
                             <div class="investment-header">
                                 <div class="investment-icon">
-                                    <img src="https://i.postimg.cc/zGCj7vxm/kmc-20251003-172009.png" alt="Double Click" onerror="this.style.display='none'">
+                                    <img src="https://i.postimg.cc/zGCj7vxm/kmc-20251003-172009.png" alt="DoubleClick">
                                 </div>
                                 <div class="investment-info">
-                                    <div class="investment-name">Double Click</div>
-                                    <div class="investment-details">2x points per tap</div>
+                                    <div class="investment-name">DoubleClick</div>
+                                    <div class="investment-details">Double points per click</div>
                                 </div>
                             </div>
                             <div class="investment-stats">
@@ -305,11 +311,11 @@
                                     <div class="stat-label">Cost</div>
                                 </div>
                                 <div class="stat">
-                                    <div class="stat-value">2x</div>
-                                    <div class="stat-label">Multiplier</div>
+                                    <div class="stat-value">2x Click</div>
+                                    <div class="stat-label">Boost</div>
                                 </div>
                             </div>
-                            <button class="buy-btn" onclick="buyInvestment('doubleclick')" id="buy-doubleclick">Buy Double Click</button>
+                            <button class="buy-btn" onclick="buyInvestment('doubleclick')" id="buy-doubleclick">Buy DoubleClick</button>
                         </div>
                     </div>
                 </div>
@@ -327,15 +333,30 @@
                             </div>
                         </div>
                     </div>
-                    
+
+                    <!-- Referral Section -->
                     <div class="referral-section">
                         <div class="referral-title">Referral Program</div>
                         <div class="referral-stats">
-                            <span>Total Referrals:</span>
-                            <span id="referral-count">0</span>
+                            <div class="referral-stat">
+                                <div class="referral-value" id="referral-count">0</div>
+                                <div class="referral-label">Referrals</div>
+                            </div>
+                            <div class="referral-stat">
+                                <div class="referral-value" id="referral-earned">0</div>
+                                <div class="referral-label">Earned</div>
+                            </div>
                         </div>
                         <div class="referral-link" id="referral-link">Loading...</div>
-                        <button class="copy-btn" onclick="copyReferralLink()">Copy Referral Link</button>
+                        <div class="referral-history">
+                            <div class="referral-title" style="margin-bottom: 12px;">Referral History</div>
+                            <div id="referral-list">
+                                <div class="referral-item">
+                                    <span class="referral-user">No referrals yet</span>
+                                    <span class="referral-reward">+0 D</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="theme-switcher">
@@ -362,12 +383,12 @@
         class DREVOApp {
             #tg = window.Telegram.WebApp;
             #incomeInterval = null;
-            #BOT_TOKEN = '8288840321:AAFhOT_8B3Uw9DEoUf3KXi7GCQ2qMxC6q0M';
             
             state = {
                 balance: 0,
-                energy: 10000,
+                energy: 1000,
                 clicksToday: 0,
+                pointsPerClick: 1,
                 completedTasks: {
                     channel1: false,
                     channel2: false,
@@ -380,20 +401,23 @@
                     twitch: false,
                     doubleclick: false
                 },
+                referrals: {
+                    count: 0,
+                    earned: 0,
+                    list: []
+                },
                 userId: null,
                 username: 'User',
                 registrationDate: null,
                 lastClickDate: null,
-                theme: 'light',
-                referralCount: 0,
-                pointsPerTap: 1
+                theme: 'light'
             };
 
             constructor() {
                 this.init();
             }
 
-            async init() {
+            init() {
                 this.#tg.expand();
                 this.setupUser();
                 this.loadState();
@@ -402,12 +426,7 @@
                 this.updateUI();
                 this.updateProfile();
                 this.applyTheme(this.state.theme);
-                
-                // Check if user came from referral
-                await this.checkReferral();
-                
-                // Send welcome message
-                await this.sendWelcomeMessage();
+                this.updateReferralUI();
             }
 
             setupUser() {
@@ -418,45 +437,43 @@
                 if (!this.state.registrationDate) {
                     this.state.registrationDate = Date.now();
                 }
+
+                // Check for referral parameter
+                const urlParams = new URLSearchParams(window.location.search);
+                const ref = urlParams.get('ref');
+                if (ref && ref !== this.state.userId.toString()) {
+                    this.processReferral(ref);
+                }
             }
 
-            async sendWelcomeMessage() {
-                // This would typically be handled by the bot backend
-                // For demo purposes, we'll just log it
-                const welcomeMessage = `
-🚀 Welcome to DREVO - The Future of Gaming & Crypto!
-
-DREVO is an innovative gaming platform that combines entertainment with real economic value. Our native token will be launched on blockchain, providing players with tangible assets they can trade and monetize.
-
-📢 Stay Updated:
-• Official Channel: @drevocoin
-• Community Chat: @drevocommunity
-
-Start earning DREVO tokens today and be part of our growing ecosystem! Your engagement today builds your financial freedom tomorrow.
-
-#DREVO #Crypto #Blockchain #Gaming
-                `;
+            processReferral(referrerId) {
+                // Check if this is first time and not self-referral
+                const userKey = `drevoState_${this.state.userId}`;
+                const saved = localStorage.getItem(userKey);
                 
-                console.log('Welcome message:', welcomeMessage);
-                // In a real implementation, this would send to Telegram Bot API
-            }
-
-            async checkReferral() {
-                // Check if user came from referral link
-                const startParam = this.#tg.initDataUnsafe.start_param;
-                if (startParam && startParam.startsWith('ref_')) {
-                    const referrerId = startParam.replace('ref_', '');
+                if (!saved) {
+                    // This is a new user via referral
+                    const referrerKey = `drevoState_${referrerId}`;
+                    const referrerData = localStorage.getItem(referrerKey);
                     
-                    // Award bonus to current user
-                    this.state.balance += 100; // Welcome bonus
-                    
-                    // Here you would typically notify the backend about the referral
-                    // For demo, we'll just update locally
-                    console.log(`User ${this.state.userId} referred by ${referrerId}`);
-                    
-                    this.saveState();
-                    this.updateUI();
-                    this.updateProfile();
+                    if (referrerData) {
+                        try {
+                            const referrerState = JSON.parse(referrerData);
+                            referrerState.balance += 500;
+                            referrerState.referrals.count += 1;
+                            referrerState.referrals.earned += 500;
+                            referrerState.referrals.list.push({
+                                userId: this.state.userId,
+                                username: this.state.username,
+                                date: Date.now(),
+                                reward: 500
+                            });
+                            
+                            localStorage.setItem(referrerKey, JSON.stringify(referrerState));
+                        } catch (error) {
+                            console.error('Error processing referral:', error);
+                        }
+                    }
                 }
             }
 
@@ -468,7 +485,10 @@ Start earning DREVO tokens today and be part of our growing ecosystem! Your enga
                 
                 if (tabName === 'tasks') this.updateTasksUI();
                 if (tabName === 'investments') this.updateInvestmentsUI();
-                if (tabName === 'profile') this.updateProfile();
+                if (tabName === 'profile') {
+                    this.updateProfile();
+                    this.updateReferralUI();
+                }
             }
 
             switchTheme(themeName) {
@@ -497,21 +517,21 @@ Start earning DREVO tokens today and be part of our growing ecosystem! Your enga
                         // Reset daily limits if new day
                         if (parsed.lastClickDate !== today) {
                             this.state.clicksToday = 0;
-                            this.state.energy = 10000;
+                            this.state.energy = 1000;
                         } else {
                             this.state.clicksToday = parsed.clicksToday || 0;
-                            this.state.energy = 10000 - this.state.clicksToday;
+                            this.state.energy = 1000 - this.state.clicksToday;
                         }
                         
                         // Load all state data
                         this.state.balance = parsed.balance || 0;
+                        this.state.pointsPerClick = parsed.pointsPerClick || 1;
                         this.state.completedTasks = parsed.completedTasks || this.state.completedTasks;
                         this.state.investments = parsed.investments || this.state.investments;
+                        this.state.referrals = parsed.referrals || this.state.referrals;
                         this.state.registrationDate = parsed.registrationDate || Date.now();
                         this.state.lastClickDate = today;
                         this.state.theme = parsed.theme || 'light';
-                        this.state.referralCount = parsed.referralCount || 0;
-                        this.state.pointsPerTap = parsed.pointsPerTap || 1;
                         
                     } catch (error) {
                         console.error('Error loading state:', error);
@@ -526,8 +546,9 @@ Start earning DREVO tokens today and be part of our growing ecosystem! Your enga
 
             resetState() {
                 this.state.balance = 0;
-                this.state.energy = 10000;
+                this.state.energy = 1000;
                 this.state.clicksToday = 0;
+                this.state.pointsPerClick = 1;
                 this.state.completedTasks = {
                     channel1: false,
                     channel2: false,
@@ -540,11 +561,14 @@ Start earning DREVO tokens today and be part of our growing ecosystem! Your enga
                     twitch: false,
                     doubleclick: false
                 };
+                this.state.referrals = {
+                    count: 0,
+                    earned: 0,
+                    list: []
+                };
                 this.state.registrationDate = Date.now();
                 this.state.lastClickDate = new Date().toDateString();
                 this.state.theme = 'light';
-                this.state.referralCount = 0;
-                this.state.pointsPerTap = 1;
             }
 
             saveState() {
@@ -583,20 +607,23 @@ Start earning DREVO tokens today and be part of our growing ecosystem! Your enga
                     this.#tg.showAlert('Daily limit reached!');
                     return;
                 }
-                this.state.balance += this.state.pointsPerTap;
-                this.state.energy -= 1;
+                
+                const pointsEarned = this.state.pointsPerClick;
+                this.state.balance += pointsEarned;
+                this.state.energy--;
                 this.state.clicksToday++;
-                this.showCoinAnimation();
+                
+                this.showCoinAnimation(pointsEarned);
                 this.#tg.HapticFeedback.impactOccurred('light');
                 this.saveState();
                 this.updateUI();
                 this.updateProfile();
             }
 
-            showCoinAnimation() {
+            showCoinAnimation(points) {
                 const coin = document.createElement('div');
                 coin.className = 'coin-pop';
-                coin.textContent = `+${this.state.pointsPerTap}`;
+                coin.textContent = `+${points}`;
                 coin.style.cssText = 'position:absolute;font-size:16px;font-weight:700;color:var(--primary);opacity:0;';
                 document.getElementById('click-btn').parentElement.appendChild(coin);
                 setTimeout(() => coin.remove(), 800);
@@ -613,7 +640,7 @@ Start earning DREVO tokens today and be part of our growing ecosystem! Your enga
                     channel1: 'https://t.me/drevocoin',
                     channel2: 'https://t.me/onesk',
                     chat: 'https://t.me/drevocommunity',
-                    invite: 'https://t.me/drevocoinbot?start=ref_' + this.state.userId
+                    invite: `https://t.me/share/url?url=https://t.me/drevocoinbot?start=${this.state.userId}`
                 };
 
                 // Open the link
@@ -621,28 +648,17 @@ Start earning DREVO tokens today and be part of our growing ecosystem! Your enga
                     this.#tg.openLink(urls[taskId]);
                 }
 
-                // For invite task, just mark as completed without reward
-                // Reward is given when someone actually uses the referral
-                if (taskId === 'invite') {
-                    this.state.completedTasks[taskId] = true;
-                    this.#tg.showPopup({
-                        title: 'Referral Link Ready!',
-                        message: 'Your referral link has been generated. Share it with friends to earn 500 coins for each new user!',
-                        buttons: [{ type: 'ok' }]
-                    });
-                } else {
-                    // Give reward immediately for other tasks
-                    const reward = 1000;
-                    this.state.balance += reward;
-                    this.state.completedTasks[taskId] = true;
-                    this.#tg.HapticFeedback.impactOccurred('success');
+                // Give reward immediately
+                const reward = taskId === 'invite' ? 500 : 1000;
+                this.state.balance += reward;
+                this.state.completedTasks[taskId] = true;
+                this.#tg.HapticFeedback.impactOccurred('success');
 
-                    this.#tg.showPopup({
-                        title: 'Task Completed!',
-                        message: `You received ${reward} DREVO points!`,
-                        buttons: [{ type: 'ok' }]
-                    });
-                }
+                this.#tg.showPopup({
+                    title: 'Task Completed!',
+                    message: `You received ${reward} DREVO points!`,
+                    buttons: [{ type: 'ok' }]
+                });
 
                 this.saveState();
                 this.updateUI();
@@ -673,7 +689,158 @@ Start earning DREVO tokens today and be part of our growing ecosystem! Your enga
                 this.state.balance -= price;
                 this.state.investments[investmentId] = true;
 
-                // Special effect for double click
+                // Apply DoubleClick effect
                 if (investmentId === 'doubleclick') {
-                    this.state.pointsPerTap = 2;
+                    this.state.pointsPerClick = 2;
                     document.getElementById('points-per-tap').textContent = '+2';
+                }
+
+                this.#tg.showPopup({
+                    title: 'Investment Purchased!',
+                    message: `You successfully bought ${investmentId.charAt(0).toUpperCase() + investmentId.slice(1)}!`,
+                    buttons: [{ type: 'ok' }]
+                });
+
+                this.saveState();
+                this.updateUI();
+                this.updateInvestmentsUI();
+                this.updateProfile();
+            }
+
+            updateUI() {
+                document.getElementById('balance').textContent = this.state.balance.toLocaleString();
+                document.getElementById('energy').textContent = `${this.state.energy}/1000`;
+                document.getElementById('today-limit').textContent = `${this.state.clicksToday}/1000`;
+                document.getElementById('progress-fill').style.width = `${(this.state.clicksToday / 1000) * 100}%`;
+                document.getElementById('points-per-tap').textContent = `+${this.state.pointsPerClick}`;
+
+                const clickBtn = document.getElementById('click-btn');
+                if (this.state.energy <= 0) {
+                    clickBtn.classList.remove('pulse');
+                    clickBtn.style.opacity = '0.6';
+                } else {
+                    clickBtn.classList.add('pulse');
+                    clickBtn.style.opacity = '1';
+                }
+            }
+
+            updateTasksUI() {
+                const taskIds = ['channel1', 'channel2', 'chat', 'invite'];
+                taskIds.forEach(taskId => {
+                    const btn = document.getElementById(`btn-${taskId}`);
+                    if (btn) {
+                        if (this.state.completedTasks[taskId]) {
+                            btn.textContent = 'Completed';
+                            btn.disabled = true;
+                            btn.classList.add('completed');
+                        } else {
+                            btn.textContent = taskId === 'invite' ? 'Invite' : 'Join';
+                            btn.disabled = false;
+                            btn.classList.remove('completed');
+                        }
+                    }
+                });
+            }
+
+            updateInvestmentsUI() {
+                const investments = ['telegram', 'youtube', 'twitch', 'doubleclick'];
+                investments.forEach(investment => {
+                    const btn = document.getElementById(`buy-${investment}`);
+                    if (btn) {
+                        if (this.state.investments[investment]) {
+                            btn.textContent = 'Owned';
+                            btn.disabled = true;
+                        } else {
+                            const prices = { 
+                                telegram: 2600, 
+                                youtube: 3300, 
+                                twitch: 4200, 
+                                doubleclick: 2000 
+                            };
+                            btn.textContent = `Buy ${investment.charAt(0).toUpperCase() + investment.slice(1)}`;
+                            btn.disabled = this.state.balance < prices[investment];
+                        }
+                    }
+                });
+            }
+
+            updateReferralUI() {
+                document.getElementById('referral-count').textContent = this.state.referrals.count;
+                document.getElementById('referral-earned').textContent = this.state.referrals.earned;
+                
+                const referralLink = `https://t.me/drevocoinbot?start=${this.state.userId}`;
+                document.getElementById('referral-link').textContent = referralLink;
+
+                const referralList = document.getElementById('referral-list');
+                if (this.state.referrals.list.length === 0) {
+                    referralList.innerHTML = `
+                        <div class="referral-item">
+                            <span class="referral-user">No referrals yet</span>
+                            <span class="referral-reward">+0 D</span>
+                        </div>
+                    `;
+                } else {
+                    referralList.innerHTML = this.state.referrals.list.map(ref => `
+                        <div class="referral-item">
+                            <span class="referral-user">${ref.username}</span>
+                            <span class="referral-reward">+${ref.reward} D</span>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            updateProfile() {
+                document.getElementById('profile-avatar').textContent = this.state.username.charAt(0).toUpperCase();
+                document.getElementById('profile-username').textContent = this.state.username;
+
+                const timeDiff = Date.now() - this.state.registrationDate;
+                const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+
+                let timeText = '';
+                if (days > 0) {
+                    timeText = `${days} day${days > 1 ? 's' : ''}`;
+                } else if (hours > 0) {
+                    timeText = `${hours} hour${hours > 1 ? 's' : ''}`;
+                } else {
+                    timeText = `${minutes} minute${minutes > 1 ? 's' : ''}`;
+                }
+
+                document.getElementById('profile-stats').textContent =
+                    `${this.state.balance.toLocaleString()} coins • Playing for ${timeText}`;
+                    
+                document.querySelectorAll('.theme-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.textContent.toLowerCase() === this.state.theme) {
+                        btn.classList.add('active');
+                    }
+                });
+            }
+        }
+
+        // Global functions for HTML onclick
+        function switchTab(tabName) {
+            app.switchTab(tabName, event);
+        }
+
+        function completeTask(taskId) {
+            app.completeTask(taskId);
+        }
+
+        function buyInvestment(investmentId) {
+            app.buyInvestment(investmentId);
+        }
+
+        function switchTheme(themeName) {
+            app.switchTheme(themeName);
+        }
+
+        // Initialize app
+        let app;
+        document.addEventListener('DOMContentLoaded', () => {
+            app = new DREVOApp();
+        });
+    </script>
+</body>
+</html>
