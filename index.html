@@ -274,428 +274,455 @@
     </div>
 
     <script>
-        const tg = window.Telegram.WebApp;
-        
-        // Online leaderboard storage simulation (using localStorage as "server")
-        const LEADERBOARD_KEY = 'drevo_global_leaderboard';
-        
-        // Initialize state
-        let state = { 
-            balance: 0, 
-            energy: 1000, 
-            clicksToday: 0, 
-            completedTasks: {
-                channel1: false,
-                channel2: false, 
-                channel3: false,
-                chat: false, 
-                invite: false
-            },
-            investments: {
-                telegram: false,
-                youtube: false,
-                twitch: false
-            },
-            userId: null,
-            username: 'User',
-            registrationDate: null,
-            lastClickDate: null
-        };
+        class DREVOApp {
+            #tg = window.Telegram.WebApp;
+            #LEADERBOARD_KEY = 'drevo_global_leaderboard_v2';
+            #incomeInterval = null;
+            
+            state = {
+                balance: 0,
+                energy: 1000,
+                clicksToday: 0,
+                completedTasks: new Map([
+                    ['channel1', false],
+                    ['channel2', false],
+                    ['channel3', false],
+                    ['chat', false],
+                    ['invite', false]
+                ]),
+                investments: new Map([
+                    ['telegram', false],
+                    ['youtube', false],
+                    ['twitch', false]
+                ]),
+                userId: null,
+                username: 'User',
+                registrationDate: null,
+                lastClickDate: null
+            };
 
-        // Investment income interval
-        let incomeInterval = null;
+            constructor() {
+                this.init();
+            }
 
-        function init() {
-            tg.expand();
-            setupUser();
-            loadState();
-            setupEventListeners();
-            startIncomeGeneration();
-            updateUI();
-            updateLeadersBoard();
-        }
-        
-        function setupUser() {
-            const user = tg.initDataUnsafe.user;
-            state.userId = user?.id || Math.floor(Math.random() * 1000000000);
-            state.username = user?.first_name || 'User' + state.userId.toString().slice(-4);
-            
-            // Initialize user in global leaderboard
-            initializeUserInLeaderboard();
-        }
-        
-        function initializeUserInLeaderboard() {
-            const globalLeaderboard = getGlobalLeaderboard();
-            const existingUser = globalLeaderboard.find(u => u.id === state.userId);
-            
-            if (!existingUser) {
-                state.registrationDate = Date.now();
-                globalLeaderboard.push({
-                    id: state.userId,
-                    name: state.username,
-                    score: 0,
-                    lastActive: Date.now(),
-                    registrationDate: state.registrationDate
-                });
-                saveGlobalLeaderboard(globalLeaderboard);
-            } else {
-                // Update username if changed
-                existingUser.name = state.username;
-                existingUser.lastActive = Date.now();
-                if (!existingUser.registrationDate) {
-                    existingUser.registrationDate = Date.now();
-                }
-                state.registrationDate = existingUser.registrationDate;
-                saveGlobalLeaderboard(globalLeaderboard);
+            init() {
+                this.#tg.expand();
+                this.setupUser();
+                this.loadState();
+                this.setupEventListeners();
+                this.startIncomeGeneration();
+                this.updateUI();
+                this.updateLeadersBoard();
+                
+                // Auto-update leaderboard every 5 seconds
+                setInterval(() => this.updateLeadersBoard(), 5000);
             }
-        }
-        
-        function getGlobalLeaderboard() {
-            try {
-                return JSON.parse(localStorage.getItem(LEADERBOARD_KEY)) || [];
-            } catch {
-                return [];
+
+            setupUser() {
+                const user = this.#tg.initDataUnsafe.user;
+                this.state.userId = user?.id ?? Math.floor(Math.random() * 1000000000);
+                this.state.username = user?.first_name ?? `User${this.state.userId.toString().slice(-4)}`;
+                
+                this.initializeUserInLeaderboard();
             }
-        }
-        
-        function saveGlobalLeaderboard(leaderboard) {
-            // Clean up inactive users (older than 30 days)
-            const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
-            const activeLeaderboard = leaderboard.filter(user => user.lastActive > thirtyDaysAgo);
-            
-            // Sort by score
-            activeLeaderboard.sort((a, b) => b.score - a.score);
-            
-            localStorage.setItem(LEADERBOARD_KEY, JSON.stringify(activeLeaderboard));
-            return activeLeaderboard;
-        }
-        
-        function updateUserScore() {
-            const globalLeaderboard = getGlobalLeaderboard();
-            const userIndex = globalLeaderboard.findIndex(u => u.id === state.userId);
-            
-            if (userIndex !== -1) {
-                globalLeaderboard[userIndex].score = state.balance;
-                globalLeaderboard[userIndex].lastActive = Date.now();
-                globalLeaderboard[userIndex].name = state.username;
-                saveGlobalLeaderboard(globalLeaderboard);
-            }
-        }
-        
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            event.target.classList.add('active');
-            document.getElementById(tabName + '-tab').classList.add('active');
-            
-            if (tabName === 'tasks') updateTasksUI();
-            if (tabName === 'investments') updateInvestmentsUI();
-            if (tabName === 'leaders') updateLeadersBoard();
-        }
-        
-        function loadState() {
-            const userKey = `drevoState_${state.userId}`;
-            const saved = localStorage.getItem(userKey);
-            
-            if (saved) {
-                try {
-                    const parsed = JSON.parse(saved);
-                    const today = new Date().toDateString();
-                    
-                    if (parsed.lastClickDate !== today) { 
-                        state.clicksToday = 0; 
-                        state.energy = 1000; 
-                    } else { 
-                        state.clicksToday = parsed.clicksToday || 0; 
-                        state.energy = 1000 - state.clicksToday; 
+
+            initializeUserInLeaderboard() {
+                const globalLeaderboard = this.getGlobalLeaderboard();
+                const existingUser = globalLeaderboard.find(u => u.id === this.state.userId);
+                
+                if (!existingUser) {
+                    this.state.registrationDate = Date.now();
+                    globalLeaderboard.push({
+                        id: this.state.userId,
+                        name: this.state.username,
+                        score: 0,
+                        lastActive: Date.now(),
+                        registrationDate: this.state.registrationDate
+                    });
+                    this.saveGlobalLeaderboard(globalLeaderboard);
+                } else {
+                    existingUser.name = this.state.username;
+                    existingUser.lastActive = Date.now();
+                    if (!existingUser.registrationDate) {
+                        existingUser.registrationDate = Date.now();
                     }
-                    
-                    state.balance = parsed.balance || 0;
-                    state.completedTasks = parsed.completedTasks || {
-                        channel1: false,
-                        channel2: false, 
-                        channel3: false,
-                        chat: false, 
-                        invite: false
-                    };
-                    state.investments = parsed.investments || {
-                        telegram: false,
-                        youtube: false,
-                        twitch: false
-                    };
-                    state.registrationDate = parsed.registrationDate || Date.now();
-                    state.lastClickDate = today;
-                    
-                } catch (e) {
-                    console.error('Error loading state:', e);
-                    resetState();
+                    this.state.registrationDate = existingUser.registrationDate;
+                    this.saveGlobalLeaderboard(globalLeaderboard);
                 }
-            } else {
-                resetState();
             }
-            
-            saveState();
-        }
-        
-        function resetState() {
-            state.balance = 0;
-            state.energy = 1000;
-            state.clicksToday = 0;
-            state.completedTasks = {
-                channel1: false,
-                channel2: false, 
-                channel3: false,
-                chat: false, 
-                invite: false
-            };
-            state.investments = {
-                telegram: false,
-                youtube: false,
-                twitch: false
-            };
-            state.registrationDate = Date.now();
-            state.lastClickDate = new Date().toDateString();
-        }
-        
-        function saveState() { 
-            const userKey = `drevoState_${state.userId}`;
-            state.lastClickDate = new Date().toDateString(); 
-            localStorage.setItem(userKey, JSON.stringify(state));
-            updateUserScore();
-        }
-        
-        function setupEventListeners() { 
-            document.getElementById('click-btn').addEventListener('click', handleClick); 
-        }
-        
-        function startIncomeGeneration() {
-            // Clear existing interval
-            if (incomeInterval) {
-                clearInterval(incomeInterval);
+
+            getGlobalLeaderboard() {
+                try {
+                    return JSON.parse(localStorage.getItem(this.#LEADERBOARD_KEY)) ?? [];
+                } catch {
+                    return [];
+                }
             }
-            
-            // Start income generation every minute
-            incomeInterval = setInterval(() => {
-                let income = 0;
+
+            saveGlobalLeaderboard(leaderboard) {
+                const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
+                const activeLeaderboard = leaderboard.filter(user => user.lastActive > thirtyDaysAgo);
                 
-                if (state.investments.telegram) income += 1;
-                if (state.investments.youtube) income += 1;
-                if (state.investments.twitch) income += 2;
+                activeLeaderboard.sort((a, b) => b.score - a.score);
                 
-                if (income > 0) {
-                    state.balance += income;
-                    saveState();
-                    updateUI();
-                    updateLeadersBoard();
+                localStorage.setItem(this.#LEADERBOARD_KEY, JSON.stringify(activeLeaderboard));
+                return activeLeaderboard;
+            }
+
+            updateUserScore() {
+                const globalLeaderboard = this.getGlobalLeaderboard();
+                const userIndex = globalLeaderboard.findIndex(u => u.id === this.state.userId);
+                
+                if (userIndex !== -1) {
+                    globalLeaderboard[userIndex].score = this.state.balance;
+                    globalLeaderboard[userIndex].lastActive = Date.now();
+                    globalLeaderboard[userIndex].name = this.state.username;
+                    this.saveGlobalLeaderboard(globalLeaderboard);
+                }
+            }
+
+            switchTab(tabName, event) {
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                event.target.classList.add('active');
+                document.getElementById(`${tabName}-tab`).classList.add('active');
+                
+                if (tabName === 'tasks') this.updateTasksUI();
+                if (tabName === 'investments') this.updateInvestmentsUI();
+                if (tabName === 'leaders') this.updateLeadersBoard();
+            }
+
+            loadState() {
+                const userKey = `drevoState_${this.state.userId}`;
+                const saved = localStorage.getItem(userKey);
+                
+                if (saved) {
+                    try {
+                        const parsed = JSON.parse(saved);
+                        const today = new Date().toDateString();
+                        
+                        if (parsed.lastClickDate !== today) { 
+                            this.state.clicksToday = 0; 
+                            this.state.energy = 1000; 
+                        } else { 
+                            this.state.clicksToday = parsed.clicksToday ?? 0; 
+                            this.state.energy = 1000 - this.state.clicksToday; 
+                        }
+                        
+                        this.state.balance = parsed.balance ?? 0;
+                        
+                        // Convert completed tasks from object to Map
+                        if (parsed.completedTasks) {
+                            Object.entries(parsed.completedTasks).forEach(([key, value]) => {
+                                this.state.completedTasks.set(key, value);
+                            });
+                        }
+                        
+                        // Convert investments from object to Map
+                        if (parsed.investments) {
+                            Object.entries(parsed.investments).forEach(([key, value]) => {
+                                this.state.investments.set(key, value);
+                            });
+                        }
+                        
+                        this.state.registrationDate = parsed.registrationDate ?? Date.now();
+                        this.state.lastClickDate = today;
+                        
+                    } catch (error) {
+                        console.error('Error loading state:', error);
+                        this.resetState();
+                    }
+                } else {
+                    this.resetState();
+                }
+                
+                this.saveState();
+            }
+
+            resetState() {
+                this.state.balance = 0;
+                this.state.energy = 1000;
+                this.state.clicksToday = 0;
+                
+                // Reset all tasks to false
+                for (const key of this.state.completedTasks.keys()) {
+                    this.state.completedTasks.set(key, false);
+                }
+                
+                // Reset all investments to false
+                for (const key of this.state.investments.keys()) {
+                    this.state.investments.set(key, false);
+                }
+                
+                this.state.registrationDate = Date.now();
+                this.state.lastClickDate = new Date().toDateString();
+            }
+
+            saveState() { 
+                const userKey = `drevoState_${this.state.userId}`;
+                this.state.lastClickDate = new Date().toDateString();
+                
+                // Convert Maps to objects for storage
+                const stateToSave = {
+                    ...this.state,
+                    completedTasks: Object.fromEntries(this.state.completedTasks),
+                    investments: Object.fromEntries(this.state.investments)
+                };
+                
+                localStorage.setItem(userKey, JSON.stringify(stateToSave));
+                this.updateUserScore();
+            }
+
+            setupEventListeners() { 
+                document.getElementById('click-btn').addEventListener('click', () => this.handleClick()); 
+            }
+
+            startIncomeGeneration() {
+                if (this.#incomeInterval) {
+                    clearInterval(this.#incomeInterval);
+                }
+                
+                this.#incomeInterval = setInterval(() => {
+                    let income = 0;
                     
-                    // Show notification for income
+                    if (this.state.investments.get('telegram')) income += 1;
+                    if (this.state.investments.get('youtube')) income += 1;
+                    if (this.state.investments.get('twitch')) income += 2;
+                    
                     if (income > 0) {
-                        tg.showPopup({
+                        this.state.balance += income;
+                        this.saveState();
+                        this.updateUI();
+                        this.updateLeadersBoard();
+                        
+                        this.#tg.showPopup({
                             title: 'Investment Income!',
                             message: `You earned ${income} coins from your investments!`,
                             buttons: [{ type: 'ok' }]
                         });
                     }
-                }
-            }, 60000); // Every minute
-        }
-        
-        function handleClick() {
-            if (state.energy <= 0) { 
-                tg.showAlert('Daily limit reached!'); 
-                return; 
+                }, 60000);
             }
-            state.balance++; 
-            state.energy--; 
-            state.clicksToday++;
-            showCoinAnimation(); 
-            tg.HapticFeedback.impactOccurred('light'); 
-            saveState(); 
-            updateUI();
-            updateLeadersBoard();
-        }
-        
-        function showCoinAnimation() {
-            const coin = document.createElement('div'); 
-            coin.className = 'coin-pop'; 
-            coin.textContent = '+1'; 
-            coin.style.cssText = 'position:absolute;font-size:16px;font-weight:700;color:#00B894;opacity:0;';
-            document.getElementById('click-btn').parentElement.appendChild(coin); 
-            setTimeout(() => coin.remove(), 800);
-        }
-        
-        function completeTask(taskId) {
-            if (state.completedTasks[taskId]) { 
-                tg.showAlert('Task already completed!'); 
-                return; 
-            }
-            
-            const urls = { 
-                channel1: 'https://t.me/drevocoin', 
-                channel2: 'https://t.me/onesk', 
-                channel3: 'https://t.me/biosprutel',
-                chat: 'https://t.me/drevocommunity', 
-                invite: 'https://t.me/share/url?url=https://t.me/drevo_bot' 
-            };
-            
-            if (urls[taskId]) {
-                tg.openLink(urls[taskId]);
-            }
-            
-            // Give reward immediately (simplified for demo)
-            const reward = taskId === 'invite' ? 500 : 1000;
-            state.balance += reward; 
-            state.completedTasks[taskId] = true; 
-            tg.HapticFeedback.impactOccurred('success');
-            
-            tg.showPopup({ 
-                title: 'Task Completed!', 
-                message: `You received ${reward} DREVO points!`, 
-                buttons: [{ type: 'ok' }] 
-            });
-            
-            saveState(); 
-            updateUI(); 
-            updateTasksUI();
-            updateLeadersBoard();
-        }
-        
-        function buyInvestment(investmentId) {
-            const prices = {
-                telegram: 2600,
-                youtube: 3300,
-                twitch: 4200
-            };
-            
-            const price = prices[investmentId];
-            
-            if (state.balance < price) {
-                tg.showAlert(`Not enough coins! You need ${price} coins.`);
-                return;
-            }
-            
-            if (state.investments[investmentId]) {
-                tg.showAlert('You already own this investment!');
-                return;
-            }
-            
-            state.balance -= price;
-            state.investments[investmentId] = true;
-            
-            tg.showPopup({
-                title: 'Investment Purchased!',
-                message: `You successfully bought ${investmentId.charAt(0).toUpperCase() + investmentId.slice(1)}!`,
-                buttons: [{ type: 'ok' }]
-            });
-            
-            saveState();
-            updateUI();
-            updateInvestmentsUI();
-            updateLeadersBoard();
-        }
-        
-        function updateUI() {
-            document.getElementById('balance').textContent = state.balance.toLocaleString();
-            document.getElementById('energy').textContent = state.energy + '/1000';
-            document.getElementById('today-limit').textContent = state.clicksToday + '/1000';
-            document.getElementById('progress-fill').style.width = (state.clicksToday / 1000) * 100 + '%';
-            
-            const clickBtn = document.getElementById('click-btn');
-            if (state.energy <= 0) { 
-                clickBtn.classList.remove('pulse'); 
-                clickBtn.style.opacity = '0.6'; 
-            } else { 
-                clickBtn.classList.add('pulse'); 
-                clickBtn.style.opacity = '1'; 
-            }
-        }
-        
-        function updateTasksUI() {
-            Object.keys(state.completedTasks).forEach(taskId => {
-                const taskCard = document.getElementById('task-' + taskId); 
-                if (taskCard) {
-                    const btn = taskCard.querySelector('.task-btn');
-                    
-                    if (state.completedTasks[taskId]) {
-                        btn.textContent = 'Completed'; 
-                        btn.disabled = true; 
-                        btn.classList.add('completed');
-                    } else {
-                        btn.textContent = taskId === 'invite' ? 'Invite' : 'Join';
-                        btn.disabled = false;
-                        btn.classList.remove('completed');
-                    }
-                }
-            });
-        }
-        
-        function updateInvestmentsUI() {
-            const investments = ['telegram', 'youtube', 'twitch'];
-            investments.forEach(investment => {
-                const btn = document.getElementById(`buy-${investment}`);
-                if (btn) {
-                    if (state.investments[investment]) {
-                        btn.textContent = 'Owned';
-                        btn.disabled = true;
-                    } else {
-                        btn.textContent = `Buy ${investment.charAt(0).toUpperCase() + investment.slice(1)}`;
-                        btn.disabled = state.balance < (investment === 'telegram' ? 2600 : investment === 'youtube' ? 3300 : 4200);
-                    }
-                }
-            });
-        }
-        
-        function updateLeadersBoard() {
-            const globalLeaderboard = getGlobalLeaderboard();
-            const topPlayers = globalLeaderboard.slice(0, 10); // Get top 10
-            
-            // Update user info in leader header
-            document.getElementById('user-avatar-large').textContent = state.username.charAt(0).toUpperCase();
-            document.getElementById('leader-username').textContent = state.username;
-            
-            // Calculate time since registration
-            const timeDiff = Date.now() - state.registrationDate;
-            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-            
-            let timeText = '';
-            if (days > 0) {
-                timeText = `${days} day${days > 1 ? 's' : ''}`;
-            } else if (hours > 0) {
-                timeText = `${hours} hour${hours > 1 ? 's' : ''}`;
-            } else {
-                timeText = `${minutes} minute${minutes > 1 ? 's' : ''}`;
-            }
-            
-            document.getElementById('leader-stats').textContent = 
-                `${state.balance.toLocaleString()} coins • Playing for ${timeText}`;
 
-            const leadersList = document.getElementById('leaders-list');
-            
-            if (topPlayers.length === 0) {
-                leadersList.innerHTML = '<div class="loading">No players yet</div>';
-                return;
+            handleClick() {
+                if (this.state.energy <= 0) { 
+                    this.#tg.showAlert('Daily limit reached!'); 
+                    return; 
+                }
+                this.state.balance++; 
+                this.state.energy--; 
+                this.state.clicksToday++;
+                this.showCoinAnimation(); 
+                this.#tg.HapticFeedback.impactOccurred('light'); 
+                this.saveState(); 
+                this.updateUI();
+                this.updateLeadersBoard();
             }
-            
-            leadersList.innerHTML = topPlayers.map((player, index) => {
-                const isCurrentUser = player.id === state.userId;
-                const rankClass = index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : '';
+
+            showCoinAnimation() {
+                const coin = document.createElement('div'); 
+                coin.className = 'coin-pop'; 
+                coin.textContent = '+1'; 
+                coin.style.cssText = 'position:absolute;font-size:16px;font-weight:700;color:#00B894;opacity:0;';
+                document.getElementById('click-btn').parentElement.appendChild(coin); 
+                setTimeout(() => coin.remove(), 800);
+            }
+
+            completeTask(taskId) {
+                if (this.state.completedTasks.get(taskId)) { 
+                    this.#tg.showAlert('Task already completed!'); 
+                    return; 
+                }
                 
-                return `
-                    <div class="leader-item ${isCurrentUser ? 'current-user' : ''}">
-                        <div class="leader-rank ${rankClass}">${index + 1}</div>
-                        <div class="leader-avatar">${player.name.charAt(0).toUpperCase()}</div>
-                        <div class="leader-info">
-                            <div class="leader-name">${player.name} ${isCurrentUser ? '(You)' : ''}</div>
+                const urls = new Map([
+                    ['channel1', 'https://t.me/drevocoin'],
+                    ['channel2', 'https://t.me/onesk'],
+                    ['channel3', 'https://t.me/biosprutel'],
+                    ['chat', 'https://t.me/drevocommunity'],
+                    ['invite', 'https://t.me/share/url?url=https://t.me/drevo_bot']
+                ]);
+                
+                if (urls.has(taskId)) {
+                    this.#tg.openLink(urls.get(taskId));
+                }
+                
+                // Give reward immediately
+                const reward = taskId === 'invite' ? 500 : 1000;
+                this.state.balance += reward; 
+                this.state.completedTasks.set(taskId, true);
+                this.#tg.HapticFeedback.impactOccurred('success');
+                
+                this.#tg.showPopup({ 
+                    title: 'Task Completed!', 
+                    message: `You received ${reward} DREVO points!`, 
+                    buttons: [{ type: 'ok' }] 
+                });
+                
+                this.saveState(); 
+                this.updateUI(); 
+                this.updateTasksUI();
+                this.updateLeadersBoard();
+            }
+
+            buyInvestment(investmentId) {
+                const prices = new Map([
+                    ['telegram', 2600],
+                    ['youtube', 3300],
+                    ['twitch', 4200]
+                ]);
+                
+                const price = prices.get(investmentId);
+                
+                if (this.state.balance < price) {
+                    this.#tg.showAlert(`Not enough coins! You need ${price} coins.`);
+                    return;
+                }
+                
+                if (this.state.investments.get(investmentId)) {
+                    this.#tg.showAlert('You already own this investment!');
+                    return;
+                }
+                
+                this.state.balance -= price;
+                this.state.investments.set(investmentId, true);
+                
+                this.#tg.showPopup({
+                    title: 'Investment Purchased!',
+                    message: `You successfully bought ${investmentId.charAt(0).toUpperCase() + investmentId.slice(1)}!`,
+                    buttons: [{ type: 'ok' }]
+                });
+                
+                this.saveState();
+                this.updateUI();
+                this.updateInvestmentsUI();
+                this.updateLeadersBoard();
+            }
+
+            updateUI() {
+                document.getElementById('balance').textContent = this.state.balance.toLocaleString();
+                document.getElementById('energy').textContent = `${this.state.energy}/1000`;
+                document.getElementById('today-limit').textContent = `${this.state.clicksToday}/1000`;
+                document.getElementById('progress-fill').style.width = `${(this.state.clicksToday / 1000) * 100}%`;
+                
+                const clickBtn = document.getElementById('click-btn');
+                if (this.state.energy <= 0) { 
+                    clickBtn.classList.remove('pulse'); 
+                    clickBtn.style.opacity = '0.6'; 
+                } else { 
+                    clickBtn.classList.add('pulse'); 
+                    clickBtn.style.opacity = '1'; 
+                }
+            }
+
+            updateTasksUI() {
+                for (const [taskId] of this.state.completedTasks) {
+                    const taskCard = document.getElementById(`task-${taskId}`); 
+                    if (taskCard) {
+                        const btn = taskCard.querySelector('.task-btn');
+                        
+                        if (this.state.completedTasks.get(taskId)) {
+                            btn.textContent = 'Completed'; 
+                            btn.disabled = true; 
+                            btn.classList.add('completed');
+                        } else {
+                            btn.textContent = taskId === 'invite' ? 'Invite' : 'Join';
+                            btn.disabled = false;
+                            btn.classList.remove('completed');
+                        }
+                    }
+                }
+            }
+
+            updateInvestmentsUI() {
+                const investments = ['telegram', 'youtube', 'twitch'];
+                for (const investment of investments) {
+                    const btn = document.getElementById(`buy-${investment}`);
+                    if (btn) {
+                        if (this.state.investments.get(investment)) {
+                            btn.textContent = 'Owned';
+                            btn.disabled = true;
+                        } else {
+                            const prices = new Map([
+                                ['telegram', 2600],
+                                ['youtube', 3300],
+                                ['twitch', 4200]
+                            ]);
+                            btn.textContent = `Buy ${investment.charAt(0).toUpperCase() + investment.slice(1)}`;
+                            btn.disabled = this.state.balance < prices.get(investment);
+                        }
+                    }
+                }
+            }
+
+            updateLeadersBoard() {
+                const globalLeaderboard = this.getGlobalLeaderboard();
+                const topPlayers = globalLeaderboard.slice(0, 10);
+
+                // Update user info in leader header
+                document.getElementById('user-avatar-large').textContent = this.state.username.charAt(0).toUpperCase();
+                document.getElementById('leader-username').textContent = this.state.username;
+                
+                // Calculate time since registration
+                const timeDiff = Date.now() - this.state.registrationDate;
+                const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                
+                let timeText = '';
+                if (days > 0) {
+                    timeText = `${days} day${days > 1 ? 's' : ''}`;
+                } else if (hours > 0) {
+                    timeText = `${hours} hour${hours > 1 ? 's' : ''}`;
+                } else {
+                    timeText = `${minutes} minute${minutes > 1 ? 's' : ''}`;
+                }
+                
+                document.getElementById('leader-stats').textContent = 
+                    `${this.state.balance.toLocaleString()} coins • Playing for ${timeText}`;
+
+                const leadersList = document.getElementById('leaders-list');
+                
+                if (topPlayers.length === 0) {
+                    leadersList.innerHTML = '<div class="loading">No players yet</div>';
+                    return;
+                }
+                
+                leadersList.innerHTML = topPlayers.map((player, index) => {
+                    const isCurrentUser = player.id === this.state.userId;
+                    const rankClass = index === 0 ? 'rank-1' : index === 1 ? 'rank-2' : index === 2 ? 'rank-3' : '';
+                    
+                    return `
+                        <div class="leader-item ${isCurrentUser ? 'current-user' : ''}">
+                            <div class="leader-rank ${rankClass}">${index + 1}</div>
+                            <div class="leader-avatar">${player.name.charAt(0).toUpperCase()}</div>
+                            <div class="leader-info">
+                                <div class="leader-name">${player.name} ${isCurrentUser ? '(You)' : ''}</div>
+                            </div>
+                            <div class="leader-score">${player.score.toLocaleString()} D</div>
                         </div>
-                        <div class="leader-score">${player.score.toLocaleString()} D</div>
-                    </div>
-                `;
-            }).join('');
+                    `;
+                }).join('');
+            }
         }
-        
-        document.addEventListener('DOMContentLoaded', init);
+
+        // Global functions for HTML onclick
+        function switchTab(tabName) {
+            app.switchTab(tabName, event);
+        }
+
+        function completeTask(taskId) {
+            app.completeTask(taskId);
+        }
+
+        function buyInvestment(investmentId) {
+            app.buyInvestment(investmentId);
+        }
+
+        // Initialize app
+        let app;
+        document.addEventListener('DOMContentLoaded', () => {
+            app = new DREVOApp();
+        });
     </script>
 </body>
 </html>
