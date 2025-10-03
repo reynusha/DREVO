@@ -8,7 +8,9 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
+        
+        /* Light Theme Variables */
+        .theme-light {
             --primary: #8B4513;
             --primary-light: #A0522D;
             --primary-dark: #654321;
@@ -21,7 +23,30 @@
             --gradient: linear-gradient(135deg, #FFFFFF 0%, #F8F8F8 100%);
             --autumn-gradient: linear-gradient(135deg, #8B4513 0%, #D2691E 50%, #F4A460 100%);
         }
-        body { font-family: 'Roboto', sans-serif; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; }
+        
+        /* Dark Theme Variables */
+        .theme-dark {
+            --primary: #00B894;
+            --primary-light: #00D4AA;
+            --primary-dark: #009975;
+            --bg: #0A0A0A;
+            --card: #1A1A1A;
+            --text: #FFFFFF;
+            --secondary: #A0A0A0;
+            --border: #2A2A2A;
+            --accent: #2EA6FF;
+            --gradient: linear-gradient(135deg, #1A1A1A 0%, #2A2A2A 100%);
+            --autumn-gradient: linear-gradient(135deg, #00B894 0%, #00D4AA 50%, #2EA6FF 100%);
+        }
+
+        body { 
+            font-family: 'Roboto', sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            height: 100vh; 
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
         .app { height: 100vh; display: flex; flex-direction: column; }
         
         /* Header */
@@ -45,6 +70,7 @@
         .clicker-section { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
         .daily-bonus { background: var(--autumn-gradient); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-bottom: 20px; color: white; }
         .clicker-circle { width: 220px; height: 220px; border-radius: 50%; background: var(--card); display: flex; align-items: center; justify-content: center; margin: 20px 0; position: relative; border: 3px solid var(--primary); box-shadow: 0 8px 25px rgba(139, 69, 19, 0.2); overflow: hidden; }
+        .theme-dark .clicker-circle { box-shadow: 0 8px 25px rgba(0, 184, 148, 0.3); }
         .clicker-btn { width: 100%; height: 100%; border-radius: 50%; border: none; cursor: pointer; transition: all 0.1s ease; background: transparent; padding: 0; }
         .clicker-btn:active { transform: scale(0.95); }
         .clicker-image { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
@@ -67,6 +93,7 @@
         /* Investments Section */
         .investments-section { padding: 20px 0; }
         .investments-info { background: rgba(210, 105, 30, 0.1); border: 1px solid var(--accent); border-radius: 12px; padding: 16px; margin-bottom: 20px; font-size: 12px; line-height: 1.4; color: var(--primary); }
+        .theme-dark .investments-info { background: rgba(46, 166, 255, 0.1); }
         .investments-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
         .investment-card { background: var(--card); border-radius: 16px; padding: 20px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .investment-header { display: flex; align-items: center; margin-bottom: 16px; }
@@ -90,6 +117,14 @@
         .profile-info { flex: 1; }
         .profile-username { font-size: 18px; font-weight: 600; margin-bottom: 4px; color: var(--primary); }
         .profile-stats { font-size: 14px; color: var(--secondary); }
+        
+        /* Theme Switcher */
+        .theme-switcher { background: var(--gradient); border-radius: 12px; padding: 16px; margin-bottom: 20px; border: 1px solid var(--border); }
+        .theme-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; color: var(--primary); }
+        .theme-buttons { display: flex; gap: 12px; }
+        .theme-btn { flex: 1; padding: 12px; border: 2px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+        .theme-btn.active { border-color: var(--primary); background: var(--autumn-gradient); color: white; }
+        
         .profile-motivation { background: var(--gradient); border-radius: 16px; padding: 20px; text-align: center; border: 1px solid var(--border); }
         .motivation-image { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin: 0 auto 16px; border: 3px solid var(--primary); }
         .motivation-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; color: var(--primary); }
@@ -105,7 +140,7 @@
         .loading { text-align: center; padding: 40px; color: var(--secondary); }
     </style>
 </head>
-<body>
+<body class="theme-light">
     <div class="app">
         <div class="header">
             <div class="logo">DREVO</div>
@@ -130,7 +165,7 @@
                     <div class="daily-bonus">Daily limit</div>
                     <div class="clicker-circle">
                         <button class="clicker-btn pulse" id="click-btn">
-                            <img src="https://iimg.su/i/U7Gdjm" alt="DREVO" class="clicker-image" onerror="this.style.display='none'">
+                            <img src="https://i.postimg.cc/3Jzfvb3c/IMG-20251002-224117-911.jpg" alt="DREVO" class="clicker-image" onerror="this.style.display='none'">
                         </button>
                     </div>
                     <div class="stats-section">
@@ -261,8 +296,16 @@
                         </div>
                     </div>
                     
+                    <div class="theme-switcher">
+                        <div class="theme-title">Theme</div>
+                        <div class="theme-buttons">
+                            <button class="theme-btn active" onclick="switchTheme('light')">Light</button>
+                            <button class="theme-btn" onclick="switchTheme('dark')">Dark</button>
+                        </div>
+                    </div>
+                    
                     <div class="profile-motivation">
-                        <img src="https://iimg.su/i/U7Gdjm" alt="Dreams" class="motivation-image" onerror="this.style.display='none'">
+                        <img src="https://i.postimg.cc/3Jzfvb3c/IMG-20251002-224117-911.jpg" alt="Dreams" class="motivation-image" onerror="this.style.display='none'">
                         <div class="motivation-title">Dreams Come True</div>
                         <div class="motivation-text">
                             Coming soon: Leaderboard ranking system. Early players and top leaders will receive exclusive advantages during the currency listing on exchanges. Your dedication today builds your success tomorrow.
@@ -297,7 +340,8 @@
                 userId: null,
                 username: 'User',
                 registrationDate: null,
-                lastClickDate: null
+                lastClickDate: null,
+                theme: 'light'
             };
 
             constructor() {
@@ -312,6 +356,7 @@
                 this.startIncomeGeneration();
                 this.updateUI();
                 this.updateProfile();
+                this.applyTheme(this.state.theme);
             }
 
             setupUser() {
@@ -333,6 +378,20 @@
                 if (tabName === 'tasks') this.updateTasksUI();
                 if (tabName === 'investments') this.updateInvestmentsUI();
                 if (tabName === 'profile') this.updateProfile();
+            }
+
+            switchTheme(themeName) {
+                this.state.theme = themeName;
+                this.applyTheme(themeName);
+                this.saveState();
+                
+                // Update theme buttons
+                document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
+                event.target.classList.add('active');
+            }
+
+            applyTheme(themeName) {
+                document.body.className = `theme-${themeName}`;
             }
 
             loadState() {
@@ -359,6 +418,7 @@
                         this.state.investments = parsed.investments || this.state.investments;
                         this.state.registrationDate = parsed.registrationDate || Date.now();
                         this.state.lastClickDate = today;
+                        this.state.theme = parsed.theme || 'light';
                         
                     } catch (error) {
                         console.error('Error loading state:', error);
@@ -389,6 +449,7 @@
                 };
                 this.state.registrationDate = Date.now();
                 this.state.lastClickDate = new Date().toDateString();
+                this.state.theme = 'light';
             }
 
             saveState() {
@@ -441,7 +502,7 @@
                 const coin = document.createElement('div');
                 coin.className = 'coin-pop';
                 coin.textContent = '+1';
-                coin.style.cssText = 'position:absolute;font-size:16px;font-weight:700;color:#8B4513;opacity:0;';
+                coin.style.cssText = 'position:absolute;font-size:16px;font-weight:700;color:var(--primary);opacity:0;';
                 document.getElementById('click-btn').parentElement.appendChild(coin);
                 setTimeout(() => coin.remove(), 800);
             }
@@ -479,7 +540,7 @@
                 });
 
                 this.saveState();
-                this.updateUI();
+                this.updateUI(); // ОБНОВЛЯЕМ ИНТЕРФЕЙС СРАЗУ!
                 this.updateTasksUI();
                 this.updateProfile();
             }
@@ -519,6 +580,7 @@
             }
 
             updateUI() {
+                // ОБНОВЛЯЕМ БАЛАНС В ХЕДЕРЕ И ВСЕ СТАТИСТИКИ
                 document.getElementById('balance').textContent = this.state.balance.toLocaleString();
                 document.getElementById('energy').textContent = `${this.state.energy}/1000`;
                 document.getElementById('today-limit').textContent = `${this.state.clicksToday}/1000`;
@@ -591,6 +653,14 @@
 
                 document.getElementById('profile-stats').textContent =
                     `${this.state.balance.toLocaleString()} coins • Playing for ${timeText}`;
+                    
+                // Update theme buttons
+                document.querySelectorAll('.theme-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.textContent.toLowerCase() === this.state.theme) {
+                        btn.classList.add('active');
+                    }
+                });
             }
         }
 
@@ -605,6 +675,10 @@
 
         function buyInvestment(investmentId) {
             app.buyInvestment(investmentId);
+        }
+
+        function switchTheme(themeName) {
+            app.switchTheme(themeName);
         }
 
         // Initialize app
