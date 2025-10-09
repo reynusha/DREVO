@@ -5,157 +5,743 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DREVO</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        /* Light Theme Variables */
-        .theme-light {
-            --primary: #8B4513;
-            --primary-light: #A0522D;
-            --primary-dark: #654321;
-            --bg: #F5F5F5;
-            --card: #FFFFFF;
-            --text: #2C2C2C;
-            --secondary: #666666;
-            --border: #E0E0E0;
-            --accent: #D2691E;
-            --gradient: linear-gradient(135deg, #FFFFFF 0%, #F8F8F8 100%);
-            --autumn-gradient: linear-gradient(135deg, #8B4513 0%, #D2691E 50%, #F4A460 100%);
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-card: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #888888;
+            --accent: #0088cc;
+            --ton: #0088cc;
+            --success: #00c781;
+            --border: #2a2a2a;
+            --gradient: linear-gradient(135deg, #0088cc, #00c6ff);
+            --vip: #ffd700;
+            --energy: #ff6b35;
+            --drevo: #00c781;
         }
         
-        /* Dark Theme Variables */
-        .theme-dark {
-            --primary: #00B894;
-            --primary-light: #00D4AA;
-            --primary-dark: #009975;
-            --bg: #0A0A0A;
-            --card: #1A1A1A;
-            --text: #FFFFFF;
-            --secondary: #A0A0A0;
-            --border: #2A2A2A;
-            --accent: #2EA6FF;
-            --gradient: linear-gradient(135deg, #1A1A1A 0%, #2A2A2A 100%);
-            --autumn-gradient: linear-gradient(135deg, #00B894 0%, #00D4AA 50%, #2EA6FF 100%);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
         }
-
-        body { 
-            font-family: 'Roboto', sans-serif; 
-            background: var(--bg); 
-            color: var(--text); 
-            height: 100vh; 
+        
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+        
+        .container {
+            max-width: 428px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+        
+        .header {
+            padding: 20px 0;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .balance-section {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .energy-section {
+            background: var(--bg-card);
+            padding: 8px 12px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            font-size: 14px;
+            color: var(--energy);
+            font-weight: 600;
+        }
+        
+        .balance-card {
+            background: var(--bg-card);
+            padding: 8px 12px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+        }
+        
+        .balance-icon {
+            color: var(--drevo);
+            font-weight: 700;
+        }
+        
+        .section {
+            margin-bottom: 24px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            padding: 0 8px;
+        }
+        
+        /* Clicker styles */
+        .clicker-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .clicker-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: var(--gradient);
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            cursor: pointer;
+            border: 4px solid var(--border);
+            transition: transform 0.1s;
+            user-select: none;
+        }
+        
+        .clicker-circle:active {
+            transform: scale(0.95);
+        }
+        
+        .clicker-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+        
+        .stat-value {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--drevo);
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        /* Upgrades */
+        .upgrades-grid {
+            display: grid;
+            gap: 12px;
+        }
+        
+        .upgrade-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .upgrade-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
             overflow: hidden;
-            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .app { height: 100vh; display: flex; flex-direction: column; }
         
-        /* Header */
-        .header { background: var(--card); padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .logo { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 700; background: var(--autumn-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .balance-section { display: flex; align-items: center; gap: 12px; }
-        .balance-card, .energy-section { background: var(--gradient); padding: 8px 12px; border-radius: 12px; display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; border: 1px solid var(--border); }
-        .balance-icon { color: var(--primary); }
+        .upgrade-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
         
-        /* Navigation */
-        .tabs { display: flex; background: var(--card); margin: 12px; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .tab-btn { flex: 1; padding: 14px; background: none; border: none; color: var(--secondary); font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.3s ease; }
-        .tab-btn.active { background: var(--autumn-gradient); color: white; }
+        .upgrade-info {
+            flex: 1;
+        }
         
-        /* Content */
-        .content { flex: 1; overflow-y: auto; padding: 0 12px 20px; }
-        .tab-content { display: none; height: 100%; }
-        .tab-content.active { display: block; }
+        .upgrade-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
         
-        /* Clicker Section */
-        .clicker-section { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
-        .daily-bonus { background: var(--autumn-gradient); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-bottom: 20px; color: white; }
-        .clicker-circle { width: 220px; height: 220px; border-radius: 50%; background: var(--card); display: flex; align-items: center; justify-content: center; margin: 20px 0; position: relative; border: 3px solid var(--primary); box-shadow: 0 8px 25px rgba(139, 69, 19, 0.2); overflow: hidden; }
-        .theme-dark .clicker-circle { box-shadow: 0 8px 25px rgba(0, 184, 148, 0.3); }
-        .clicker-btn { width: 100%; height: 100%; border-radius: 50%; border: none; cursor: pointer; transition: all 0.1s ease; background: transparent; padding: 0; }
-        .clicker-btn:active { transform: scale(0.95); }
-        .clicker-image { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
-        .stats-section { background: var(--card); border-radius: 16px; padding: 16px; width: 100%; max-width: 320px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .stat-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; }
-        .progress-bar { width: 100%; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: 4px; }
-        .progress-fill { height: 100%; background: var(--autumn-gradient); border-radius: 3px; transition: width 0.3s ease; }
+        .upgrade-description {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
         
-        /* Tasks Section */
-        .tasks-section { background: var(--card); border-radius: 16px; padding: 20px; margin-top: 20px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .section-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--primary); }
-        .tasks-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .task-card { background: var(--gradient); border-radius: 12px; padding: 16px; text-align: center; border: 1px solid var(--border); }
-        .task-title { font-size: 12px; color: var(--secondary); margin-bottom: 4px; }
-        .task-reward { font-size: 14px; font-weight: 700; color: var(--primary); }
-        .task-btn { width: 100%; padding: 8px; background: var(--autumn-gradient); border: none; border-radius: 8px; color: white; font-size: 12px; font-weight: 600; cursor: pointer; margin-top: 8px; transition: all 0.3s ease; }
-        .task-btn:hover { opacity: 0.9; }
-        .task-btn.completed { background: var(--secondary); cursor: not-allowed; }
+        .upgrade-price {
+            font-size: 12px;
+            color: var(--drevo);
+            font-weight: 600;
+        }
         
-        /* Investments Section */
-        .investments-section { padding: 20px 0; }
-        .investments-info { background: rgba(210, 105, 30, 0.1); border: 1px solid var(--accent); border-radius: 12px; padding: 16px; margin-bottom: 20px; font-size: 12px; line-height: 1.4; color: var(--primary); }
-        .theme-dark .investments-info { background: rgba(46, 166, 255, 0.1); }
-        .investments-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
-        .investment-card { background: var(--card); border-radius: 16px; padding: 20px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .investment-header { display: flex; align-items: center; margin-bottom: 16px; }
-        .investment-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 600; margin-right: 12px; overflow: hidden; }
-        .investment-icon img { width: 100%; height: 100%; object-fit: cover; }
-        .investment-info { flex: 1; }
-        .investment-name { font-size: 16px; font-weight: 600; margin-bottom: 4px; color: var(--primary); }
-        .investment-details { font-size: 12px; color: var(--secondary); }
-        .investment-stats { display: flex; justify-content: space-between; margin-bottom: 16px; }
-        .stat { text-align: center; }
-        .stat-value { font-size: 18px; font-weight: 700; color: var(--primary); }
-        .stat-label { font-size: 10px; color: var(--secondary); margin-top: 4px; }
-        .buy-btn { width: 100%; padding: 12px; background: var(--autumn-gradient); border: none; border-radius: 8px; color: white; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
-        .buy-btn:hover { opacity: 0.9; }
-        .buy-btn:disabled { background: var(--secondary); cursor: not-allowed; }
+        .upgrade-button {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 12px;
+        }
         
-        /* Profile Section */
-        .profile-section { padding: 20px 0; }
-        .profile-card { background: var(--card); border-radius: 16px; padding: 24px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        .profile-header { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
-        .profile-avatar { width: 64px; height: 64px; border-radius: 50%; background: var(--autumn-gradient); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 24px; color: white; }
-        .profile-info { flex: 1; }
-        .profile-username { font-size: 18px; font-weight: 600; margin-bottom: 4px; color: var(--primary); }
-        .profile-stats { font-size: 14px; color: var(--secondary); }
+        .upgrade-button:disabled {
+            background: var(--border);
+            cursor: not-allowed;
+        }
         
-        /* Referral Section */
-        .referral-section { background: var(--card); border-radius: 16px; padding: 20px; margin-bottom: 20px; border: 1px solid var(--border); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .referral-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; color: var(--primary); }
-        .referral-stats { display: flex; justify-content: space-between; margin-bottom: 16px; }
-        .referral-stat { text-align: center; }
-        .referral-value { font-size: 18px; font-weight: 700; color: var(--primary); }
-        .referral-label { font-size: 12px; color: var(--secondary); }
-        .referral-link { background: var(--gradient); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 12px; font-size: 12px; word-break: break-all; }
-        .referral-history { max-height: 200px; overflow-y: auto; }
-        .referral-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
-        .referral-user { font-size: 12px; }
-        .referral-reward { font-size: 12px; color: var(--primary); font-weight: 600; }
+        .upgrade-button.owned {
+            background: var(--success);
+        }
         
-        /* Theme Switcher */
-        .theme-switcher { background: var(--gradient); border-radius: 12px; padding: 16px; margin-bottom: 20px; border: 1px solid var(--border); }
-        .theme-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; color: var(--primary); }
-        .theme-buttons { display: flex; gap: 12px; }
-        .theme-btn { flex: 1; padding: 12px; border: 2px solid var(--border); border-radius: 8px; background: var(--card); color: var(--text); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
-        .theme-btn.active { border-color: var(--primary); background: var(--autumn-gradient); color: white; }
+        /* Tasks */
+        .tasks-grid {
+            display: grid;
+            gap: 12px;
+        }
         
-        .profile-motivation { background: var(--gradient); border-radius: 16px; padding: 20px; text-align: center; border: 1px solid var(--border); }
-        .motivation-image { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin: 0 auto 16px; border: 3px solid var(--primary); }
-        .motivation-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; color: var(--primary); }
-        .motivation-text { font-size: 14px; color: var(--secondary); line-height: 1.4; }
+        .task-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
         
-        /* Animations */
-        @keyframes coinPop { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-60px) scale(1.1); opacity: 0; } }
-        .coin-pop { animation: coinPop 0.8s ease-out forwards; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-        .pulse { animation: pulse 2s infinite; }
+        .task-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
         
-        /* Loading */
-        .loading { text-align: center; padding: 40px; color: var(--secondary); }
+        .task-info {
+            flex: 1;
+        }
+        
+        .task-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .task-progress {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+        
+        .task-reward {
+            font-size: 12px;
+            color: var(--drevo);
+            font-weight: 600;
+        }
+        
+        .task-button {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .task-button:disabled {
+            background: var(--border);
+            cursor: not-allowed;
+        }
+        
+        /* Market styles */
+        .wallet-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+        
+        .wallet-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .wallet-address {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 12px;
+            color: var(--text-secondary);
+            background: var(--bg-secondary);
+            padding: 6px 10px;
+            border-radius: 10px;
+        }
+        
+        .ton-connect-button {
+            min-width: 120px;
+        }
+        
+        .collectibles-grid {
+            display: grid;
+            gap: 12px;
+        }
+        
+        .collectible-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        
+        .collectible-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .collectible-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .collectible-stock {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        .collectible-image {
+            width: 100%;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: transparent;
+        }
+        
+        .collectible-image img {
+            width: 180px;
+            height: 180px;
+            object-fit: contain;
+            border-radius: 12px;
+        }
+        
+        .collectible-info {
+            padding: 16px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .info-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .info-value {
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .price-tag {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+        }
+        
+        .price-tag.ton {
+            color: var(--ton);
+        }
+        
+        .price-tag.drevo {
+            color: var(--drevo);
+        }
+        
+        .buy-section {
+            padding: 16px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .buy-button {
+            width: 100%;
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .buy-button.drevo {
+            background: var(--drevo);
+        }
+        
+        .buy-button.vip {
+            background: var(--vip);
+            color: #000;
+        }
+        
+        .buy-button:disabled {
+            background: var(--border);
+            cursor: not-allowed;
+        }
+        
+        /* Profile */
+        .profile-card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+        
+        .theme-section {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+        
+        .theme-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .dreams-section {
+            background: var(--gradient);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .dreams-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .dreams-text {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+        }
+        
+        .user-details {
+            flex: 1;
+        }
+        
+        .username {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .member-since {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .collection-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .collection-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+        
+        .collection-item {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            border: 1px solid var(--border);
+            cursor: pointer;
+        }
+        
+        .collection-image {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 8px;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .collection-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 6px;
+        }
+        
+        .collection-name {
+            font-size: 11px;
+            font-weight: 500;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+        
+        .empty-state i {
+            font-size: 40px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+        
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            display: flex;
+            padding: 12px 16px;
+            backdrop-filter: blur(20px);
+        }
+        
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-item.active {
+            background: rgba(0, 136, 204, 0.1);
+            color: var(--accent);
+        }
+        
+        .nav-icon {
+            font-size: 18px;
+        }
+        
+        .nav-label {
+            font-size: 10px;
+            font-weight: 500;
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 16px;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 360px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+        
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            text-align: center;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .modal-image {
+            width: 100%;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: transparent;
+        }
+        
+        .modal-image img {
+            width: 180px;
+            height: 180px;
+            object-fit: contain;
+            border-radius: 12px;
+        }
+        
+        .modal-details {
+            padding: 20px;
+        }
+        
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        
+        .detail-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .detail-value {
+            font-weight: 500;
+            font-size: 14px;
+        }
+        
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .ton-badge {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--ton);
+            font-weight: 600;
+        }
+        
+        .drevo-badge {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--drevo);
+            font-weight: 600;
+        }
+        
+        .vip-badge {
+            background: var(--vip);
+            color: #000;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 8px;
+        }
     </style>
 </head>
-<body class="theme-light">
-    <div class="app">
+<body>
+    <div class="container">
         <div class="header">
             <div class="logo">DREVO</div>
             <div class="balance-section">
@@ -164,683 +750,1011 @@
             </div>
         </div>
         
-        <!-- Navigation -->
-        <nav class="tabs">
-            <button class="tab-btn active" onclick="switchTab('clicker')">Clicker</button>
-            <button class="tab-btn" onclick="switchTab('tasks')">Tasks</button>
-            <button class="tab-btn" onclick="switchTab('investments')">Investments</button>
-            <button class="tab-btn" onclick="switchTab('profile')">Profile</button>
-        </nav>
+        <!-- Clicker Page -->
+        <div id="clicker-page" class="page active">
+            <div class="clicker-section">
+                <div class="clicker-circle" id="clicker">
+                    <span id="click-power">1</span>
+                </div>
+                
+                <div class="clicker-stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="clicks-per-second">0</div>
+                        <div class="stat-label">Per Second</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-clicks">0</div>
+                        <div class="stat-label">Total Clicks</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title">Upgrades</h2>
+                
+                <div class="upgrades-grid" id="upgrades-container">
+                    <!-- Upgrades will be added by JS -->
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title">Tasks</h2>
+                
+                <div class="tasks-grid" id="tasks-container">
+                    <!-- Tasks will be added by JS -->
+                </div>
+            </div>
+        </div>
         
-        <main class="content">
-            <!-- Clicker Tab -->
-            <div id="clicker-tab" class="tab-content active">
-                <div class="clicker-section">
-                    <div class="daily-bonus">Daily limit</div>
-                    <div class="clicker-circle">
-                        <button class="clicker-btn pulse" id="click-btn">
-                            <img src="https://i.postimg.cc/3Jzfvb3c/IMG-20251002-224117-911.jpg" alt="DREVO" class="clicker-image" onerror="this.style.display='none'">
-                        </button>
-                    </div>
-                    <div class="stats-section">
-                        <div class="stat-row"><span>Points per tap</span><span id="points-per-tap">+1</span></div>
-                        <div class="stat-row"><span>Daily limit</span><span id="today-limit">0/1000</span></div>
-                        <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width: 0%"></div></div>
-                    </div>
+        <!-- Market Page -->
+        <div id="market-page" class="page">
+            <div class="wallet-card">
+                <div class="wallet-info">
+                    <div class="wallet-address" id="wallet-address">Not connected</div>
+                    <div id="connect-btn" class="ton-connect-button"></div>
                 </div>
             </div>
             
-            <!-- Tasks Tab -->
-            <div id="tasks-tab" class="tab-content">
-                <div class="tasks-section">
-                    <div class="section-title">Tasks</div>
-                    <div class="tasks-grid">
-                        <div class="task-card" id="task-channel1">
-                            <div class="task-title">Join DREVO Coin</div>
-                            <div class="task-reward">+1000 D</div>
-                            <button class="task-btn" onclick="completeTask('channel1')" id="btn-channel1">Join</button>
-                        </div>
-                        <div class="task-card" id="task-channel2">
-                            <div class="task-title">Join OneSK</div>
-                            <div class="task-reward">+1000 D</div>
-                            <button class="task-btn" onclick="completeTask('channel2')" id="btn-channel2">Join</button>
-                        </div>
-                        <div class="task-card" id="task-chat">
-                            <div class="task-title">Join DREVO Community</div>
-                            <div class="task-reward">+1000 D</div>
-                            <button class="task-btn" onclick="completeTask('chat')" id="btn-chat">Join</button>
-                        </div>
-                        <div class="task-card" id="task-invite">
-                            <div class="task-title">Invite Friends</div>
-                            <div class="task-reward">+500 D</div>
-                            <button class="task-btn" onclick="completeTask('invite')" id="btn-invite">Invite</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Investments Tab -->
-            <div id="investments-tab" class="tab-content">
-                <div class="investments-section">
-                    <div class="investments-info">
-                        ⚠️ Important: Investments generate coins only while you are actively in the game. When you exit, income stops.
-                    </div>
-                    <div class="investments-grid">
-                        <div class="investment-card">
-                            <div class="investment-header">
-                                <div class="investment-icon">
-                                    <img src="https://i.postimg.cc/X7744By9/efdf7126cd8f8ab435c15bf22be460dd.jpg" alt="Telegram">
-                                </div>
-                                <div class="investment-info">
-                                    <div class="investment-name">Telegram</div>
-                                    <div class="investment-details">Social platform</div>
-                                </div>
-                            </div>
-                            <div class="investment-stats">
-                                <div class="stat">
-                                    <div class="stat-value">2600</div>
-                                    <div class="stat-label">Cost</div>
-                                </div>
-                                <div class="stat">
-                                    <div class="stat-value">1/min</div>
-                                    <div class="stat-label">Income</div>
-                                </div>
-                            </div>
-                            <button class="buy-btn" onclick="buyInvestment('telegram')" id="buy-telegram">Buy Telegram</button>
+            <div class="section">
+                <h2 class="section-title">Gifts</h2>
+                
+                <div class="collectibles-grid">
+                    <!-- Cat for DREVO -->
+                    <div class="collectible-card">
+                        <div class="collectible-header">
+                            <div class="collectible-title">Cat</div>
+                            <div class="collectible-stock" id="cat-stock">20000 of 20000</div>
                         </div>
                         
-                        <div class="investment-card">
-                            <div class="investment-header">
-                                <div class="investment-icon">
-                                    <img src="https://i.postimg.cc/wMMfbz7L/E3-Bi-AE9y-FKj-T-ij-Niqt-Lj-CXavtb6x-Is-EHI43-WLcy6-Be-XFY6-G7e-Ol-Shn-M-pxu-Svt-H8-Koz-Iu-To-s900-c-k-c0x00ffffff-no-rj.jpg" alt="YouTube">
-                                </div>
-                                <div class="investment-info">
-                                    <div class="investment-name">YouTube</div>
-                                    <div class="investment-details">Video platform</div>
-                                </div>
-                            </div>
-                            <div class="investment-stats">
-                                <div class="stat">
-                                    <div class="stat-value">3300</div>
-                                    <div class="stat-label">Cost</div>
-                                </div>
-                                <div class="stat">
-                                    <div class="stat-value">1/min</div>
-                                    <div class="stat-label">Income</div>
-                                </div>
-                            </div>
-                            <button class="buy-btn" onclick="buyInvestment('youtube')" id="buy-youtube">Buy YouTube</button>
+                        <div class="collectible-image">
+                            <img src="https://i.postimg.cc/x1MzBqft/ezgif-78d2cebd8effbe.gif" alt="Cat">
                         </div>
                         
-                        <div class="investment-card">
-                            <div class="investment-header">
-                                <div class="investment-icon">
-                                    <img src="https://i.postimg.cc/5tJPWLXf/392c156408ee049437b3341290dd64cf.jpg" alt="Twitch">
-                                </div>
-                                <div class="investment-info">
-                                    <div class="investment-name">Twitch</div>
-                                    <div class="investment-details">Streaming platform</div>
+                        <div class="collectible-info">
+                            <div class="info-row">
+                                <div class="info-label">Cost</div>
+                                <div class="price-tag drevo">
+                                    <i class="fas fa-coins"></i>
+                                    <span id="cat-price">20000 DREVO</span>
                                 </div>
                             </div>
-                            <div class="investment-stats">
-                                <div class="stat">
-                                    <div class="stat-value">4200</div>
-                                    <div class="stat-label">Cost</div>
-                                </div>
-                                <div class="stat">
-                                    <div class="stat-value">2/min</div>
-                                    <div class="stat-label">Income</div>
-                                </div>
+                            <div class="info-row">
+                                <div class="info-label">Owner</div>
+                                <div class="info-value">-</div>
                             </div>
-                            <button class="buy-btn" onclick="buyInvestment('twitch')" id="buy-twitch">Buy Twitch</button>
-                        </div>
-
-                        <div class="investment-card">
-                            <div class="investment-header">
-                                <div class="investment-icon">
-                                    <img src="https://i.postimg.cc/zGCj7vxm/kmc-20251003-172009.png" alt="DoubleClick">
-                                </div>
-                                <div class="investment-info">
-                                    <div class="investment-name">DoubleClick</div>
-                                    <div class="investment-details">Double points per click</div>
-                                </div>
-                            </div>
-                            <div class="investment-stats">
-                                <div class="stat">
-                                    <div class="stat-value">2000</div>
-                                    <div class="stat-label">Cost</div>
-                                </div>
-                                <div class="stat">
-                                    <div class="stat-value">2x Click</div>
-                                    <div class="stat-label">Boost</div>
-                                </div>
-                            </div>
-                            <button class="buy-btn" onclick="buyInvestment('doubleclick')" id="buy-doubleclick">Buy DoubleClick</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Profile Tab -->
-            <div id="profile-tab" class="tab-content">
-                <div class="profile-section">
-                    <div class="profile-card">
-                        <div class="profile-header">
-                            <div class="profile-avatar" id="profile-avatar">U</div>
-                            <div class="profile-info">
-                                <div class="profile-username" id="profile-username">User</div>
-                                <div class="profile-stats" id="profile-stats">0 coins • Just started</div>
+                            <div class="info-row">
+                                <div class="info-label">Date</div>
+                                <div class="info-value">-</div>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Referral Section -->
-                    <div class="referral-section">
-                        <div class="referral-title">Referral Program</div>
-                        <div class="referral-stats">
-                            <div class="referral-stat">
-                                <div class="referral-value" id="referral-count">0</div>
-                                <div class="referral-label">Referrals</div>
-                            </div>
-                            <div class="referral-stat">
-                                <div class="referral-value" id="referral-earned">0</div>
-                                <div class="referral-label">Earned</div>
-                            </div>
-                        </div>
-                        <div class="referral-link" id="referral-link">Loading...</div>
-                        <div class="referral-history">
-                            <div class="referral-title" style="margin-bottom: 12px;">Referral History</div>
-                            <div id="referral-list">
-                                <div class="referral-item">
-                                    <span class="referral-user">No referrals yet</span>
-                                    <span class="referral-reward">+0 D</span>
-                                </div>
-                            </div>
+                        
+                        <div class="buy-section">
+                            <button class="buy-button drevo" id="buy-cat" onclick="buyGift('cat')">
+                                <i class="fas fa-coins"></i>
+                                <span id="buy-cat-text">Buy for 20000 DREVO</span>
+                            </button>
                         </div>
                     </div>
                     
-                    <div class="theme-switcher">
-                        <div class="theme-title">Theme</div>
-                        <div class="theme-buttons">
-                            <button class="theme-btn active" onclick="switchTheme('light')">Light</button>
-                            <button class="theme-btn" onclick="switchTheme('dark')">Dark</button>
+                    <!-- Christian Cross for TON -->
+                    <div class="collectible-card">
+                        <div class="collectible-header">
+                            <div class="collectible-title">Christian Cross</div>
+                            <div class="collectible-stock" id="cross-stock">1200 of 1200</div>
+                        </div>
+                        
+                        <div class="collectible-image">
+                            <img src="https://i.postimg.cc/HL2pCGh5/ezgif-825d8532b9c755.gif" alt="Christian Cross">
+                        </div>
+                        
+                        <div class="collectible-info">
+                            <div class="info-row">
+                                <div class="info-label">Cost</div>
+                                <div class="price-tag ton">
+                                    <i class="fab fa-toncoin"></i>
+                                    <span id="cross-price">0.5 TON</span>
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Owner</div>
+                                <div class="info-value">-</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Date</div>
+                                <div class="info-value">-</div>
+                            </div>
+                        </div>
+                        
+                        <div class="buy-section">
+                            <button class="buy-button" id="buy-cross" onclick="buyGift('cross')">
+                                <i class="fab fa-toncoin"></i>
+                                <span id="buy-cross-text">Buy for 0.5 TON</span>
+                            </button>
                         </div>
                     </div>
                     
-                    <div class="profile-motivation">
-                        <img src="https://i.postimg.cc/3Jzfvb3c/IMG-20251002-224117-911.jpg" alt="Dreams" class="motivation-image" onerror="this.style.display='none'">
-                        <div class="motivation-title">Dreams Come True</div>
-                        <div class="motivation-text">
-                            Coming soon: Leaderboard ranking system. Early players and top leaders will receive exclusive advantages during the currency listing on exchanges. Your dedication today builds your success tomorrow.
+                    <!-- Cybercar for TON -->
+                    <div class="collectible-card">
+                        <div class="collectible-header">
+                            <div class="collectible-title">Cybercar</div>
+                            <div class="collectible-stock" id="cybercar-stock">2000 of 2000</div>
+                        </div>
+                        
+                        <div class="collectible-image">
+                            <img src="https://i.postimg.cc/1zrHK4Vn/ezgif-8f92856a9fc001-2.gif" alt="Cybercar">
+                        </div>
+                        
+                        <div class="collectible-info">
+                            <div class="info-row">
+                                <div class="info-label">Cost</div>
+                                <div class="price-tag ton">
+                                    <i class="fab fa-toncoin"></i>
+                                    <span id="cybercar-price">0.5 TON</span>
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Owner</div>
+                                <div class="info-value">-</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Date</div>
+                                <div class="info-value">-</div>
+                            </div>
+                        </div>
+                        
+                        <div class="buy-section">
+                            <button class="buy-button" id="buy-cybercar" onclick="buyGift('cybercar')">
+                                <i class="fab fa-toncoin"></i>
+                                <span id="buy-cybercar-text">Buy for 0.5 TON</span>
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
+        
+        <!-- Profile Page -->
+        <div id="profile-page" class="page">
+            <div class="profile-card">
+                <div class="theme-section">
+                    <div class="theme-title">
+                        <i class="fas fa-palette"></i>
+                        Theme
+                    </div>
+                    <div class="info-text">Dark theme activated</div>
+                </div>
+                
+                <div class="dreams-section">
+                    <div class="dreams-title">Dreams Come True</div>
+                    <div class="dreams-text">Your dreams become reality with DREVO</div>
+                </div>
+                
+                <div class="user-info">
+                    <div class="avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <div class="username" id="user-name">User</div>
+                        <div class="member-since" id="user-joined">Member since: Loading...</div>
+                    </div>
+                </div>
+                
+                <div class="collection-stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-gifts">0</div>
+                        <div class="stat-label">Gifts</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-spent">0</div>
+                        <div class="stat-label">Spent</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title">My Gifts</h2>
+                
+                <div id="gifts-container">
+                    <div class="empty-state" id="empty-gifts">
+                        <i class="fas fa-gift"></i>
+                        <p>No gifts yet</p>
+                    </div>
+                    <div class="collection-grid" id="gifts-grid" style="display: none;">
+                        <!-- Gifts will appear here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="showPage('clicker-page')">
+            <div class="nav-icon">
+                <i class="fas fa-hand-pointer"></i>
+            </div>
+            <div class="nav-label">Clicker</div>
+        </div>
+        <div class="nav-item" onclick="showPage('market-page')">
+            <div class="nav-icon">
+                <i class="fas fa-gift"></i>
+            </div>
+            <div class="nav-label">Market</div>
+        </div>
+        <div class="nav-item" onclick="showPage('profile-page')">
+            <div class="nav-icon">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="nav-label">Profile</div>
+        </div>
+    </div>
+    
+    <!-- Gift Modal -->
+    <div class="modal" id="gift-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modal-title">Cat</div>
+            </div>
+            
+            <div class="modal-image">
+                <img src="" alt="" id="modal-image">
+            </div>
+            
+            <div class="modal-details">
+                <div class="detail-row">
+                    <div class="detail-label">Owner</div>
+                    <div class="detail-value" id="modal-owner">-</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Date</div>
+                    <div class="detail-value" id="modal-date">-</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Cost</div>
+                    <div class="detail-value">
+                        <div class="drevo-badge" id="modal-cost">
+                            <i class="fas fa-coins"></i>
+                            <span>20000 DREVO</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Availability</div>
+                    <div class="detail-value" id="modal-availability">-</div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="buy-button" onclick="closeModal()" style="background: var(--border);">
+                    Close
+                </button>
+            </div>
+        </div>
     </div>
 
     <script>
-        class DREVOApp {
-            #tg = window.Telegram.WebApp;
-            #incomeInterval = null;
-            
-            state = {
-                balance: 0,
-                energy: 1000,
-                clicksToday: 0,
-                pointsPerClick: 1,
-                completedTasks: {
-                    channel1: false,
-                    channel2: false,
-                    chat: false,
-                    invite: false
-                },
-                investments: {
-                    telegram: false,
-                    youtube: false,
-                    twitch: false,
-                    doubleclick: false
-                },
-                referrals: {
-                    count: 0,
-                    earned: 0,
-                    list: []
-                },
-                userId: null,
-                username: 'User',
-                registrationDate: null,
-                lastClickDate: null,
-                theme: 'light'
-            };
-
-            constructor() {
-                this.init();
+        // Telegram WebApp
+        const tg = window.Telegram.WebApp;
+        
+        // Initialize
+        tg.expand();
+        tg.enableClosingConfirmation();
+        
+        // TON Connect
+        let tonConnectUI;
+        let wallet = null;
+        const MERCHANT_ADDRESS = 'UQBYt_yorGejtv403290WeEgd1hJiCB2vx_7obx3cFjDlYEF';
+        
+        // VIP user
+        const VIP_USERNAME = 'clanffys';
+        let isVIP = false;
+        
+        // Game Data
+        let userData = {
+            id: tg.initDataUnsafe.user?.id || 'unknown',
+            firstName: tg.initDataUnsafe.user?.first_name || 'User',
+            lastName: tg.initDataUnsafe.user?.last_name || '',
+            username: tg.initDataUnsafe.user?.username || '',
+            joinDate: null
+        };
+        
+        let gameData = {
+            balance: 0,
+            energy: 1000,
+            maxEnergy: 1000,
+            clickPower: 1,
+            totalClicks: 0,
+            clicksPerSecond: 0,
+            autoClickers: 0,
+            lastEnergyUpdate: Date.now(),
+            lastSaveTime: Date.now()
+        };
+        
+        // Upgrades Data
+        const UPGRADES_DATA = [
+            {
+                id: 'double-click',
+                name: 'DoubleClick',
+                description: '+2 per click',
+                price: 1000,
+                image: 'https://i.postimg.cc/3Nc6y1y0/double-click.png',
+                type: 'click',
+                value: 2,
+                owned: false
+            },
+            {
+                id: 'triple-click',
+                name: 'TripleClick',
+                description: '+3 per click (requires DoubleClick)',
+                price: 3000,
+                image: 'https://i.postimg.cc/xCDJ5QDm/kmc-20251009-084222.png',
+                type: 'click',
+                value: 3,
+                owned: false,
+                requires: 'double-click'
+            },
+            {
+                id: 'facebook',
+                name: 'Facebook',
+                description: '+3 per second (offline income)',
+                price: 4242,
+                image: 'https://i.postimg.cc/sDN2Kz5H/c9c3e0e40de09a3ebe5bbfef2ac88c6c.jpg',
+                type: 'investment',
+                value: 3,
+                owned: false
+            },
+            {
+                id: 'instagram',
+                name: 'Instagram',
+                description: '+4 per second (offline income)',
+                price: 5500,
+                image: 'https://i.postimg.cc/FHGXGgMB/0ed76aba8b377310b99d359ac989a3e5.jpg',
+                type: 'investment',
+                value: 4,
+                owned: false
+            },
+            {
+                id: 'apple',
+                name: 'Apple',
+                description: '+10 per second (offline income)',
+                price: 10000,
+                image: 'https://i.postimg.cc/wBTgdb5K/1440244215-379810114-1.jpg',
+                type: 'investment',
+                value: 10,
+                owned: false
             }
-
-            init() {
-                this.#tg.expand();
-                this.setupUser();
-                this.loadState();
-                this.setupEventListeners();
-                this.startIncomeGeneration();
-                this.updateUI();
-                this.updateProfile();
-                this.applyTheme(this.state.theme);
-                this.updateReferralUI();
+        ];
+        
+        // Tasks Data
+        const TASKS_DATA = [
+            { id: 'click-100', title: 'Make 100 clicks', target: 100, reward: 1000, type: 'clicks', progress: 0, completed: false },
+            { id: 'click-500', title: 'Make 500 clicks', target: 500, reward: 5000, type: 'clicks', progress: 0, completed: false },
+            { id: 'click-1000', title: 'Make 1000 clicks', target: 1000, reward: 10000, type: 'clicks', progress: 0, completed: false },
+            { id: 'balance-1000', title: 'Reach 1000 coins', target: 1000, reward: 500, type: 'balance', progress: 0, completed: false },
+            { id: 'balance-5000', title: 'Reach 5000 coins', target: 5000, reward: 2000, type: 'balance', progress: 0, completed: false }
+        ];
+        
+        // Gifts Data
+        const GIFTS_DATA = {
+            cat: {
+                name: 'Cat',
+                price: 20000,
+                currency: 'DREVO',
+                image: 'https://i.postimg.cc/x1MzBqft/ezgif-78d2cebd8effbe.gif',
+                totalSupply: 20000,
+                description: 'Cute cat collectible'
+            },
+            cross: {
+                name: 'Christian Cross',
+                price: 0.5,
+                currency: 'TON',
+                image: 'https://i.postimg.cc/HL2pCGh5/ezgif-825d8532b9c755.gif',
+                totalSupply: 1200,
+                description: 'Exclusive spiritual collectible'
+            },
+            cybercar: {
+                name: 'Cybercar',
+                price: 0.5,
+                currency: 'TON',
+                image: 'https://i.postimg.cc/1zrHK4Vn/ezgif-8f92856a9fc001-2.gif',
+                totalSupply: 2000,
+                description: 'Futuristic vehicle collectible'
             }
-
-            setupUser() {
-                const user = this.#tg.initDataUnsafe.user;
-                this.state.userId = user?.id || Math.floor(Math.random() * 1000000000);
-                this.state.username = user?.first_name || `User${this.state.userId.toString().slice(-4)}`;
-                
-                if (!this.state.registrationDate) {
-                    this.state.registrationDate = Date.now();
-                }
-
-                // Check for referral parameter
-                const urlParams = new URLSearchParams(window.location.search);
-                const ref = urlParams.get('ref');
-                if (ref && ref !== this.state.userId.toString()) {
-                    this.processReferral(ref);
-                }
-            }
-
-            processReferral(referrerId) {
-                // Check if this is first time and not self-referral
-                const userKey = `drevoState_${this.state.userId}`;
-                const saved = localStorage.getItem(userKey);
-                
-                if (!saved) {
-                    // This is a new user via referral
-                    const referrerKey = `drevoState_${referrerId}`;
-                    const referrerData = localStorage.getItem(referrerKey);
-                    
-                    if (referrerData) {
-                        try {
-                            const referrerState = JSON.parse(referrerData);
-                            referrerState.balance += 500;
-                            referrerState.referrals.count += 1;
-                            referrerState.referrals.earned += 500;
-                            referrerState.referrals.list.push({
-                                userId: this.state.userId,
-                                username: this.state.username,
-                                date: Date.now(),
-                                reward: 500
-                            });
-                            
-                            localStorage.setItem(referrerKey, JSON.stringify(referrerState));
-                        } catch (error) {
-                            console.error('Error processing referral:', error);
-                        }
-                    }
-                }
-            }
-
-            switchTab(tabName, event) {
-                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-                event.target.classList.add('active');
-                document.getElementById(`${tabName}-tab`).classList.add('active');
-                
-                if (tabName === 'tasks') this.updateTasksUI();
-                if (tabName === 'investments') this.updateInvestmentsUI();
-                if (tabName === 'profile') {
-                    this.updateProfile();
-                    this.updateReferralUI();
-                }
-            }
-
-            switchTheme(themeName) {
-                this.state.theme = themeName;
-                this.applyTheme(themeName);
-                this.saveState();
-                
-                // Update theme buttons
-                document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
-                event.target.classList.add('active');
-            }
-
-            applyTheme(themeName) {
-                document.body.className = `theme-${themeName}`;
-            }
-
-            loadState() {
-                const userKey = `drevoState_${this.state.userId}`;
-                const saved = localStorage.getItem(userKey);
-                
-                if (saved) {
-                    try {
-                        const parsed = JSON.parse(saved);
-                        const today = new Date().toDateString();
-                        
-                        // Reset daily limits if new day
-                        if (parsed.lastClickDate !== today) {
-                            this.state.clicksToday = 0;
-                            this.state.energy = 1000;
-                        } else {
-                            this.state.clicksToday = parsed.clicksToday || 0;
-                            this.state.energy = 1000 - this.state.clicksToday;
-                        }
-                        
-                        // Load all state data
-                        this.state.balance = parsed.balance || 0;
-                        this.state.pointsPerClick = parsed.pointsPerClick || 1;
-                        this.state.completedTasks = parsed.completedTasks || this.state.completedTasks;
-                        this.state.investments = parsed.investments || this.state.investments;
-                        this.state.referrals = parsed.referrals || this.state.referrals;
-                        this.state.registrationDate = parsed.registrationDate || Date.now();
-                        this.state.lastClickDate = today;
-                        this.state.theme = parsed.theme || 'light';
-                        
-                    } catch (error) {
-                        console.error('Error loading state:', error);
-                        this.resetState();
-                    }
-                } else {
-                    this.resetState();
-                }
-                
-                this.saveState();
-            }
-
-            resetState() {
-                this.state.balance = 0;
-                this.state.energy = 1000;
-                this.state.clicksToday = 0;
-                this.state.pointsPerClick = 1;
-                this.state.completedTasks = {
-                    channel1: false,
-                    channel2: false,
-                    chat: false,
-                    invite: false
-                };
-                this.state.investments = {
-                    telegram: false,
-                    youtube: false,
-                    twitch: false,
-                    doubleclick: false
-                };
-                this.state.referrals = {
-                    count: 0,
-                    earned: 0,
-                    list: []
-                };
-                this.state.registrationDate = Date.now();
-                this.state.lastClickDate = new Date().toDateString();
-                this.state.theme = 'light';
-            }
-
-            saveState() {
-                const userKey = `drevoState_${this.state.userId}`;
-                this.state.lastClickDate = new Date().toDateString();
-                localStorage.setItem(userKey, JSON.stringify(this.state));
-            }
-
-            setupEventListeners() {
-                document.getElementById('click-btn').addEventListener('click', () => this.handleClick());
-            }
-
-            startIncomeGeneration() {
-                if (this.#incomeInterval) {
-                    clearInterval(this.#incomeInterval);
-                }
-                
-                this.#incomeInterval = setInterval(() => {
-                    let income = 0;
-                    
-                    if (this.state.investments.telegram) income += 1;
-                    if (this.state.investments.youtube) income += 1;
-                    if (this.state.investments.twitch) income += 2;
-                    
-                    if (income > 0) {
-                        this.state.balance += income;
-                        this.saveState();
-                        this.updateUI();
-                        this.updateProfile();
-                    }
-                }, 60000);
-            }
-
-            handleClick() {
-                if (this.state.energy <= 0) {
-                    this.#tg.showAlert('Daily limit reached!');
-                    return;
-                }
-                
-                const pointsEarned = this.state.pointsPerClick;
-                this.state.balance += pointsEarned;
-                this.state.energy--;
-                this.state.clicksToday++;
-                
-                this.showCoinAnimation(pointsEarned);
-                this.#tg.HapticFeedback.impactOccurred('light');
-                this.saveState();
-                this.updateUI();
-                this.updateProfile();
-            }
-
-            showCoinAnimation(points) {
-                const coin = document.createElement('div');
-                coin.className = 'coin-pop';
-                coin.textContent = `+${points}`;
-                coin.style.cssText = 'position:absolute;font-size:16px;font-weight:700;color:var(--primary);opacity:0;';
-                document.getElementById('click-btn').parentElement.appendChild(coin);
-                setTimeout(() => coin.remove(), 800);
-            }
-
-            completeTask(taskId) {
-                // Check if task already completed
-                if (this.state.completedTasks[taskId]) {
-                    this.#tg.showAlert('Task already completed!');
-                    return;
-                }
-
-                const urls = {
-                    channel1: 'https://t.me/drevocoin',
-                    channel2: 'https://t.me/onesk',
-                    chat: 'https://t.me/drevocommunity',
-                    invite: `https://t.me/share/url?url=https://t.me/drevocoinbot?start=${this.state.userId}`
-                };
-
-                // Open the link
-                if (urls[taskId]) {
-                    this.#tg.openLink(urls[taskId]);
-                }
-
-                // Give reward immediately
-                const reward = taskId === 'invite' ? 500 : 1000;
-                this.state.balance += reward;
-                this.state.completedTasks[taskId] = true;
-                this.#tg.HapticFeedback.impactOccurred('success');
-
-                this.#tg.showPopup({
-                    title: 'Task Completed!',
-                    message: `You received ${reward} DREVO points!`,
-                    buttons: [{ type: 'ok' }]
-                });
-
-                this.saveState();
-                this.updateUI();
-                this.updateTasksUI();
-                this.updateProfile();
-            }
-
-            buyInvestment(investmentId) {
-                const prices = {
-                    telegram: 2600,
-                    youtube: 3300,
-                    twitch: 4200,
-                    doubleclick: 2000
-                };
-
-                const price = prices[investmentId];
-
-                if (this.state.balance < price) {
-                    this.#tg.showAlert(`Not enough coins! You need ${price} coins.`);
-                    return;
-                }
-
-                if (this.state.investments[investmentId]) {
-                    this.#tg.showAlert('You already own this investment!');
-                    return;
-                }
-
-                this.state.balance -= price;
-                this.state.investments[investmentId] = true;
-
-                // Apply DoubleClick effect
-                if (investmentId === 'doubleclick') {
-                    this.state.pointsPerClick = 2;
-                    document.getElementById('points-per-tap').textContent = '+2';
-                }
-
-                this.#tg.showPopup({
-                    title: 'Investment Purchased!',
-                    message: `You successfully bought ${investmentId.charAt(0).toUpperCase() + investmentId.slice(1)}!`,
-                    buttons: [{ type: 'ok' }]
-                });
-
-                this.saveState();
-                this.updateUI();
-                this.updateInvestmentsUI();
-                this.updateProfile();
-            }
-
-            updateUI() {
-                document.getElementById('balance').textContent = this.state.balance.toLocaleString();
-                document.getElementById('energy').textContent = `${this.state.energy}/1000`;
-                document.getElementById('today-limit').textContent = `${this.state.clicksToday}/1000`;
-                document.getElementById('progress-fill').style.width = `${(this.state.clicksToday / 1000) * 100}%`;
-                document.getElementById('points-per-tap').textContent = `+${this.state.pointsPerClick}`;
-
-                const clickBtn = document.getElementById('click-btn');
-                if (this.state.energy <= 0) {
-                    clickBtn.classList.remove('pulse');
-                    clickBtn.style.opacity = '0.6';
-                } else {
-                    clickBtn.classList.add('pulse');
-                    clickBtn.style.opacity = '1';
-                }
-            }
-
-            updateTasksUI() {
-                const taskIds = ['channel1', 'channel2', 'chat', 'invite'];
-                taskIds.forEach(taskId => {
-                    const btn = document.getElementById(`btn-${taskId}`);
-                    if (btn) {
-                        if (this.state.completedTasks[taskId]) {
-                            btn.textContent = 'Completed';
-                            btn.disabled = true;
-                            btn.classList.add('completed');
-                        } else {
-                            btn.textContent = taskId === 'invite' ? 'Invite' : 'Join';
-                            btn.disabled = false;
-                            btn.classList.remove('completed');
-                        }
-                    }
-                });
-            }
-
-            updateInvestmentsUI() {
-                const investments = ['telegram', 'youtube', 'twitch', 'doubleclick'];
-                investments.forEach(investment => {
-                    const btn = document.getElementById(`buy-${investment}`);
-                    if (btn) {
-                        if (this.state.investments[investment]) {
-                            btn.textContent = 'Owned';
-                            btn.disabled = true;
-                        } else {
-                            const prices = { 
-                                telegram: 2600, 
-                                youtube: 3300, 
-                                twitch: 4200, 
-                                doubleclick: 2000 
-                            };
-                            btn.textContent = `Buy ${investment.charAt(0).toUpperCase() + investment.slice(1)}`;
-                            btn.disabled = this.state.balance < prices[investment];
-                        }
-                    }
-                });
-            }
-
-            updateReferralUI() {
-                document.getElementById('referral-count').textContent = this.state.referrals.count;
-                document.getElementById('referral-earned').textContent = this.state.referrals.earned;
-                
-                const referralLink = `https://t.me/drevocoinbot?start=${this.state.userId}`;
-                document.getElementById('referral-link').textContent = referralLink;
-
-                const referralList = document.getElementById('referral-list');
-                if (this.state.referrals.list.length === 0) {
-                    referralList.innerHTML = `
-                        <div class="referral-item">
-                            <span class="referral-user">No referrals yet</span>
-                            <span class="referral-reward">+0 D</span>
-                        </div>
-                    `;
-                } else {
-                    referralList.innerHTML = this.state.referrals.list.map(ref => `
-                        <div class="referral-item">
-                            <span class="referral-user">${ref.username}</span>
-                            <span class="referral-reward">+${ref.reward} D</span>
-                        </div>
-                    `).join('');
-                }
-            }
-
-            updateProfile() {
-                document.getElementById('profile-avatar').textContent = this.state.username.charAt(0).toUpperCase();
-                document.getElementById('profile-username').textContent = this.state.username;
-
-                const timeDiff = Date.now() - this.state.registrationDate;
-                const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-
-                let timeText = '';
-                if (days > 0) {
-                    timeText = `${days} day${days > 1 ? 's' : ''}`;
-                } else if (hours > 0) {
-                    timeText = `${hours} hour${hours > 1 ? 's' : ''}`;
-                } else {
-                    timeText = `${minutes} minute${minutes > 1 ? 's' : ''}`;
-                }
-
-                document.getElementById('profile-stats').textContent =
-                    `${this.state.balance.toLocaleString()} coins • Playing for ${timeText}`;
-                    
-                document.querySelectorAll('.theme-btn').forEach(btn => {
-                    btn.classList.remove('active');
-                    if (btn.textContent.toLowerCase() === this.state.theme) {
-                        btn.classList.add('active');
-                    }
-                });
-            }
-        }
-
-        // Global functions for HTML onclick
-        function switchTab(tabName) {
-            app.switchTab(tabName, event);
-        }
-
-        function completeTask(taskId) {
-            app.completeTask(taskId);
-        }
-
-        function buyInvestment(investmentId) {
-            app.buyInvestment(investmentId);
-        }
-
-        function switchTheme(themeName) {
-            app.switchTheme(themeName);
-        }
+        };
+        
+        let userGifts = [];
+        let tasks = JSON.parse(JSON.stringify(TASKS_DATA));
+        let upgrades = JSON.parse(JSON.stringify(UPGRADES_DATA));
+        let energyCooldown = null;
 
         // Initialize app
-        let app;
-        document.addEventListener('DOMContentLoaded', () => {
-            app = new DREVOApp();
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
         });
+
+        async function initializeApp() {
+            loadUserData();
+            loadGameData();
+            loadUserGifts();
+            loadTasks();
+            loadUpgrades();
+            await initTONConnect();
+            checkVIPStatus();
+            updateDisplay();
+            startGameLoop();
+            
+            // Calculate offline income
+            calculateOfflineIncome();
+        }
+        
+        // Check if user is VIP
+        function checkVIPStatus() {
+            if (userData.username === VIP_USERNAME) {
+                isVIP = true;
+                document.getElementById('user-name').innerHTML = userData.firstName + ' <span class="vip-badge">VIP</span>';
+                
+                // Update buttons for VIP
+                document.getElementById('buy-cross').className = 'buy-button vip';
+                document.getElementById('buy-cybercar').className = 'buy-button vip';
+                document.getElementById('buy-cross-text').textContent = 'Get for FREE';
+                document.getElementById('buy-cybercar-text').textContent = 'Get for FREE';
+                document.getElementById('cross-price').textContent = 'FREE';
+                document.getElementById('cybercar-price').textContent = 'FREE';
+            }
+        }
+        
+        // Calculate offline income from investments
+        function calculateOfflineIncome() {
+            const now = Date.now();
+            const timeDiff = now - gameData.lastSaveTime;
+            const secondsPassed = Math.floor(timeDiff / 1000);
+            
+            if (secondsPassed > 0) {
+                let offlineIncome = 0;
+                upgrades.forEach(upgrade => {
+                    if (upgrade.owned && upgrade.type === 'investment') {
+                        offlineIncome += upgrade.value * secondsPassed;
+                    }
+                });
+                
+                if (offlineIncome > 0) {
+                    gameData.balance += offlineIncome;
+                    tg.showPopup({
+                        title: 'Offline Income',
+                        message: `You earned ${offlineIncome} coins while offline!`,
+                        buttons: [{id: 'ok', type: 'default', text: 'OK'}]
+                    });
+                }
+            }
+            
+            gameData.lastSaveTime = now;
+            saveGameData();
+        }
+        
+        // Initialize TON Connect
+        async function initTONConnect() {
+            try {
+                const manifestUrl = 'https://raw.githubusercontent.com/reynusha/translater/main/tonconnect-manifest.json';
+                
+                tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+                    manifestUrl: manifestUrl,
+                    buttonRootId: 'connect-btn'
+                });
+
+                wallet = await tonConnectUI.connectionRestored;
+                
+                if (wallet) {
+                    updateWalletDisplay();
+                }
+
+                tonConnectUI.onStatusChange(async (newWallet) => {
+                    wallet = newWallet;
+                    updateWalletDisplay();
+                    
+                    if (wallet) {
+                        tg.showPopup({
+                            title: 'Wallet Connected',
+                            message: 'TON wallet successfully connected',
+                            buttons: [{id: 'ok', type: 'default', text: 'OK'}]
+                        });
+                    }
+                });
+
+            } catch (error) {
+                console.error('TON Connect error:', error);
+                document.getElementById('wallet-address').textContent = 'Connection error';
+            }
+        }
+        
+        // Update wallet display
+        function updateWalletDisplay() {
+            const addressElement = document.getElementById('wallet-address');
+            
+            if (wallet && wallet.account) {
+                const shortAddress = wallet.account.address.slice(0, 8) + '...' + wallet.account.address.slice(-8);
+                addressElement.textContent = shortAddress;
+                addressElement.style.color = 'var(--success)';
+            } else {
+                addressElement.textContent = 'Not connected';
+                addressElement.style.color = 'var(--text-secondary)';
+            }
+        }
+        
+        // Load user data
+        function loadUserData() {
+            const nameElement = document.getElementById('user-name');
+            if (!isVIP) {
+                nameElement.textContent = userData.firstName + (userData.lastName ? ' ' + userData.lastName : '');
+            }
+            
+            const joinElement = document.getElementById('user-joined');
+            const joinDate = localStorage.getItem('drevo_join_date_' + userData.id);
+            if (joinDate) {
+                userData.joinDate = new Date(joinDate);
+                joinElement.textContent = 'Member since: ' + formatDate(userData.joinDate);
+            } else {
+                const now = new Date();
+                localStorage.setItem('drevo_join_date_' + userData.id, now.toISOString());
+                userData.joinDate = now;
+                joinElement.textContent = 'Member since: ' + formatDate(now);
+            }
+        }
+        
+        // Load game data
+        function loadGameData() {
+            const savedData = localStorage.getItem('drevo_game_data_' + userData.id);
+            if (savedData) {
+                const parsed = JSON.parse(savedData);
+                Object.assign(gameData, parsed);
+                
+                // Update energy based on time passed
+                const now = Date.now();
+                const timeDiff = now - gameData.lastEnergyUpdate;
+                const energyGain = Math.floor(timeDiff / 100); // 1 energy per 100ms
+                
+                if (energyGain > 0) {
+                    gameData.energy = Math.min(gameData.maxEnergy, gameData.energy + energyGain);
+                    gameData.lastEnergyUpdate = now;
+                }
+            }
+        }
+        
+        // Save game data
+        function saveGameData() {
+            gameData.lastSaveTime = Date.now();
+            localStorage.setItem('drevo_game_data_' + userData.id, JSON.stringify(gameData));
+        }
+        
+        // Load user gifts
+        function loadUserGifts() {
+            const savedGifts = localStorage.getItem('drevo_user_gifts_' + userData.id);
+            if (savedGifts) {
+                userGifts = JSON.parse(savedGifts);
+            }
+        }
+        
+        // Save user gifts
+        function saveUserGifts() {
+            localStorage.setItem('drevo_user_gifts_' + userData.id, JSON.stringify(userGifts));
+        }
+        
+        // Load tasks
+        function loadTasks() {
+            const savedTasks = localStorage.getItem('drevo_tasks_' + userData.id);
+            if (savedTasks) {
+                tasks = JSON.parse(savedTasks);
+            }
+        }
+        
+        // Save tasks
+        function saveTasks() {
+            localStorage.setItem('drevo_tasks_' + userData.id, JSON.stringify(tasks));
+        }
+        
+        // Load upgrades
+        function loadUpgrades() {
+            const savedUpgrades = localStorage.getItem('drevo_upgrades_' + userData.id);
+            if (savedUpgrades) {
+                upgrades = JSON.parse(savedUpgrades);
+            }
+        }
+        
+        // Save upgrades
+        function saveUpgrades() {
+            localStorage.setItem('drevo_upgrades_' + userData.id, JSON.stringify(upgrades));
+        }
+        
+        // Update display
+        function updateDisplay() {
+            // Update balance and energy
+            document.getElementById('balance').textContent = Math.floor(gameData.balance);
+            document.getElementById('energy').textContent = `${Math.floor(gameData.energy)}/${gameData.maxEnergy}`;
+            document.getElementById('click-power').textContent = gameData.clickPower;
+            document.getElementById('total-clicks').textContent = gameData.totalClicks;
+            document.getElementById('clicks-per-second').textContent = gameData.clicksPerSecond;
+            
+            // Update profile stats
+            document.getElementById('total-gifts').textContent = userGifts.length;
+            document.getElementById('total-spent').textContent = Math.floor(gameData.balance);
+            
+            updateTasksDisplay();
+            updateUpgradesDisplay();
+            updateGiftsDisplay();
+        }
+        
+        // Update tasks display
+        function updateTasksDisplay() {
+            const container = document.getElementById('tasks-container');
+            container.innerHTML = '';
+            
+            tasks.forEach(task => {
+                const taskCard = document.createElement('div');
+                taskCard.className = 'task-card';
+                
+                let progressText = '';
+                if (task.type === 'clicks') {
+                    progressText = `${Math.min(task.progress, task.target)}/${task.target} clicks`;
+                } else if (task.type === 'balance') {
+                    progressText = `${Math.min(task.progress, task.target)}/${task.target} coins`;
+                }
+                
+                taskCard.innerHTML = `
+                    <div class="task-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <div class="task-info">
+                        <div class="task-title">${task.title}</div>
+                        <div class="task-progress">${progressText}</div>
+                        <div class="task-reward">Reward: ${task.reward} coins</div>
+                    </div>
+                    <button class="task-button" ${task.completed ? '' : 'disabled'} 
+                            onclick="claimTask('${task.id}')">
+                        ${task.completed ? 'Claim' : 'In Progress'}
+                    </button>
+                `;
+                
+                container.appendChild(taskCard);
+            });
+        }
+        
+        // Update upgrades display
+        function updateUpgradesDisplay() {
+            const container = document.getElementById('upgrades-container');
+            container.innerHTML = '';
+            
+            upgrades.forEach(upgrade => {
+                const upgradeCard = document.createElement('div');
+                upgradeCard.className = 'upgrade-card';
+                
+                // Check if upgrade is available for purchase
+                let canBuy = gameData.balance >= upgrade.price && !upgrade.owned;
+                if (upgrade.requires) {
+                    const requiredUpgrade = upgrades.find(u => u.id === upgrade.requires);
+                    canBuy = canBuy && requiredUpgrade && requiredUpgrade.owned;
+                }
+                
+                upgradeCard.innerHTML = `
+                    <div class="upgrade-icon">
+                        <img src="${upgrade.image}" alt="${upgrade.name}">
+                    </div>
+                    <div class="upgrade-info">
+                        <div class="upgrade-title">${upgrade.name}</div>
+                        <div class="upgrade-description">${upgrade.description}</div>
+                        <div class="upgrade-price">${upgrade.price} coins</div>
+                    </div>
+                    <button class="upgrade-button ${upgrade.owned ? 'owned' : ''}" 
+                            ${canBuy ? '' : 'disabled'} 
+                            onclick="buyUpgrade('${upgrade.id}')">
+                        ${upgrade.owned ? 'Owned' : 'Buy'}
+                    </button>
+                `;
+                
+                container.appendChild(upgradeCard);
+            });
+        }
+        
+        // Update gifts display
+        function updateGiftsDisplay() {
+            const emptyGifts = document.getElementById('empty-gifts');
+            const giftsGrid = document.getElementById('gifts-grid');
+            
+            if (userGifts.length > 0) {
+                emptyGifts.style.display = 'none';
+                giftsGrid.style.display = 'grid';
+                giftsGrid.innerHTML = '';
+                
+                userGifts.forEach((gift, index) => {
+                    const giftData = GIFTS_DATA[gift.id];
+                    if (!giftData) return;
+                    
+                    const giftItem = document.createElement('div');
+                    giftItem.className = 'collection-item';
+                    giftItem.onclick = () => showGiftModal(gift);
+                    
+                    giftItem.innerHTML = `
+                        <div class="collection-image">
+                            <img src="${giftData.image}" alt="${giftData.name}">
+                        </div>
+                        <div class="collection-name">${giftData.name}</div>
+                    `;
+                    
+                    giftsGrid.appendChild(giftItem);
+                });
+            } else {
+                emptyGifts.style.display = 'block';
+                giftsGrid.style.display = 'none';
+            }
+        }
+        
+        // Click handler
+        document.getElementById('clicker').addEventListener('click', function() {
+            if (gameData.energy > 0) {
+                gameData.balance += gameData.clickPower;
+                gameData.totalClicks++;
+                gameData.energy--;
+                gameData.lastEnergyUpdate = Date.now();
+                
+                // Update tasks progress
+                updateTasksProgress('clicks', 1);
+                updateTasksProgress('balance', gameData.clickPower);
+                
+                updateDisplay();
+                saveGameData();
+                saveTasks();
+            } else if (!energyCooldown) {
+                tg.showPopup({
+                    title: 'No Energy',
+                    message: 'Wait 30 minutes for energy to recharge',
+                    buttons: [{id: 'ok', type: 'default', text: 'OK'}]
+                });
+                
+                // Start energy cooldown
+                energyCooldown = setTimeout(() => {
+                    gameData.energy = gameData.maxEnergy;
+                    energyCooldown = null;
+                    updateDisplay();
+                    saveGameData();
+                }, 30 * 60 * 1000); // 30 minutes
+            }
+        });
+        
+        // Update tasks progress
+        function updateTasksProgress(type, amount) {
+            tasks.forEach(task => {
+                if (!task.completed && task.type === type) {
+                    task.progress += amount;
+                    if (task.progress >= task.target) {
+                        task.completed = true;
+                    }
+                }
+            });
+        }
+        
+        // Claim task reward
+        function claimTask(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (task && task.completed) {
+                gameData.balance += task.reward;
+                // Remove completed task
+                tasks = tasks.filter(t => t.id !== taskId);
+                updateDisplay();
+                saveGameData();
+                saveTasks();
+                
+                tg.showPopup({
+                    title: 'Task Completed!',
+                    message: `You received ${task.reward} coins!`,
+                    buttons: [{id: 'ok', type: 'default', text: 'OK'}]
+                });
+            }
+        }
+        
+        // Buy upgrade
+        function buyUpgrade(upgradeId) {
+            const upgrade = upgrades.find(u => u.id === upgradeId);
+            if (upgrade && !upgrade.owned && gameData.balance >= upgrade.price) {
+                gameData.balance -= upgrade.price;
+                upgrade.owned = true;
+                
+                if (upgrade.type === 'click') {
+                    gameData.clickPower += upgrade.value;
+                } else if (upgrade.type === 'investment') {
+                    gameData.clicksPerSecond += upgrade.value;
+                }
+                
+                updateDisplay();
+                saveGameData();
+                saveUpgrades();
+                
+                tg.showPopup({
+                    title: 'Upgrade Purchased!',
+                    message: `You bought ${upgrade.name}!`,
+                    buttons: [{id: 'ok', type: 'default', text: 'OK'}]
+                });
+            }
+        }
+        
+        // Show gift modal
+        function showGiftModal(gift) {
+            const giftData = GIFTS_DATA[gift.id];
+            if (!giftData) return;
+            
+            document.getElementById('modal-title').textContent = giftData.name;
+            document.getElementById('modal-image').src = giftData.image;
+            document.getElementById('modal-owner').textContent = userData.firstName;
+            document.getElementById('modal-date').textContent = formatDateTime(new Date(gift.purchaseDate));
+            
+            if (giftData.currency === 'DREVO') {
+                document.getElementById('modal-cost').innerHTML = `
+                    <i class="fas fa-coins"></i>
+                    <span>${isVIP ? 'FREE' : giftData.price + ' DREVO'}</span>
+                `;
+            } else {
+                document.getElementById('modal-cost').innerHTML = `
+                    <i class="fab fa-toncoin"></i>
+                    <span>${isVIP ? 'FREE' : giftData.price + ' TON'}</span>
+                `;
+            }
+            
+            document.getElementById('modal-availability').textContent = 
+                'Available';
+            
+            document.getElementById('gift-modal').classList.add('active');
+        }
+        
+        // Close modal
+        function closeModal() {
+            document.getElementById('gift-modal').classList.remove('active');
+        }
+        
+        // Buy gift
+        async function buyGift(giftId) {
+            const gift = GIFTS_DATA[giftId];
+            
+            if (isVIP) {
+                // VIP gets it for free
+                processGiftPurchase(giftId, null, true);
+            } else if (gift.currency === 'DREVO') {
+                // Buy with DREVO coins
+                if (gameData.balance >= gift.price) {
+                    gameData.balance -= gift.price;
+                    processGiftPurchase(giftId, null, false);
+                } else {
+                    tg.showPopup({
+                        title: 'Not Enough Coins',
+                        message: `You need ${gift.price} DREVO coins to buy this gift`,
+                        buttons: [{id: 'ok', type: 'default', text: 'OK'}]
+                    });
+                }
+            } else {
+                // Buy with TON
+                if (!wallet) {
+                    tg.showPopup({
+                        title: 'Wallet Not Connected',
+                        message: 'Please connect your TON wallet to make purchases.',
+                        buttons: [{id: 'ok', type: 'default', text: 'OK'}]
+                    });
+                    return;
+                }
+                
+                try {
+                    const transaction = {
+                        validUntil: Math.floor(Date.now() / 1000) + 600,
+                        messages: [
+                            {
+                                address: MERCHANT_ADDRESS,
+                                amount: '500000000' // 0.5 TON in nanotons
+                            }
+                        ]
+                    };
+                    
+                    const result = await tonConnectUI.sendTransaction(transaction);
+                    processGiftPurchase(giftId, result, false);
+                    
+                } catch (error) {
+                    console.error('Transaction error:', error);
+                    if (error.message !== 'User rejected the transaction') {
+                        tg.showPopup({
+                            title: 'Transaction Failed',
+                            message: 'Payment was not completed. Please try again.',
+                            buttons: [{id: 'ok', type: 'default', text: 'OK'}]
+                        });
+                    }
+                }
+            }
+        }
+        
+        // Process gift purchase
+        function processGiftPurchase(giftId, transactionResult = null, isFree = false) {
+            const gift = GIFTS_DATA[giftId];
+            
+            const purchaseItem = {
+                id: giftId,
+                purchaseDate: new Date().toISOString(),
+                transactionId: isFree ? 'free_vip_purchase' : (transactionResult ? (transactionResult.boc || generateTransactionId()) : 'unknown')
+            };
+            
+            userGifts.push(purchaseItem);
+            saveUserGifts();
+            updateDisplay();
+            
+            tg.showPopup({
+                title: 'Purchase Complete!',
+                message: `You successfully acquired ${gift.name}! ${isFree ? '(VIP Free Purchase)' : ''}`,
+                buttons: [{id: 'ok', type: 'default', text: 'OK'}]
+            });
+        }
+        
+        // Generate transaction ID
+        function generateTransactionId() {
+            return 'ton_tx_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+        
+        // Game loop for auto income
+        function startGameLoop() {
+            setInterval(() => {
+                // Add income from investments
+                let income = 0;
+                upgrades.forEach(upgrade => {
+                    if (upgrade.owned && upgrade.type === 'investment') {
+                        income += upgrade.value;
+                    }
+                });
+                
+                if (income > 0) {
+                    gameData.balance += income;
+                    updateDisplay();
+                    saveGameData();
+                }
+                
+                // Regenerate energy
+                if (gameData.energy < gameData.maxEnergy) {
+                    gameData.energy = Math.min(gameData.maxEnergy, gameData.energy + 1);
+                    updateDisplay();
+                    saveGameData();
+                }
+                
+            }, 1000); // Update every second
+        }
+        
+        // Switch between pages
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            document.getElementById(pageId).classList.add('active');
+            
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            if (pageId === 'clicker-page') {
+                document.querySelectorAll('.nav-item')[0].classList.add('active');
+            } else if (pageId === 'profile-page') {
+                document.querySelectorAll('.nav-item')[2].classList.add('active');
+            } else if (pageId === 'market-page') {
+                document.querySelectorAll('.nav-item')[1].classList.add('active');
+            }
+        }
+        
+        // Format date
+        function formatDate(date) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return date.toLocaleDateString('en-US', options);
+        }
+        
+        // Format date and time
+        function formatDateTime(date) {
+            const options = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            return date.toLocaleDateString('en-US', options);
+        }
     </script>
 </body>
 </html>
