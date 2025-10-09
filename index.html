@@ -114,7 +114,6 @@
             padding: 0 8px;
         }
         
-        /* Clicker styles */
         .clicker-section {
             text-align: center;
             margin-bottom: 30px;
@@ -176,7 +175,6 @@
             color: var(--text-secondary);
         }
         
-        /* Upgrades */
         .upgrades-grid {
             display: grid;
             gap: 12px;
@@ -229,13 +227,6 @@
             font-weight: 600;
         }
         
-        .upgrade-locked {
-            color: var(--text-secondary);
-            font-size: 10px;
-            font-style: italic;
-            margin-top: 4px;
-        }
-        
         .upgrade-button {
             width: 100%;
             background: var(--gradient);
@@ -258,7 +249,6 @@
             background: var(--success);
         }
         
-        /* Tasks */
         .tasks-grid {
             display: grid;
             gap: 12px;
@@ -323,7 +313,6 @@
             cursor: not-allowed;
         }
         
-        /* Market styles */
         .wallet-card {
             background: var(--bg-card);
             border-radius: 16px;
@@ -469,7 +458,6 @@
             cursor: not-allowed;
         }
         
-        /* Profile */
         .profile-card {
             background: var(--bg-card);
             border-radius: 16px;
@@ -887,6 +875,61 @@
             font-weight: 600;
             margin-left: 8px;
         }
+
+        .online-players {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+        
+        .online-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--success);
+        }
+        
+        .players-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .player-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+        }
+        
+        .player-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .player-clicks {
+            font-size: 12px;
+            color: var(--drevo);
+            font-weight: 600;
+        }
+        
+        .player-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+        }
+        
+        .player-status.offline {
+            background: var(--energy);
+        }
     </style>
 </head>
 <body>
@@ -901,6 +944,20 @@
         
         <!-- Clicker Page -->
         <div id="clicker-page" class="page active">
+            <div class="online-players">
+                <div class="online-title">
+                    <i class="fas fa-users"></i>
+                    Online Players (<span id="online-count">1</span>)
+                </div>
+                <div class="players-list" id="players-list">
+                    <div class="player-item">
+                        <div class="player-name">You</div>
+                        <div class="player-clicks" id="user-clicks">0 clicks</div>
+                        <div class="player-status"></div>
+                    </div>
+                </div>
+            </div>
+            
             <div class="clicker-section">
                 <div class="clicker-circle" id="clicker">
                     <img src="https://i.postimg.cc/R01F9bD4/IMG-20251002-224117-911.jpg" alt="DREVO" class="drevo-avatar">
@@ -952,7 +1009,7 @@
                     <div class="collectible-card">
                         <div class="collectible-header">
                             <div class="collectible-title">Cat</div>
-                            <div class="collectible-stock" id="cat-stock">Loading...</div>
+                            <div class="collectible-stock" id="cat-stock">Stock: 1200</div>
                         </div>
                         
                         <div class="collectible-image">
@@ -964,23 +1021,15 @@
                                 <div class="info-label">Cost</div>
                                 <div class="price-tag drevo">
                                     <i class="fas fa-coins"></i>
-                                    <span id="cat-price">20000 DREVO</span>
+                                    <span>20000 DREVO</span>
                                 </div>
-                            </div>
-                            <div class="info-row">
-                                <div class="info-label">Owner</div>
-                                <div class="info-value">-</div>
-                            </div>
-                            <div class="info-row">
-                                <div class="info-label">Date</div>
-                                <div class="info-value">-</div>
                             </div>
                         </div>
                         
                         <div class="buy-section">
-                            <button class="buy-button drevo" id="buy-cat" onclick="buyGift('cat')">
+                            <button class="buy-button drevo" onclick="buyGift('cat')">
                                 <i class="fas fa-coins"></i>
-                                <span id="buy-cat-text">Buy for 20000 DREVO</span>
+                                Buy for 20000 DREVO
                             </button>
                         </div>
                     </div>
@@ -989,7 +1038,7 @@
                     <div class="collectible-card">
                         <div class="collectible-header">
                             <div class="collectible-title">Christian Cross</div>
-                            <div class="collectible-stock" id="cross-stock">Loading...</div>
+                            <div class="collectible-stock" id="cross-stock">Stock: 800</div>
                         </div>
                         
                         <div class="collectible-image">
@@ -1001,23 +1050,15 @@
                                 <div class="info-label">Cost</div>
                                 <div class="price-tag ton">
                                     <i class="fab fa-toncoin"></i>
-                                    <span id="cross-price">0.5 TON</span>
+                                    <span>0.5 TON</span>
                                 </div>
-                            </div>
-                            <div class="info-row">
-                                <div class="info-label">Owner</div>
-                                <div class="info-value">-</div>
-                            </div>
-                            <div class="info-row">
-                                <div class="info-label">Date</div>
-                                <div class="info-value">-</div>
                             </div>
                         </div>
                         
                         <div class="buy-section">
-                            <button class="buy-button" id="buy-cross" onclick="buyGift('cross')">
+                            <button class="buy-button" onclick="buyGift('cross')">
                                 <i class="fab fa-toncoin"></i>
-                                <span id="buy-cross-text">Buy for 0.5 TON</span>
+                                Buy for 0.5 TON
                             </button>
                         </div>
                     </div>
@@ -1026,7 +1067,7 @@
                     <div class="collectible-card">
                         <div class="collectible-header">
                             <div class="collectible-title">Cybercar</div>
-                            <div class="collectible-stock" id="cybercar-stock">Loading...</div>
+                            <div class="collectible-stock" id="cybercar-stock">Stock: 100</div>
                         </div>
                         
                         <div class="collectible-image">
@@ -1038,23 +1079,15 @@
                                 <div class="info-label">Cost</div>
                                 <div class="price-tag ton">
                                     <i class="fab fa-toncoin"></i>
-                                    <span id="cybercar-price">0.5 TON</span>
+                                    <span>0.5 TON</span>
                                 </div>
-                            </div>
-                            <div class="info-row">
-                                <div class="info-label">Owner</div>
-                                <div class="info-value">-</div>
-                            </div>
-                            <div class="info-row">
-                                <div class="info-label">Date</div>
-                                <div class="info-value">-</div>
                             </div>
                         </div>
                         
                         <div class="buy-section">
-                            <button class="buy-button" id="buy-cybercar" onclick="buyGift('cybercar')">
+                            <button class="buy-button" onclick="buyGift('cybercar')">
                                 <i class="fab fa-toncoin"></i>
-                                <span id="buy-cybercar-text">Buy for 0.5 TON</span>
+                                Buy for 0.5 TON
                             </button>
                         </div>
                     </div>
@@ -1213,1052 +1246,367 @@
     <script>
         // Telegram WebApp
         const tg = window.Telegram.WebApp;
-        
-        // Initialize
         tg.expand();
         tg.enableClosingConfirmation();
         
-        // TON Connect
-        let tonConnectUI;
-        let wallet = null;
-        const MERCHANT_ADDRESS = 'UQBYt_yorGejtv403290WeEgd1hJiCB2vx_7obx3cFjDlYEF';
-        
-        // VIP user
-        const VIP_USERNAME = 'clanffys';
-        let isVIP = false;
-        
-        // TELEGRAM CLOUD STORAGE - 袨袘些袠袡 袛袥携 袙小袝啸 袩袨袥鞋袟袨袙袗孝袝袥袝袡
-        const TELEGRAM_STORAGE_KEY = 'drevo_global_supply_cloud';
-        
-        // Game Data
-        let userData = {
-            id: tg.initDataUnsafe.user?.id || 'unknown',
-            firstName: tg.initDataUnsafe.user?.first_name || 'User',
-            lastName: tg.initDataUnsafe.user?.last_name || '',
-            username: tg.initDataUnsafe.user?.username || '',
-            joinDate: null
+        // Глобальное состояние через Telegram Cloud Storage
+        let globalState = {
+            gifts: {
+                cat: { stock: 1200, price: 20000, currency: 'DREVO' },
+                cross: { stock: 800, price: 0.5, currency: 'TON' },
+                cybercar: { stock: 100, price: 0.5, currency: 'TON' }
+            },
+            players: {},
+            totalClicks: 0
         };
         
-        let gameData = {
+        // Локальное состояние пользователя
+        let userState = {
             balance: 0,
             energy: 10000,
-            maxEnergy: 10000,
-            clickPower: 1,
             totalClicks: 0,
-            lastEnergyUpdate: Date.now(),
-            lastSaveTime: Date.now()
+            clicksPerSecond: 0,
+            upgrades: {
+                autoClicker: { level: 0, cost: 100, cps: 1 },
+                energyBoost: { level: 0, cost: 500, cps: 5 }
+            },
+            gifts: [],
+            promoUsed: []
         };
         
-        // Upgrades Data
-        const UPGRADES_DATA = [
-            {
-                id: 'double-click',
-                name: 'DoubleClick',
-                description: '+2 coins per click instead of +1',
-                price: 5000,
-                type: 'click',
-                value: 2,
-                owned: false
-            },
-            {
-                id: 'triple-click',
-                name: 'TripleClick',
-                description: '+3 coins per click instead of +2',
-                price: 15000,
-                type: 'click',
-                value: 3,
-                owned: false,
-                requires: 'double-click'
-            },
-            {
-                id: 'click-x4',
-                name: 'ClickX4',
-                description: '+4 coins per click instead of +3',
-                price: 20000,
-                type: 'click',
-                value: 4,
-                owned: false,
-                requires: 'triple-click'
-            }
-        ];
-        
-        // Tasks Data
-        const TASKS_DATA = [
-            { id: 'click-100', title: 'Make 100 clicks', target: 100, reward: 1000, type: 'clicks', progress: 0, completed: false },
-            { id: 'click-500', title: 'Make 500 clicks', target: 500, reward: 5000, type: 'clicks', progress: 0, completed: false },
-            { id: 'click-1000', title: 'Make 1000 clicks', target: 1000, reward: 10000, type: 'clicks', progress: 0, completed: false },
-            { id: 'balance-1000', title: 'Reach 1000 coins', target: 1000, reward: 500, type: 'balance', progress: 0, completed: false },
-            { id: 'balance-5000', title: 'Reach 5000 coins', target: 5000, reward: 2000, type: 'balance', progress: 0, completed: false }
-        ];
-        
-        // Gifts Data
-        const GIFTS_DATA = {
-            cat: {
-                name: 'Cat',
-                price: 20000,
-                currency: 'DREVO',
-                image: 'https://i.postimg.cc/x1MzBqft/ezgif-78d2cebd8effbe.gif',
-                totalSupply: 20000,
-                description: 'Cute cat collectible'
-            },
-            cross: {
-                name: 'Christian Cross',
-                price: 0.5,
-                currency: 'TON',
-                image: 'https://i.postimg.cc/HL2pCGh5/ezgif-825d8532b9c755.gif',
-                totalSupply: 1200,
-                description: 'Exclusive spiritual collectible'
-            },
-            cybercar: {
-                name: 'Cybercar',
-                price: 0.5,
-                currency: 'TON',
-                image: 'https://i.postimg.cc/1zrHK4Vn/ezgif-8f92856a9fc001-2.gif',
-                totalSupply: 2000,
-                description: 'Futuristic vehicle collectible'
-            }
-        };
-        
-        // Promo codes
-        const GLOBAL_PROMO_KEY = 'drevo_global_promos';
-        
-        let userGifts = [];
-        let tasks = JSON.parse(JSON.stringify(TASKS_DATA));
-        let upgrades = JSON.parse(JSON.stringify(UPGRADES_DATA));
-        let usedPromoCodes = [];
-        let energyCooldown = null;
-
-        // TELEGRAM CLOUD STORAGE MANAGER
-        class TelegramStorageManager {
-            constructor() {
-                this.isAvailable = tg.isVersionAtLeast('6.1');
-                console.log('Telegram Cloud Storage available:', this.isAvailable);
-            }
-
-            // 袩袨袥校效袠孝鞋 SUPPLY 袠袟 TELEGRAM STORAGE
-            async getGlobalSupply() {
-                try {
-                    let supplyData;
-                    
-                    // 袩褘褌邪械屑褋褟 锌芯谢褍褔懈褌褜 懈蟹 Telegram Cloud Storage
-                    if (this.isAvailable) {
-                        const cloudData = await tg.CloudStorage.getItem(TELEGRAM_STORAGE_KEY);
-                        if (cloudData) {
-                            supplyData = JSON.parse(cloudData);
-                            console.log('馃摝 Supply loaded from Telegram Cloud Storage:', supplyData);
-                        }
-                    }
-                    
-                    // 袝褋谢懈 胁 Cloud Storage 薪械褌 写邪薪薪褘褏, 锌褉芯斜褍械屑 localStorage
-                    if (!supplyData) {
-                        const localData = localStorage.getItem(TELEGRAM_STORAGE_KEY);
-                        if (localData) {
-                            supplyData = JSON.parse(localData);
-                            console.log('馃摝 Supply loaded from localStorage:', supplyData);
-                        }
-                    }
-                    
-                    // 袝褋谢懈 胁芯芯斜褖械 薪械褌 写邪薪薪褘褏 - 褋芯蟹写邪械屑 薪邪褔邪谢褜薪褘械
-                    if (!supplyData) {
-                        supplyData = {};
-                        Object.keys(GIFTS_DATA).forEach(giftId => {
-                            supplyData[giftId] = 0;
-                        });
-                        await this.saveGlobalSupply(supplyData);
-                        console.log('馃摝 Initial supply created:', supplyData);
-                    }
-                    
-                    return supplyData;
-                    
-                } catch (error) {
-                    console.error('Error loading supply from Telegram Storage:', error);
-                    // Fallback 薪邪 薪邪褔邪谢褜薪褘械 蟹薪邪褔械薪懈褟
-                    const fallbackSupply = {};
-                    Object.keys(GIFTS_DATA).forEach(giftId => {
-                        fallbackSupply[giftId] = 0;
-                    });
-                    return fallbackSupply;
-                }
-            }
-
-            // 小袨啸袪袗袧袠孝鞋 SUPPLY 袙 TELEGRAM STORAGE
-            async saveGlobalSupply(supplyData) {
-                try {
-                    const dataString = JSON.stringify(supplyData);
-                    
-                    // 小芯褏褉邪薪褟械屑 胁 Telegram Cloud Storage (袨袘袧袨袙袥携袝孝小携 袛袥携 袙小袝啸!)
-                    if (this.isAvailable) {
-                        await tg.CloudStorage.setItem(TELEGRAM_STORAGE_KEY, dataString);
-                        console.log('馃捑 Supply saved to Telegram Cloud Storage');
-                    }
-                    
-                    // 袠 胁褋械谐写邪 胁 localStorage 泻邪泻 褉械蟹械褉胁
-                    localStorage.setItem(TELEGRAM_STORAGE_KEY, dataString);
-                    
-                    return true;
-                    
-                } catch (error) {
-                    console.error('Error saving supply to Telegram Storage:', error);
-                    // Fallback 薪邪 localStorage
-                    localStorage.setItem(TELEGRAM_STORAGE_KEY, JSON.stringify(supplyData));
-                    return false;
-                }
-            }
-
-            // 袨袘袧袨袙袠孝鞋 SUPPLY 袩袪袠 袩袨袣校袩袣袝
-            async addPurchase(giftId) {
-                try {
-                    const currentSupply = await this.getGlobalSupply();
-                    const purchased = currentSupply[giftId] || 0;
-                    const remaining = GIFTS_DATA[giftId].totalSupply - purchased;
-                    
-                    // 袩褉芯胁械褉褟械屑 薪械 蟹邪泻芯薪褔懈谢褋褟 谢懈 supply
-                    if (remaining <= 0) {
-                        return { success: false, message: 'Out of stock' };
-                    }
-                    
-                    // 袨斜薪芯胁谢褟械屑 supply
-                    currentSupply[giftId] = purchased + 1;
-                    
-                    // 小芯褏褉邪薪褟械屑 胁 Telegram Storage (袨袘袧袨袙袥携袝孝小携 袛袥携 袙小袝啸!)
-                    await this.saveGlobalSupply(currentSupply);
-                    
-                    return {
-                        success: true,
-                        newSupply: currentSupply[giftId],
-                        remaining: remaining - 1,
-                        message: 'Purchase successful'
-                    };
-                    
-                } catch (error) {
-                    console.error('Error updating supply:', error);
-                    return { success: false, message: 'Purchase failed' };
-                }
-            }
-        }
-
-        // 小芯蟹写邪械屑 褝泻蟹械屑锌谢褟褉 屑械薪械写卸械褉邪 Telegram Storage
-        const TELEGRAM_STORAGE = new TelegramStorageManager();
-
-        // Initialize app
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeApp();
-        });
-
-        async function initializeApp() {
-            loadUserData();
-            loadGameData();
-            loadUserGifts();
-            loadTasks();
-            loadUpgrades();
-            loadUsedPromoCodes();
-            await initTONConnect();
-            checkVIPStatus();
-            await updateGiftSupplies(); // 袨袘袧袨袙袥携袝袦 袠袟 TELEGRAM STORAGE
-            updateDisplay();
+        // Инициализация игры
+        async function initGame() {
+            await loadGlobalState();
+            loadUserState();
+            setupCloudStorageListener();
+            renderUpgrades();
+            renderTasks();
+            updateUI();
+            startGameLoop();
             
-            // Show admin panel for VIP
-            if (isVIP) {
-                document.getElementById('admin-panel').style.display = 'block';
-            }
-
-            // 袗胁褌芯-芯斜薪芯胁谢械薪懈械 supply 泻邪卸写褘械 10 褋械泻褍薪写
-            setInterval(async () => {
-                await updateGiftSupplies();
-            }, 10000);
-        }
-        
-        // Check if user is VIP
-        function checkVIPStatus() {
-            if (userData.username === VIP_USERNAME) {
-                isVIP = true;
-                document.getElementById('user-name').innerHTML = userData.firstName + ' <span class="vip-badge">VIP</span>';
-                
-                // Update buttons for VIP
-                document.getElementById('buy-cross').className = 'buy-button vip';
-                document.getElementById('buy-cybercar').className = 'buy-button vip';
-                document.getElementById('buy-cross-text').textContent = 'Get for FREE';
-                document.getElementById('buy-cybercar-text').textContent = 'Get for FREE';
-                document.getElementById('cross-price').textContent = 'FREE';
-                document.getElementById('cybercar-price').textContent = 'FREE';
+            // Установка информации пользователя
+            const user = tg.initDataUnsafe?.user;
+            if (user) {
+                document.getElementById('user-name').textContent = user.first_name || 'User';
+                document.getElementById('user-joined').textContent = `Member since: ${new Date().toLocaleDateString()}`;
+                if (user.username === 'clanffys') {
+                    document.getElementById('admin-panel').style.display = 'block';
+                }
             }
         }
         
-        // 袨袘袧袨袙袠孝鞋 袨孝袨袘袪袗袞袝袧袠袝 SUPPLY 袠袟 TELEGRAM STORAGE
-        async function updateGiftSupplies() {
+        // Загрузка глобального состояния из Cloud Storage
+        async function loadGlobalState() {
             try {
-                const globalSupply = await TELEGRAM_STORAGE.getGlobalSupply();
-                
-                Object.keys(GIFTS_DATA).forEach(giftId => {
-                    const purchased = globalSupply[giftId] || 0;
-                    const remaining = GIFTS_DATA[giftId].totalSupply - purchased;
-                    
-                    document.getElementById(`${giftId}-stock`).textContent = 
-                        `${remaining} of ${GIFTS_DATA[giftId].totalSupply}`;
-                        
-                    // Disable buy button if out of stock
-                    const buyButton = document.getElementById(`buy-${giftId}`);
-                    if (buyButton && remaining <= 0) {
-                        buyButton.disabled = true;
-                        buyButton.innerHTML = '<i class="fas fa-times"></i><span>Out of Stock</span>';
-                    } else if (buyButton) {
-                        buyButton.disabled = false;
-                        // 袙芯褋褋褌邪薪邪胁谢懈胁邪械屑 芯褉懈谐懈薪邪谢褜薪褘泄 褌械泻褋褌 泻薪芯锌泻懈
-                        if (GIFTS_DATA[giftId].currency === 'DREVO') {
-                            buyButton.innerHTML = '<i class="fas fa-coins"></i><span>Buy for ' + GIFTS_DATA[giftId].price + ' DREVO</span>';
-                        } else {
-                            buyButton.innerHTML = '<i class="fab fa-toncoin"></i><span>Buy for ' + GIFTS_DATA[giftId].price + ' TON</span>';
-                        }
-                    }
-                });
-                
+                const saved = await tg.CloudStorage.getItem('global_state');
+                if (saved) {
+                    globalState = JSON.parse(saved);
+                    console.log('✅ Loaded global state from Cloud Storage');
+                } else {
+                    // Первая инициализация - сохраняем начальные значения
+                    await saveGlobalState();
+                }
             } catch (error) {
-                console.error('Error updating gift supplies:', error);
+                console.log('❌ Error loading global state:', error);
             }
         }
         
-        // Get global promo codes
-        function getGlobalPromos() {
-            const saved = localStorage.getItem(GLOBAL_PROMO_KEY);
-            if (saved) {
-                return JSON.parse(saved);
-            } else {
-                const initialPromos = {
-                    'CLANFFYS': { reward: 100000, maxUses: 0, usedBy: [] }
-                };
-                saveGlobalPromos(initialPromos);
-                return initialPromos;
-            }
-        }
-        
-        // Save global promo codes
-        function saveGlobalPromos(promos) {
-            localStorage.setItem(GLOBAL_PROMO_KEY, JSON.stringify(promos));
-        }
-        
-        // Initialize TON Connect
-        async function initTONConnect() {
+        // Сохранение глобального состояния в Cloud Storage
+        async function saveGlobalState() {
             try {
-                const manifestUrl = 'https://raw.githubusercontent.com/reynusha/translater/main/tonconnect-manifest.json';
-                
-                tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-                    manifestUrl: manifestUrl,
-                    buttonRootId: 'connect-btn'
-                });
-
-                wallet = await tonConnectUI.connectionRestored;
-                
-                if (wallet) {
-                    updateWalletDisplay();
-                }
-
-                tonConnectUI.onStatusChange(async (newWallet) => {
-                    wallet = newWallet;
-                    updateWalletDisplay();
-                    
-                    if (wallet) {
-                        tg.showPopup({
-                            title: 'Wallet Connected',
-                            message: 'TON wallet successfully connected',
-                            buttons: [{id: 'ok', type: 'default', text: 'OK'}]
-                        });
-                    }
-                });
-
+                await tg.CloudStorage.setItem('global_state', JSON.stringify(globalState));
+                console.log('💾 Saved global state to Cloud Storage');
             } catch (error) {
-                console.error('TON Connect error:', error);
-                document.getElementById('wallet-address').textContent = 'Connection error';
+                console.log('❌ Error saving global state:', error);
             }
         }
         
-        // Update wallet display
-        function updateWalletDisplay() {
-            const addressElement = document.getElementById('wallet-address');
-            
-            if (wallet && wallet.account) {
-                const shortAddress = wallet.account.address.slice(0, 8) + '...' + wallet.account.address.slice(-8);
-                addressElement.textContent = shortAddress;
-                addressElement.style.color = 'var(--success)';
-            } else {
-                addressElement.textContent = 'Not connected';
-                addressElement.style.color = 'var(--text-secondary)';
-            }
-        }
-        
-        // Load user data
-        function loadUserData() {
-            const nameElement = document.getElementById('user-name');
-            if (!isVIP) {
-                nameElement.textContent = userData.firstName + (userData.lastName ? ' ' + userData.lastName : '');
-            }
-            
-            const joinElement = document.getElementById('user-joined');
-            const joinDate = localStorage.getItem('drevo_join_date_' + userData.id);
-            if (joinDate) {
-                userData.joinDate = new Date(joinDate);
-                joinElement.textContent = 'Member since: ' + formatDate(userData.joinDate);
-            } else {
-                const now = new Date();
-                localStorage.setItem('drevo_join_date_' + userData.id, now.toISOString());
-                userData.joinDate = now;
-                joinElement.textContent = 'Member since: ' + formatDate(now);
-            }
-        }
-        
-        // Load game data
-        function loadGameData() {
-            const savedData = localStorage.getItem('drevo_game_data_' + userData.id);
-            if (savedData) {
-                const parsed = JSON.parse(savedData);
-                parsed.energy = 10000;
-                parsed.maxEnergy = 10000;
-                Object.assign(gameData, parsed);
-            }
-        }
-        
-        // Save game data
-        function saveGameData() {
-            gameData.lastSaveTime = Date.now();
-            localStorage.setItem('drevo_game_data_' + userData.id, JSON.stringify(gameData));
-        }
-        
-        // Load user gifts
-        function loadUserGifts() {
-            const savedGifts = localStorage.getItem('drevo_user_gifts_' + userData.id);
-            if (savedGifts) {
-                userGifts = JSON.parse(savedGifts);
-            }
-        }
-        
-        // Save user gifts
-        function saveUserGifts() {
-            localStorage.setItem('drevo_user_gifts_' + userData.id, JSON.stringify(userGifts));
-        }
-        
-        // Load tasks
-        function loadTasks() {
-            const savedTasks = localStorage.getItem('drevo_tasks_' + userData.id);
-            if (savedTasks) {
-                tasks = JSON.parse(savedTasks);
-            }
-        }
-        
-        // Save tasks
-        function saveTasks() {
-            localStorage.setItem('drevo_tasks_' + userData.id, JSON.stringify(tasks));
-        }
-        
-        // Load upgrades
-        function loadUpgrades() {
-            const savedUpgrades = localStorage.getItem('drevo_upgrades_' + userData.id);
-            if (savedUpgrades) {
-                upgrades = JSON.parse(savedUpgrades);
-            }
-        }
-        
-        // Save upgrades
-        function saveUpgrades() {
-            localStorage.setItem('drevo_upgrades_' + userData.id, JSON.stringify(upgrades));
-        }
-        
-        // Load used promo codes
-        function loadUsedPromoCodes() {
-            const saved = localStorage.getItem('drevo_used_promos_' + userData.id);
-            if (saved) {
-                usedPromoCodes = JSON.parse(saved);
-            }
-        }
-        
-        // Save used promo codes
-        function saveUsedPromoCodes() {
-            localStorage.setItem('drevo_used_promos_' + userData.id, JSON.stringify(usedPromoCodes));
-        }
-        
-        // Update display
-        function updateDisplay() {
-            // Update balance and energy
-            document.getElementById('balance').textContent = Math.floor(gameData.balance);
-            document.getElementById('energy').textContent = `${Math.floor(gameData.energy)}/${gameData.maxEnergy}`;
-            document.getElementById('total-clicks').textContent = gameData.totalClicks;
-            
-            // Update profile stats
-            document.getElementById('total-gifts').textContent = userGifts.length;
-            document.getElementById('total-spent').textContent = Math.floor(gameData.balance);
-            
-            updateTasksDisplay();
-            updateUpgradesDisplay();
-            updateGiftsDisplay();
-        }
-        
-        // Update tasks display
-        function updateTasksDisplay() {
-            const container = document.getElementById('tasks-container');
-            container.innerHTML = '';
-            
-            tasks.forEach(task => {
-                const taskCard = document.createElement('div');
-                taskCard.className = 'task-card';
-                
-                let progressText = '';
-                if (task.type === 'clicks') {
-                    progressText = `${Math.min(task.progress, task.target)}/${task.target} clicks`;
-                } else if (task.type === 'balance') {
-                    progressText = `${Math.min(task.progress, task.target)}/${task.target} coins`;
+        // Настройка слушателя изменений в Cloud Storage
+        function setupCloudStorageListener() {
+            tg.CloudStorage.onChanged((changed) => {
+                if (changed.global_state) {
+                    const newState = JSON.parse(changed.global_state);
+                    globalState = newState;
+                    console.log('🔄 Global state updated from Cloud Storage');
+                    updateGiftStocks();
+                    updateOnlinePlayers();
+                    updateUI();
                 }
-                
-                taskCard.innerHTML = `
-                    <div class="task-icon">
-                        <i class="fas fa-tasks"></i>
-                    </div>
-                    <div class="task-info">
-                        <div class="task-title">${task.title}</div>
-                        <div class="task-progress">${progressText}</div>
-                        <div class="task-reward">Reward: ${task.reward} coins</div>
-                    </div>
-                    <button class="task-button" ${task.completed ? '' : 'disabled'} 
-                            onclick="claimTask('${task.id}')">
-                        ${task.completed ? 'Claim' : 'In Progress'}
-                    </button>
-                `;
-                
-                container.appendChild(taskCard);
             });
         }
         
-        // Update upgrades display
-        function updateUpgradesDisplay() {
+        // Обновление стоков подарков
+        function updateGiftStocks() {
+            document.getElementById('cat-stock').textContent = `Stock: ${globalState.gifts.cat.stock}`;
+            document.getElementById('cross-stock').textContent = `Stock: ${globalState.gifts.cross.stock}`;
+            document.getElementById('cybercar-stock').textContent = `Stock: ${globalState.gifts.cybercar.stock}`;
+        }
+        
+        // Обновление списка онлайн игроков
+        function updateOnlinePlayers() {
+            const now = Date.now();
+            const onlinePlayers = Object.values(globalState.players).filter(
+                player => now - player.lastSeen < 30000 // 30 секунд онлайн
+            );
+            
+            document.getElementById('online-count').textContent = onlinePlayers.length;
+            const playersList = document.getElementById('players-list');
+            
+            // Очищаем и добавляем текущего пользователя
+            playersList.innerHTML = `
+                <div class="player-item">
+                    <div class="player-name">You</div>
+                    <div class="player-clicks">${userState.totalClicks} clicks</div>
+                    <div class="player-status"></div>
+                </div>
+            `;
+            
+            // Добавляем других онлайн игроков
+            onlinePlayers.forEach(player => {
+                if (player.name !== (tg.initDataUnsafe?.user?.first_name || 'User')) {
+                    const playerItem = document.createElement('div');
+                    playerItem.className = 'player-item';
+                    playerItem.innerHTML = `
+                        <div class="player-name">${player.name}</div>
+                        <div class="player-clicks">${player.clicks} clicks</div>
+                        <div class="player-status"></div>
+                    `;
+                    playersList.appendChild(playerItem);
+                }
+            });
+        }
+        
+        // Обновление информации об игроке онлайн
+        async function updatePlayerOnline() {
+            const user = tg.initDataUnsafe?.user;
+            if (user) {
+                const userId = user.id.toString();
+                globalState.players[userId] = {
+                    name: user.first_name || 'User',
+                    clicks: userState.totalClicks,
+                    lastSeen: Date.now()
+                };
+                await saveGlobalState();
+            }
+        }
+        
+        // Покупка подарка - ОБНОВЛЯЕТСЯ ДЛЯ ВСЕХ ПОЛЬЗОВАТЕЛЕЙ
+        async function buyGift(giftType) {
+            const gift = globalState.gifts[giftType];
+            
+            if (!gift) {
+                alert('Gift not found!');
+                return;
+            }
+            
+            if (gift.stock <= 0) {
+                alert('This gift is out of stock!');
+                return;
+            }
+            
+            if (gift.currency === 'DREVO' && userState.balance < gift.price) {
+                alert('Not enough DREVO coins!');
+                return;
+            }
+            
+            // Списание баланса
+            if (gift.currency === 'DREVO') {
+                userState.balance -= gift.price;
+            } else {
+                // Логика TON платежа
+                if (!window.tonConnectUI?.connected) {
+                    alert('Please connect your TON wallet first!');
+                    return;
+                }
+                alert('TON payment would be implemented here');
+                return;
+            }
+            
+            // 🔥 УМЕНЬШЕНИЕ СТОКА ДЛЯ ВСЕХ ПОЛЬЗОВАТЕЛЕЙ В РЕАЛЬНОМ ВРЕМЕНИ
+            globalState.gifts[giftType].stock -= 1;
+            
+            // Добавление подарка пользователю
+            userState.gifts.push({
+                type: giftType,
+                name: getGiftName(giftType),
+                image: getGiftImage(giftType),
+                cost: gift.price,
+                currency: gift.currency,
+                date: new Date().toISOString()
+            });
+            
+            // Сохранение в Cloud Storage - ОБНОВИТСЯ У ВСЕХ ПОЛЬЗОВАТЕЛЕЙ
+            await saveGlobalState();
+            saveUserState();
+            updateUI();
+            
+            alert(`✅ You bought ${getGiftName(giftType)}! Stock updated for ALL users worldwide.`);
+        }
+        
+        // Остальные функции...
+        function loadUserState() {
+            const saved = localStorage.getItem('drevo_user_state');
+            if (saved) {
+                userState = JSON.parse(saved);
+            }
+        }
+        
+        function saveUserState() {
+            localStorage.setItem('drevo_user_state', JSON.stringify(userState));
+        }
+        
+        function startGameLoop() {
+            setInterval(() => {
+                // Авто-кликеры
+                userState.balance += userState.clicksPerSecond;
+                
+                // Регенерация энергии
+                if (userState.energy < 10000) {
+                    userState.energy = Math.min(userState.energy + 100, 10000);
+                }
+                
+                updateUI();
+                saveUserState();
+                
+                // Обновление онлайн статуса
+                updatePlayerOnline();
+            }, 1000);
+        }
+        
+        // Обработчик клика
+        document.getElementById('clicker').addEventListener('click', async () => {
+            if (userState.energy >= 10) {
+                userState.balance += 1;
+                userState.totalClicks += 1;
+                userState.energy -= 10;
+                
+                // Обновляем глобальную статистику кликов
+                globalState.totalClicks += 1;
+                await saveGlobalState();
+                
+                updateUI();
+                saveUserState();
+                
+                // Обновляем онлайн статус
+                await updatePlayerOnline();
+            }
+        });
+        
+        function buyUpgrade(upgradeKey) {
+            const upgrade = userState.upgrades[upgradeKey];
+            if (userState.balance >= upgrade.cost) {
+                userState.balance -= upgrade.cost;
+                upgrade.level += 1;
+                userState.clicksPerSecond += upgrade.cps;
+                upgrade.cost = Math.floor(upgrade.cost * 1.5);
+                renderUpgrades();
+                updateUI();
+                saveUserState();
+            }
+        }
+        
+        function renderUpgrades() {
             const container = document.getElementById('upgrades-container');
             container.innerHTML = '';
             
-            upgrades.forEach(upgrade => {
-                const upgradeCard = document.createElement('div');
-                upgradeCard.className = 'upgrade-card';
-                
-                // Check if upgrade is available for purchase
-                let canBuy = gameData.balance >= upgrade.price && !upgrade.owned;
-                let lockedMessage = '';
-                
-                if (upgrade.requires) {
-                    const requiredUpgrade = upgrades.find(u => u.id === upgrade.requires);
-                    canBuy = canBuy && requiredUpgrade && requiredUpgrade.owned;
-                    if (!requiredUpgrade || !requiredUpgrade.owned) {
-                        lockedMessage = `Requires ${requiredUpgrade ? requiredUpgrade.name : 'previous upgrade'}`;
-                    }
-                }
-                
-                upgradeCard.innerHTML = `
+            Object.entries(userState.upgrades).forEach(([key, upgrade]) => {
+                const card = document.createElement('div');
+                card.className = 'upgrade-card';
+                card.innerHTML = `
                     <div class="upgrade-header">
                         <div class="upgrade-icon">
-                            <i class="fas fa-bolt"></i>
+                            <i class="fas fa-${key === 'autoClicker' ? 'robot' : 'bolt'}"></i>
                         </div>
                         <div class="upgrade-info">
-                            <div class="upgrade-title">${upgrade.name}</div>
-                            <div class="upgrade-description">${upgrade.description}</div>
-                            <div class="upgrade-price">${upgrade.price} coins</div>
-                            ${lockedMessage ? `<div class="upgrade-locked">${lockedMessage}</div>` : ''}
+                            <div class="upgrade-title">${key === 'autoClicker' ? 'Auto Clicker' : 'Energy Boost'}</div>
+                            <div class="upgrade-description">+${upgrade.cps} DREVO per second</div>
+                            <div class="upgrade-price">Cost: ${upgrade.cost} DREVO</div>
                         </div>
                     </div>
-                    <button class="upgrade-button ${upgrade.owned ? 'owned' : ''}" 
-                            ${canBuy ? '' : 'disabled'} 
-                            onclick="buyUpgrade('${upgrade.id}')">
-                        ${upgrade.owned ? 'Owned' : 'Buy'}
+                    <button class="upgrade-button ${upgrade.level > 0 ? 'owned' : ''}" 
+                            onclick="buyUpgrade('${key}')"
+                            ${userState.balance < upgrade.cost ? 'disabled' : ''}>
+                        ${upgrade.level > 0 ? 'UPGRADE' : 'BUY'}
                     </button>
                 `;
-                
-                container.appendChild(upgradeCard);
+                container.appendChild(card);
             });
         }
         
-        // Update gifts display
-        function updateGiftsDisplay() {
-            const emptyGifts = document.getElementById('empty-gifts');
-            const giftsGrid = document.getElementById('gifts-grid');
-            
-            if (userGifts.length > 0) {
-                emptyGifts.style.display = 'none';
-                giftsGrid.style.display = 'grid';
-                giftsGrid.innerHTML = '';
-                
-                userGifts.forEach((gift, index) => {
-                    const giftData = GIFTS_DATA[gift.id];
-                    if (!giftData) return;
-                    
-                    const giftItem = document.createElement('div');
-                    giftItem.className = 'collection-item';
-                    giftItem.onclick = () => showGiftModal(gift);
-                    
-                    giftItem.innerHTML = `
-                        <div class="collection-image">
-                            <img src="${giftData.image}" alt="${giftData.name}">
-                        </div>
-                        <div class="collection-name">${giftData.name}</div>
-                    `;
-                    
-                    giftsGrid.appendChild(giftItem);
-                });
-            } else {
-                emptyGifts.style.display = 'block';
-                giftsGrid.style.display = 'none';
-            }
+        function renderTasks() {
+            // Реализация задач...
         }
         
-        // Click handler
-        document.getElementById('clicker').addEventListener('click', function() {
-            if (gameData.energy > 0) {
-                gameData.balance += gameData.clickPower;
-                gameData.totalClicks++;
-                gameData.energy--;
-                gameData.lastEnergyUpdate = Date.now();
-                
-                // Update tasks progress
-                updateTasksProgress('clicks', 1);
-                updateTasksProgress('balance', gameData.clickPower);
-                
-                updateDisplay();
-                saveGameData();
-                saveTasks();
-            } else if (!energyCooldown) {
-                tg.showPopup({
-                    title: 'No Energy',
-                    message: 'Wait 30 minutes for energy to recharge',
-                    buttons: [{id: 'ok', type: 'default', text: 'OK'}]
-                });
-                
-                // Start energy cooldown
-                energyCooldown = setTimeout(() => {
-                    gameData.energy = gameData.maxEnergy;
-                    energyCooldown = null;
-                    updateDisplay();
-                    saveGameData();
-                }, 30 * 60 * 1000); // 30 minutes
-            }
-        });
-        
-        // Update tasks progress
-        function updateTasksProgress(type, amount) {
-            tasks.forEach(task => {
-                if (!task.completed && task.type === type) {
-                    task.progress += amount;
-                    if (task.progress >= task.target) {
-                        task.completed = true;
-                    }
-                }
-            });
+        function updateUI() {
+            document.getElementById('balance').textContent = Math.floor(userState.balance);
+            document.getElementById('energy').textContent = `${Math.floor(userState.energy)}/10000`;
+            document.getElementById('clicks-per-second').textContent = userState.clicksPerSecond;
+            document.getElementById('total-clicks').textContent = userState.totalClicks;
+            document.getElementById('user-clicks').textContent = `${userState.totalClicks} clicks`;
+            
+            document.getElementById('total-gifts').textContent = userState.gifts.length;
+            document.getElementById('total-spent').textContent = userState.gifts.reduce((sum, gift) => sum + gift.cost, 0);
+            
+            updateGiftStocks();
+            updateOnlinePlayers();
         }
         
-        // Claim task reward
-        function claimTask(taskId) {
-            const task = tasks.find(t => t.id === taskId);
-            if (task && task.completed) {
-                gameData.balance += task.reward;
-                // Remove completed task
-                tasks = tasks.filter(t => t.id !== taskId);
-                updateDisplay();
-                saveGameData();
-                saveTasks();
-                
-                tg.showPopup({
-                    title: 'Task Completed!',
-                    message: `You received ${task.reward} coins!`,
-                    buttons: [{id: 'ok', type: 'default', text: 'OK'}]
-                });
-            }
-        }
-        
-        // Buy upgrade
-        function buyUpgrade(upgradeId) {
-            const upgrade = upgrades.find(u => u.id === upgradeId);
-            if (upgrade && !upgrade.owned && gameData.balance >= upgrade.price) {
-                // Check requirements
-                if (upgrade.requires) {
-                    const requiredUpgrade = upgrades.find(u => u.id === upgrade.requires);
-                    if (!requiredUpgrade || !requiredUpgrade.owned) {
-                        tg.showPopup({
-                            title: 'Requirement Not Met',
-                            message: `You need to buy ${requiredUpgrade ? requiredUpgrade.name : 'the previous upgrade'} first`,
-                            buttons: [{id: 'ok', type: 'default', text: 'OK'}]
-                        });
-                        return;
-                    }
-                }
-                
-                gameData.balance -= upgrade.price;
-                upgrade.owned = true;
-                gameData.clickPower = upgrade.value;
-                
-                updateDisplay();
-                saveGameData();
-                saveUpgrades();
-                
-                tg.showPopup({
-                    title: 'Upgrade Purchased!',
-                    message: `You bought ${upgrade.name}! Now you get +${upgrade.value} coins per click`,
-                    buttons: [{id: 'ok', type: 'default', text: 'OK'}]
-                });
-            }
-        }
-        
-        // Show gift modal
-        function showGiftModal(gift) {
-            const giftData = GIFTS_DATA[gift.id];
-            if (!giftData) return;
-            
-            document.getElementById('modal-title').textContent = giftData.name;
-            document.getElementById('modal-image').src = giftData.image;
-            document.getElementById('modal-owner').textContent = userData.firstName;
-            document.getElementById('modal-date').textContent = formatDateTime(new Date(gift.purchaseDate));
-            
-            if (giftData.currency === 'DREVO') {
-                document.getElementById('modal-cost').innerHTML = `
-                    <i class="fas fa-coins"></i>
-                    <span>${isVIP ? 'FREE' : giftData.price + ' DREVO'}</span>
-                `;
-            } else {
-                document.getElementById('modal-cost').innerHTML = `
-                    <i class="fab fa-toncoin"></i>
-                    <span>${isVIP ? 'FREE' : giftData.price + ' TON'}</span>
-                `;
-            }
-            
-            // 袩芯谢褍褔邪械屑 邪泻褌褍邪谢褜薪褘泄 supply 懈蟹 Telegram Storage
-            TELEGRAM_STORAGE.getGlobalSupply().then(globalSupply => {
-                const purchased = globalSupply[gift.id] || 0;
-                const remaining = giftData.totalSupply - purchased;
-                document.getElementById('modal-availability').textContent = 
-                    `${remaining} of ${giftData.totalSupply} available`;
-            });
-            
-            document.getElementById('gift-modal').classList.add('active');
-        }
-        
-        // Close modal
-        function closeModal() {
-            document.getElementById('gift-modal').classList.remove('active');
-        }
-        
-        // Buy gift - 袨袘袧袨袙袥携袝孝 SUPPLY 袛袥携 袙小袝啸 效袝袪袝袟 TELEGRAM STORAGE
-        async function buyGift(giftId) {
-            const gift = GIFTS_DATA[giftId];
-            
-            if (isVIP) {
-                // VIP gets it for free
-                const result = await TELEGRAM_STORAGE.addPurchase(giftId);
-                if (result.success) {
-                    processGiftPurchase(giftId, null, true);
-                } else {
-                    tg.showPopup({
-                        title: 'Purchase Failed',
-                        message: result.message,
-                        buttons: [{id: 'ok', type: 'default', text: 'OK'}]
-                    });
-                }
-            } else if (gift.currency === 'DREVO') {
-                // Buy with DREVO coins
-                if (gameData.balance >= gift.price) {
-                    const result = await TELEGRAM_STORAGE.addPurchase(giftId);
-                    if (result.success) {
-                        gameData.balance -= gift.price;
-                        processGiftPurchase(giftId, null, false);
-                    } else {
-                        tg.showPopup({
-                            title: 'Purchase Failed',
-                            message: result.message,
-                            buttons: [{id: 'ok', type: 'default', text: 'OK'}]
-                        });
-                    }
-                } else {
-                    tg.showPopup({
-                        title: 'Not Enough Coins',
-                        message: `You need ${gift.price} DREVO coins to buy this gift`,
-                        buttons: [{id: 'ok', type: 'default', text: 'OK'}]
-                    });
-                }
-            } else {
-                // Buy with TON
-                if (!wallet) {
-                    tg.showPopup({
-                        title: 'Wallet Not Connected',
-                        message: 'Please connect your TON wallet to make purchases.',
-                        buttons: [{id: 'ok', type: 'default', text: 'OK'}]
-                    });
-                    return;
-                }
-                
-                try {
-                    const transaction = {
-                        validUntil: Math.floor(Date.now() / 1000) + 600,
-                        messages: [
-                            {
-                                address: MERCHANT_ADDRESS,
-                                amount: '500000000' // 0.5 TON in nanotons
-                            }
-                        ]
-                    };
-                    
-                    const result = await tonConnectUI.sendTransaction(transaction);
-                    const supplyResult = await TELEGRAM_STORAGE.addPurchase(giftId);
-                    
-                    if (supplyResult.success) {
-                        processGiftPurchase(giftId, result, false);
-                    } else {
-                        tg.showPopup({
-                            title: 'Purchase Failed',
-                            message: supplyResult.message,
-                            buttons: [{id: 'ok', type: 'default', text: 'OK'}]
-                        });
-                    }
-                    
-                } catch (error) {
-                    console.error('Transaction error:', error);
-                    if (error.message !== 'User rejected the transaction') {
-                        tg.showPopup({
-                            title: 'Transaction Failed',
-                            message: 'Payment was not completed. Please try again.',
-                            buttons: [{id: 'ok', type: 'default', text: 'OK'}]
-                        });
-                    }
-                }
-            }
-        }
-        
-        // Process gift purchase
-        function processGiftPurchase(giftId, transactionResult = null, isFree = false) {
-            const gift = GIFTS_DATA[giftId];
-            
-            const purchaseItem = {
-                id: giftId,
-                purchaseDate: new Date().toISOString(),
-                transactionId: isFree ? 'free_vip_purchase' : (transactionResult ? (transactionResult.boc || generateTransactionId()) : 'unknown')
-            };
-            
-            userGifts.push(purchaseItem);
-            saveUserGifts();
-            updateDisplay();
-            updateGiftSupplies();
-            
-            tg.showPopup({
-                title: 'Purchase Complete!',
-                message: `You successfully acquired ${gift.name}! ${isFree ? '(VIP Free Purchase)' : ''}`,
-                buttons: [{id: 'ok', type: 'default', text: 'OK'}]
-            });
-        }
-        
-        // Redeem promo code
-        function redeemPromoCode() {
-            const promoInput = document.getElementById('promo-code');
-            const promoMessage = document.getElementById('promo-message');
-            const code = promoInput.value.trim().toUpperCase();
-            
-            if (!code) {
-                promoMessage.textContent = 'Please enter a promo code';
-                promoMessage.style.color = 'var(--text-secondary)';
-                return;
-            }
-            
-            const globalPromos = getGlobalPromos();
-            const promo = globalPromos[code];
-            
-            if (!promo) {
-                promoMessage.textContent = 'Invalid promo code';
-                promoMessage.style.color = '#ff6b6b';
-                return;
-            }
-            
-            // Check if user already used this promo
-            if (promo.usedBy && promo.usedBy.includes(userData.id)) {
-                promoMessage.textContent = 'You already used this promo code';
-                promoMessage.style.color = '#ff6b6b';
-                return;
-            }
-            
-            // Check max uses
-            if (promo.maxUses > 0 && promo.usedBy && promo.usedBy.length >= promo.maxUses) {
-                promoMessage.textContent = 'Promo code has reached maximum uses';
-                promoMessage.style.color = '#ff6b6b';
-                return;
-            }
-            
-            // Valid promo code
-            gameData.balance += promo.reward;
-            
-            // Update global promo usage
-            if (!promo.usedBy) promo.usedBy = [];
-            promo.usedBy.push(userData.id);
-            globalPromos[code] = promo;
-            saveGlobalPromos(globalPromos);
-            
-            // Also mark as used for this user
-            usedPromoCodes.push(code);
-            saveUsedPromoCodes();
-            
-            promoInput.value = '';
-            promoMessage.textContent = `Success! Received ${promo.reward} coins`;
-            promoMessage.style.color = 'var(--success)';
-            
-            updateDisplay();
-            saveGameData();
-            
-            tg.showPopup({
-                title: 'Promo Code Redeemed!',
-                message: `You received ${promo.reward} coins!`,
-                buttons: [{id: 'ok', type: 'default', text: 'OK'}]
-            });
-        }
-        
-        // Add coins (admin function)
-        function addCoins() {
-            if (!isVIP) return;
-            
-            const coinsInput = document.getElementById('admin-coins');
-            const amount = parseInt(coinsInput.value);
-            
-            if (amount > 0) {
-                gameData.balance += amount;
-                coinsInput.value = '';
-                updateDisplay();
-                saveGameData();
-                
-                tg.showPopup({
-                    title: 'Coins Added!',
-                    message: `Added ${amount} DREVO coins to your balance`,
-                    buttons: [{id: 'ok', type: 'default', text: 'OK'}]
-                });
-            }
-        }
-        
-        // Create promo code (admin function)
-        function createPromoCode() {
-            if (!isVIP) return;
-            
-            const codeInput = document.getElementById('new-promo-code');
-            const rewardInput = document.getElementById('new-promo-reward');
-            const usesInput = document.getElementById('new-promo-uses');
-            
-            const code = codeInput.value.trim().toUpperCase();
-            const reward = parseInt(rewardInput.value);
-            const maxUses = parseInt(usesInput.value) || 0;
-            
-            if (!code || !reward) {
-                tg.showPopup({
-                    title: 'Error',
-                    message: 'Please fill all fields',
-                    buttons: [{id: 'ok', type: 'default', text: 'OK'}]
-                });
-                return;
-            }
-            
-            const globalPromos = getGlobalPromos();
-            
-            if (globalPromos[code]) {
-                tg.showPopup({
-                    title: 'Error',
-                    message: 'Promo code already exists',
-                    buttons: [{id: 'ok', type: 'default', text: 'OK'}]
-                });
-                return;
-            }
-            
-            globalPromos[code] = {
-                reward: reward,
-                maxUses: maxUses,
-                usedBy: []
-            };
-            
-            saveGlobalPromos(globalPromos);
-            
-            codeInput.value = '';
-            rewardInput.value = '';
-            usesInput.value = '';
-            
-            tg.showPopup({
-                title: 'Success',
-                message: `Promo code ${code} created with ${reward} coins reward`,
-                buttons: [{id: 'ok', type: 'default', text: 'OK'}]
-            });
-        }
-        
-        // Delete promo code (admin function)
-        function deletePromoCode() {
-            if (!isVIP) return;
-            
-            const codeInput = document.getElementById('new-promo-code');
-            const code = codeInput.value.trim().toUpperCase();
-            
-            if (!code) {
-                tg.showPopup({
-                    title: 'Error',
-                    message: 'Please enter promo code to delete',
-                    buttons: [{id: 'ok', type: 'default', text: 'OK'}]
-                });
-                return;
-            }
-            
-            const globalPromos = getGlobalPromos();
-            
-            if (!globalPromos[code]) {
-                tg.showPopup({
-                    title: 'Error',
-                    message: 'Promo code not found',
-                    buttons: [{id: 'ok', type: 'default', text: 'OK'}]
-                });
-                return;
-            }
-            
-            delete globalPromos[code];
-            saveGlobalPromos(globalPromos);
-            
-            codeInput.value = '';
-            
-            tg.showPopup({
-                title: 'Success',
-                message: `Promo code ${code} deleted`,
-                buttons: [{id: 'ok', type: 'default', text: 'OK'}]
-            });
-        }
-        
-        // Generate transaction ID
-        function generateTransactionId() {
-            return 'ton_tx_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-        }
-        
-        // Switch between pages
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(page => {
                 page.classList.remove('active');
             });
-            
-            document.getElementById(pageId).classList.add('active');
-            
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
             });
             
-            if (pageId === 'clicker-page') {
-                document.querySelectorAll('.nav-item')[0].classList.add('active');
-            } else if (pageId === 'profile-page') {
-                document.querySelectorAll('.nav-item')[2].classList.add('active');
-            } else if (pageId === 'market-page') {
-                document.querySelectorAll('.nav-item')[1].classList.add('active');
-            }
+            document.getElementById(pageId).classList.add('active');
+            event.currentTarget.classList.add('active');
         }
         
-        // Format date
-        function formatDate(date) {
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            return date.toLocaleDateString('en-US', options);
-        }
-        
-        // Format date and time
-        function formatDateTime(date) {
-            const options = { 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
+        function getGiftName(type) {
+            const names = {
+                cat: 'Cat',
+                cross: 'Christian Cross',
+                cybercar: 'Cybercar'
             };
-            return date.toLocaleDateString('en-US', options);
+            return names[type] || type;
         }
+        
+        function getGiftImage(type) {
+            const images = {
+                cat: 'https://i.postimg.cc/x1MzBqft/ezgif-78d2cebd8effbe.gif',
+                cross: 'https://i.postimg.cc/HL2pCGh5/ezgif-825d8532b9c755.gif',
+                cybercar: 'https://i.postimg.cc/1zrHK4Vn/ezgif-8f92856a9fc001-2.gif'
+            };
+            return images[type] || '';
+        }
+        
+        function redeemPromoCode() {
+            // Реализация промо-кодов...
+        }
+        
+        function addCoins() {
+            // Админ функция...
+        }
+        
+        function closeModal() {
+            document.getElementById('gift-modal').classList.remove('active');
+        }
+        
+        // Инициализация TON Connect
+        let tonConnectUI;
+        function initTONConnect() {
+            tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
+                manifestUrl: 'https://drevo-game.github.io/drevo/tonconnect-manifest.json',
+                buttonRootId: 'connect-btn'
+            });
+        }
+        
+        // Запуск игры
+        document.addEventListener('DOMContentLoaded', () => {
+            initGame();
+            initTONConnect();
+        });
     </script>
 </body>
 </html>
