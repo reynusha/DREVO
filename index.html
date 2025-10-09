@@ -952,7 +952,7 @@
                     <div class="collectible-card">
                         <div class="collectible-header">
                             <div class="collectible-title">Cat</div>
-                            <div class="collectible-stock" id="cat-stock">20000 of 20000</div>
+                            <div class="collectible-stock" id="cat-stock">Loading...</div>
                         </div>
                         
                         <div class="collectible-image">
@@ -989,7 +989,7 @@
                     <div class="collectible-card">
                         <div class="collectible-header">
                             <div class="collectible-title">Christian Cross</div>
-                            <div class="collectible-stock" id="cross-stock">1200 of 1200</div>
+                            <div class="collectible-stock" id="cross-stock">Loading...</div>
                         </div>
                         
                         <div class="collectible-image">
@@ -1026,7 +1026,7 @@
                     <div class="collectible-card">
                         <div class="collectible-header">
                             <div class="collectible-title">Cybercar</div>
-                            <div class="collectible-stock" id="cybercar-stock">2000 of 2000</div>
+                            <div class="collectible-stock" id="cybercar-stock">Loading...</div>
                         </div>
                         
                         <div class="collectible-image">
@@ -1211,6 +1211,9 @@
     </div>
 
     <script>
+        // URL к твоей базе данных supply
+        const SUPPLY_DB_URL = 'https://raw.githubusercontent.com/reynusha/DREVO/main/supply-db.js';
+        
         // Telegram WebApp
         const tg = window.Telegram.WebApp;
         
@@ -1227,9 +1230,6 @@
         const VIP_USERNAME = 'clanffys';
         let isVIP = false;
         
-        // Global supply data - одинаковый для всех пользователей
-        const GLOBAL_SUPPLY_KEY = 'drevo_global_supply';
-        
         // Game Data
         let userData = {
             id: tg.initDataUnsafe.user?.id || 'unknown',
@@ -1241,12 +1241,25 @@
         
         let gameData = {
             balance: 0,
-            energy: 10000, // У всех теперь 10000
+            energy: 10000,
             maxEnergy: 10000,
             clickPower: 1,
             totalClicks: 0,
             lastEnergyUpdate: Date.now(),
             lastSaveTime: Date.now()
+        };
+        
+        // Supply данные из базы
+        let supplyData = {
+            cat: 0,
+            cross: 0,
+            cybercar: 0
+        };
+        
+        const MAX_SUPPLY = {
+            cat: 20000,
+            cross: 1200,
+            cybercar: 2000
         };
         
         // Upgrades Data
@@ -1291,7 +1304,7 @@
             { id: 'balance-5000', title: 'Reach 5000 coins', target: 5000, reward: 2000, type: 'balance', progress: 0, completed: false }
         ];
         
-        // Gifts Data - начальные значения
+        // Gifts Data
         const GIFTS_DATA = {
             cat: {
                 name: 'Cat',
@@ -1319,7 +1332,7 @@
             }
         };
         
-        // Promo codes - глобальные для всех пользователей
+        // Promo codes
         const GLOBAL_PROMO_KEY = 'drevo_global_promos';
         
         let userGifts = [];
@@ -1341,14 +1354,63 @@
             loadUpgrades();
             loadUsedPromoCodes();
             await initTONConnect();
+            await loadSupplyData(); // Загружаем supply из базы
             checkVIPStatus();
             updateDisplay();
-            updateGiftSupplies();
             
             // Show admin panel for VIP
             if (isVIP) {
                 document.getElementById('admin-panel').style.display = 'block';
             }
+        }
+        
+        // Загрузка supply данных из базы
+        async function loadSupplyData() {
+            try {
+                const response = await fetch(SUPPLY_DB_URL + '?t=' + Date.now());
+                if (response.ok) {
+                    const text = await response.text();
+                    
+                    // Парсим данные из JS файла
+                    const catMatch = text.match(/cat:\s*(\d+)/);
+                    const crossMatch = text.match(/cross:\s*(\d+)/);
+                    const cybercarMatch = text.match(/cybercar:\s*(\d+)/);
+                    
+                    if (catMatch && crossMatch && cybercarMatch) {
+                        supplyData.cat = parseInt(catMatch[1]);
+                        supplyData.cross = parseInt(crossMatch[1]);
+                        supplyData.cybercar = parseInt(cybercarMatch[1]);
+                        
+                        console.log('Supply data loaded:', supplyData);
+                        updateGiftSupplies();
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading supply data:', error);
+                // Используем значения по умолчанию если не удалось загрузить
+                supplyData.cat = 450;
+                supplyData.cross = 180;
+                supplyData.cybercar = 320;
+                updateGiftSupplies();
+            }
+        }
+        
+        // Обновление отображения supply
+        function updateGiftSupplies() {
+            Object.keys(GIFTS_DATA).forEach(giftId => {
+                const purchased = supplyData[giftId] || 0;
+                const remaining = GIFTS_DATA[giftId].totalSupply - purchased;
+                
+                document.getElementById(`${giftId}-stock`).textContent = 
+                    `${purchased} / ${GIFTS_DATA[giftId].totalSupply}`;
+                    
+                // Disable buy button if out of stock
+                const buyButton = document.getElementById(`buy-${giftId}`);
+                if (buyButton && remaining <= 0) {
+                    buyButton.disabled = true;
+                    buyButton.innerHTML = '<i class="fas fa-times"></i><span>Out of Stock</span>';
+                }
+            });
         }
         
         // Check if user is VIP
@@ -1367,66 +1429,8 @@
             }
         }
         
-        // Get global supply data
-        function getGlobalSupply() {
-            const saved = localStorage.getItem(GLOBAL_SUPPLY_KEY);
-            if (saved) {
-                return JSON.parse(saved);
-            } else {
-                // Initialize global supply
-                const initialSupply = {};
-                Object.keys(GIFTS_DATA).forEach(giftId => {
-                    initialSupply[giftId] = 0; // 0 purchased initially
-                });
-                saveGlobalSupply(initialSupply);
-                return initialSupply;
-            }
-        }
-        
-        // Save global supply data
-        function saveGlobalSupply(supply) {
-            localStorage.setItem(GLOBAL_SUPPLY_KEY, JSON.stringify(supply));
-        }
-        
-        // Update gift supplies from global data
-        function updateGiftSupplies() {
-            const globalSupply = getGlobalSupply();
-            
-            Object.keys(GIFTS_DATA).forEach(giftId => {
-                const purchased = globalSupply[giftId] || 0;
-                const remaining = GIFTS_DATA[giftId].totalSupply - purchased;
-                
-                document.getElementById(`${giftId}-stock`).textContent = 
-                    `${remaining} of ${GIFTS_DATA[giftId].totalSupply}`;
-                    
-                // Disable buy button if out of stock
-                const buyButton = document.getElementById(`buy-${giftId}`);
-                if (buyButton && remaining <= 0) {
-                    buyButton.disabled = true;
-                    buyButton.textContent = 'Out of Stock';
-                }
-            });
-        }
-        
-        // Get global promo codes
-        function getGlobalPromos() {
-            const saved = localStorage.getItem(GLOBAL_PROMO_KEY);
-            if (saved) {
-                return JSON.parse(saved);
-            } else {
-                // Initialize with CLANFFYS promo
-                const initialPromos = {
-                    'CLANFFYS': { reward: 100000, maxUses: 0, usedBy: [] }
-                };
-                saveGlobalPromos(initialPromos);
-                return initialPromos;
-            }
-        }
-        
-        // Save global promo codes
-        function saveGlobalPromos(promos) {
-            localStorage.setItem(GLOBAL_PROMO_KEY, JSON.stringify(promos));
-        }
+        // Остальной код остается таким же как в предыдущей версии
+        // (функции loadUserData, loadGameData, initTONConnect, и т.д.)
         
         // Initialize TON Connect
         async function initTONConnect() {
@@ -1813,11 +1817,10 @@
                 `;
             }
             
-            const globalSupply = getGlobalSupply();
-            const purchased = globalSupply[gift.id] || 0;
+            const purchased = supplyData[gift.id] || 0;
             const remaining = giftData.totalSupply - purchased;
             document.getElementById('modal-availability').textContent = 
-                `${remaining} of ${giftData.totalSupply} available`;
+                `${purchased} / ${giftData.totalSupply} sold`;
             
             document.getElementById('gift-modal').classList.add('active');
         }
@@ -1830,8 +1833,7 @@
         // Buy gift
         async function buyGift(giftId) {
             const gift = GIFTS_DATA[giftId];
-            const globalSupply = getGlobalSupply();
-            const purchased = globalSupply[giftId] || 0;
+            const purchased = supplyData[giftId] || 0;
             const remaining = gift.totalSupply - purchased;
             
             if (remaining <= 0) {
@@ -1900,10 +1902,9 @@
         function processGiftPurchase(giftId, transactionResult = null, isFree = false) {
             const gift = GIFTS_DATA[giftId];
             
-            // Update global supply
-            const globalSupply = getGlobalSupply();
-            globalSupply[giftId] = (globalSupply[giftId] || 0) + 1;
-            saveGlobalSupply(globalSupply);
+            // Обновляем локальный supply (в реальном приложении это должно обновляться на сервере)
+            supplyData[giftId] = (supplyData[giftId] || 0) + 1;
+            updateGiftSupplies();
             
             const purchaseItem = {
                 id: giftId,
@@ -1914,7 +1915,6 @@
             userGifts.push(purchaseItem);
             saveUserGifts();
             updateDisplay();
-            updateGiftSupplies();
             
             tg.showPopup({
                 title: 'Purchase Complete!',
@@ -1983,6 +1983,25 @@
                 message: `You received ${promo.reward} coins!`,
                 buttons: [{id: 'ok', type: 'default', text: 'OK'}]
             });
+        }
+        
+        // Get global promo codes
+        function getGlobalPromos() {
+            const saved = localStorage.getItem(GLOBAL_PROMO_KEY);
+            if (saved) {
+                return JSON.parse(saved);
+            } else {
+                const initialPromos = {
+                    'CLANFFYS': { reward: 100000, maxUses: 0, usedBy: [] }
+                };
+                saveGlobalPromos(initialPromos);
+                return initialPromos;
+            }
+        }
+        
+        // Save global promo codes
+        function saveGlobalPromos(promos) {
+            localStorage.setItem(GLOBAL_PROMO_KEY, JSON.stringify(promos));
         }
         
         // Add coins (admin function)
