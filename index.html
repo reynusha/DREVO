@@ -24,15 +24,6 @@
             --energy: #ff6b35;
             --drevo: #00c781;
         }
-
-        .theme-light {
-            --bg-primary: #ffffff;
-            --bg-secondary: #f5f5f5;
-            --bg-card: #fafafa;
-            --text-primary: #333333;
-            --text-secondary: #666666;
-            --border: #e0e0e0;
-        }
         
         * {
             margin: 0;
@@ -46,7 +37,6 @@
             color: var(--text-primary);
             min-height: 100vh;
             padding-bottom: 80px;
-            transition: all 0.3s ease;
         }
         
         .container {
@@ -476,36 +466,6 @@
             border: 1px solid var(--border);
         }
         
-        .theme-section {
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 20px;
-            border: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .theme-title {
-            font-size: 16px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .theme-toggle {
-            background: var(--gradient);
-            border: none;
-            padding: 8px 16px;
-            border-radius: 8px;
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 12px;
-        }
-        
         .dreams-section {
             background: var(--gradient);
             border-radius: 12px;
@@ -883,7 +843,7 @@
         }
     </style>
 </head>
-<body class="theme-dark">
+<body>
     <div class="container">
         <div class="header">
             <div class="logo">DREVO</div>
@@ -1059,14 +1019,6 @@
         <!-- Profile Page -->
         <div id="profile-page" class="page">
             <div class="profile-card">
-                <div class="theme-section">
-                    <div class="theme-title">
-                        <i class="fas fa-palette"></i>
-                        Theme
-                    </div>
-                    <button class="theme-toggle" onclick="toggleTheme()">Switch to Light</button>
-                </div>
-                
                 <div class="dreams-section">
                     <div class="dreams-avatar">
                         <img src="https://i.postimg.cc/R01F9bD4/IMG-20251002-224117-911.jpg" alt="DREVO">
@@ -1321,7 +1273,6 @@
         let upgrades = JSON.parse(JSON.stringify(UPGRADES_DATA));
         let usedPromoCodes = [];
         let energyCooldown = null;
-        let currentTheme = 'dark';
 
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
@@ -1372,6 +1323,13 @@
                 
                 document.getElementById(`${giftId}-stock`).textContent = 
                     `${remaining} of ${GIFTS_DATA[giftId].totalSupply}`;
+                    
+                // Disable buy button if out of stock
+                const buyButton = document.getElementById(`buy-${giftId}`);
+                if (buyButton && remaining <= 0) {
+                    buyButton.disabled = true;
+                    buyButton.textContent = 'Out of Stock';
+                }
             });
         }
         
@@ -1543,7 +1501,6 @@
             // Update balance and energy
             document.getElementById('balance').textContent = Math.floor(gameData.balance);
             document.getElementById('energy').textContent = `${Math.floor(gameData.energy)}/${gameData.maxEnergy}`;
-            document.getElementById('click-power').textContent = gameData.clickPower;
             document.getElementById('total-clicks').textContent = gameData.totalClicks;
             
             // Update profile stats
@@ -1954,24 +1911,6 @@
                     buttons: [{id: 'ok', type: 'default', text: 'OK'}]
                 });
             }
-        }
-        
-        // Toggle theme
-        function toggleTheme() {
-            const body = document.body;
-            const themeToggle = document.querySelector('.theme-toggle');
-            
-            if (currentTheme === 'dark') {
-                body.className = 'theme-light';
-                themeToggle.textContent = 'Switch to Dark';
-                currentTheme = 'light';
-            } else {
-                body.className = 'theme-dark';
-                themeToggle.textContent = 'Switch to Light';
-                currentTheme = 'dark';
-            }
-            
-            localStorage.setItem('drevo_theme', currentTheme);
         }
         
         // Generate transaction ID
