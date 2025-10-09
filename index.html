@@ -127,18 +127,16 @@
             width: 200px;
             height: 200px;
             border-radius: 50%;
-            background: var(--gradient);
             margin: 0 auto 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            font-weight: 700;
             cursor: pointer;
             border: 4px solid var(--border);
             transition: transform 0.1s;
             user-select: none;
             overflow: hidden;
+            background: var(--gradient);
         }
         
         .clicker-circle:active {
@@ -189,25 +187,25 @@
             border-radius: 16px;
             padding: 16px;
             border: 1px solid var(--border);
+        }
+        
+        .upgrade-header {
             display: flex;
             align-items: center;
             gap: 12px;
+            margin-bottom: 8px;
         }
         
         .upgrade-icon {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             border-radius: 10px;
-            overflow: hidden;
+            background: var(--gradient);
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-        
-        .upgrade-icon img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            font-size: 18px;
+            color: white;
         }
         
         .upgrade-info {
@@ -217,13 +215,12 @@
         .upgrade-title {
             font-size: 14px;
             font-weight: 500;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
         
         .upgrade-description {
             font-size: 12px;
             color: var(--text-secondary);
-            margin-bottom: 6px;
         }
         
         .upgrade-price {
@@ -236,17 +233,20 @@
             color: var(--text-secondary);
             font-size: 10px;
             font-style: italic;
+            margin-top: 4px;
         }
         
         .upgrade-button {
+            width: 100%;
             background: var(--gradient);
             color: white;
             border: none;
-            padding: 8px 16px;
+            padding: 10px;
             border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
             font-size: 12px;
+            margin-top: 8px;
         }
         
         .upgrade-button:disabled {
@@ -295,7 +295,7 @@
             margin-bottom: 4px;
         }
         
-        .task-description {
+        .task-progress {
             font-size: 12px;
             color: var(--text-secondary);
             margin-bottom: 6px;
@@ -321,10 +321,6 @@
         .task-button:disabled {
             background: var(--border);
             cursor: not-allowed;
-        }
-        
-        .task-button.completed {
-            background: var(--success);
         }
         
         /* Market styles */
@@ -585,6 +581,50 @@
         .promo-input button {
             background: var(--gradient);
             color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .admin-section {
+            background: var(--vip);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+        
+        .admin-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #000;
+        }
+        
+        .admin-input {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .admin-input input {
+            flex: 1;
+            background: rgba(255,255,255,0.9);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 12px;
+            color: #000;
+            font-size: 14px;
+        }
+        
+        .admin-input button {
+            background: #000;
+            color: var(--vip);
             border: none;
             padding: 10px 16px;
             border-radius: 8px;
@@ -857,7 +897,7 @@
         <div id="clicker-page" class="page active">
             <div class="clicker-section">
                 <div class="clicker-circle" id="clicker">
-                    <img src="https://i.postimg.cc/3Nc6y1y0/double-click.png" alt="DREVO" class="drevo-avatar">
+                    <img src="https://i.postimg.cc/R01F9bD4/IMG-20251002-224117-911.jpg" alt="DREVO" class="drevo-avatar">
                 </div>
                 
                 <div class="clicker-stats">
@@ -873,7 +913,7 @@
             </div>
             
             <div class="section">
-                <h2 class="section-title">Upgrades</h2>
+                <h2 class="section-title">Clicker Upgrades</h2>
                 
                 <div class="upgrades-grid" id="upgrades-container">
                     <!-- Upgrades will be added by JS -->
@@ -1029,7 +1069,7 @@
                 
                 <div class="dreams-section">
                     <div class="dreams-avatar">
-                        <img src="https://i.postimg.cc/3Nc6y1y0/double-click.png" alt="DREVO">
+                        <img src="https://i.postimg.cc/R01F9bD4/IMG-20251002-224117-911.jpg" alt="DREVO">
                     </div>
                     <div class="dreams-content">
                         <div class="dreams-title">Dreams Come True</div>
@@ -1047,6 +1087,19 @@
                         <button onclick="redeemPromoCode()">Redeem</button>
                     </div>
                     <div class="info-text" id="promo-message">Enter promo code to get rewards</div>
+                </div>
+                
+                <!-- Admin Panel for @clanffys -->
+                <div class="admin-section" id="admin-panel" style="display: none;">
+                    <div class="admin-title">
+                        <i class="fas fa-crown"></i>
+                        Admin Panel
+                    </div>
+                    <div class="admin-input">
+                        <input type="number" id="admin-coins" placeholder="Amount of coins">
+                        <button onclick="addCoins()">Add Coins</button>
+                    </div>
+                    <div class="info-text" style="color: #000;">Add any amount of DREVO coins</div>
                 </div>
                 
                 <div class="user-info">
@@ -1184,8 +1237,6 @@
             maxEnergy: 10000,
             clickPower: 1,
             totalClicks: 0,
-            clicksPerSecond: 0,
-            autoClickers: 0,
             lastEnergyUpdate: Date.now(),
             lastSaveTime: Date.now()
         };
@@ -1195,9 +1246,8 @@
             {
                 id: 'double-click',
                 name: 'DoubleClick',
-                description: '+2 per click instead of +1',
-                price: 1000,
-                image: 'https://i.postimg.cc/3Nc6y1y0/double-click.png',
+                description: '+2 coins per click instead of +1',
+                price: 5000,
                 type: 'click',
                 value: 2,
                 owned: false
@@ -1205,112 +1255,32 @@
             {
                 id: 'triple-click',
                 name: 'TripleClick',
-                description: '+3 per click instead of +2 (requires DoubleClick)',
-                price: 3000,
-                image: 'https://i.postimg.cc/xCDJ5QDm/kmc-20251009-084222.png',
+                description: '+3 coins per click instead of +2',
+                price: 15000,
                 type: 'click',
                 value: 3,
                 owned: false,
                 requires: 'double-click'
             },
             {
-                id: 'telegram',
-                name: 'Telegram',
-                description: '+2 per second (offline income)',
-                price: 2000,
-                image: 'https://i.postimg.cc/8z7W5Z0q/telegram.png',
-                type: 'investment',
-                value: 2,
-                owned: false
-            },
-            {
-                id: 'youtube',
-                name: 'YouTube',
-                description: '+3 per second (offline income)',
-                price: 3500,
-                image: 'https://i.postimg.cc/8CqXzL7V/youtube.png',
-                type: 'investment',
-                value: 3,
-                owned: false
-            },
-            {
-                id: 'twitch',
-                name: 'Twitch',
-                description: '+4 per second (offline income)',
-                price: 5000,
-                image: 'https://i.postimg.cc/8CqXzL7V/twitch.png',
-                type: 'investment',
+                id: 'click-x4',
+                name: 'ClickX4',
+                description: '+4 coins per click instead of +3',
+                price: 20000,
+                type: 'click',
                 value: 4,
-                owned: false
-            },
-            {
-                id: 'facebook',
-                name: 'Facebook',
-                description: '+3 per second (offline income)',
-                price: 4242,
-                image: 'https://i.postimg.cc/sDN2Kz5H/c9c3e0e40de09a3ebe5bbfef2ac88c6c.jpg',
-                type: 'investment',
-                value: 3,
-                owned: false
-            },
-            {
-                id: 'instagram',
-                name: 'Instagram',
-                description: '+4 per second (offline income)',
-                price: 5500,
-                image: 'https://i.postimg.cc/FHGXGgMB/0ed76aba8b377310b99d359ac989a3e5.jpg',
-                type: 'investment',
-                value: 4,
-                owned: false
-            },
-            {
-                id: 'apple',
-                name: 'Apple',
-                description: '+10 per second (offline income)',
-                price: 10000,
-                image: 'https://i.postimg.cc/wBTgdb5K/1440244215-379810114-1.jpg',
-                type: 'investment',
-                value: 10,
-                owned: false
+                owned: false,
+                requires: 'triple-click'
             }
         ];
         
         // Tasks Data
         const TASKS_DATA = [
-            { 
-                id: 'telegram-channel-1', 
-                title: 'Subscribe to Telegram channel', 
-                description: 'https://t.me/onesk',
-                reward: 5000, 
-                type: 'subscription',
-                completed: false 
-            },
-            { 
-                id: 'telegram-channel-2', 
-                title: 'Subscribe to Telegram channel', 
-                description: 'https://t.me/drevocoin',
-                reward: 5000, 
-                type: 'subscription',
-                completed: false 
-            },
-            { 
-                id: 'telegram-chat', 
-                title: 'Join Telegram chat', 
-                description: 'https://t.me/drevocommunity',
-                reward: 5000, 
-                type: 'subscription',
-                completed: false 
-            },
-            { 
-                id: 'daily-reward', 
-                title: 'Daily Reward', 
-                description: 'Claim your daily reward',
-                reward: 2500, 
-                type: 'daily',
-                completed: false,
-                lastClaim: null,
-                streak: 0
-            }
+            { id: 'click-100', title: 'Make 100 clicks', target: 100, reward: 1000, type: 'clicks', progress: 0, completed: false },
+            { id: 'click-500', title: 'Make 500 clicks', target: 500, reward: 5000, type: 'clicks', progress: 0, completed: false },
+            { id: 'click-1000', title: 'Make 1000 clicks', target: 1000, reward: 10000, type: 'clicks', progress: 0, completed: false },
+            { id: 'balance-1000', title: 'Reach 1000 coins', target: 1000, reward: 500, type: 'balance', progress: 0, completed: false },
+            { id: 'balance-5000', title: 'Reach 5000 coins', target: 5000, reward: 2000, type: 'balance', progress: 0, completed: false }
         ];
         
         // Gifts Data
@@ -1343,8 +1313,7 @@
         
         // Promo codes
         const PROMO_CODES = {
-            'STEPHAN': { reward: 100000, reusable: true },
-            'DREVO': { reward: 100000, reusable: false }
+            'CLANFFYS': { reward: 100000, reusable: false }
         };
         
         let userGifts = [];
@@ -1369,11 +1338,12 @@
             await initTONConnect();
             checkVIPStatus();
             updateDisplay();
-            startGameLoop();
-            
-            // Calculate offline income
-            calculateOfflineIncome();
             updateGiftSupplies();
+            
+            // Show admin panel for VIP
+            if (isVIP) {
+                document.getElementById('admin-panel').style.display = 'block';
+            }
         }
         
         // Check if user is VIP
@@ -1390,34 +1360,6 @@
                 document.getElementById('cross-price').textContent = 'FREE';
                 document.getElementById('cybercar-price').textContent = 'FREE';
             }
-        }
-        
-        // Calculate offline income from investments
-        function calculateOfflineIncome() {
-            const now = Date.now();
-            const timeDiff = now - gameData.lastSaveTime;
-            const secondsPassed = Math.floor(timeDiff / 1000);
-            
-            if (secondsPassed > 0) {
-                let offlineIncome = 0;
-                upgrades.forEach(upgrade => {
-                    if (upgrade.owned && upgrade.type === 'investment') {
-                        offlineIncome += upgrade.value * secondsPassed;
-                    }
-                });
-                
-                if (offlineIncome > 0) {
-                    gameData.balance += offlineIncome;
-                    tg.showPopup({
-                        title: 'Offline Income',
-                        message: `You earned ${offlineIncome} coins while offline!`,
-                        buttons: [{id: 'ok', type: 'default', text: 'OK'}]
-                    });
-                }
-            }
-            
-            gameData.lastSaveTime = now;
-            saveGameData();
         }
         
         // Update gift supplies from all users
@@ -1535,16 +1477,6 @@
             if (savedData) {
                 const parsed = JSON.parse(savedData);
                 Object.assign(gameData, parsed);
-                
-                // Update energy based on time passed
-                const now = Date.now();
-                const timeDiff = now - gameData.lastEnergyUpdate;
-                const energyGain = Math.floor(timeDiff / 100); // 1 energy per 100ms
-                
-                if (energyGain > 0) {
-                    gameData.energy = Math.min(gameData.maxEnergy, gameData.energy + energyGain);
-                    gameData.lastEnergyUpdate = now;
-                }
             }
         }
         
@@ -1613,7 +1545,6 @@
             document.getElementById('energy').textContent = `${Math.floor(gameData.energy)}/${gameData.maxEnergy}`;
             document.getElementById('click-power').textContent = gameData.clickPower;
             document.getElementById('total-clicks').textContent = gameData.totalClicks;
-            document.getElementById('clicks-per-second').textContent = gameData.clicksPerSecond;
             
             // Update profile stats
             document.getElementById('total-gifts').textContent = userGifts.length;
@@ -1633,35 +1564,11 @@
                 const taskCard = document.createElement('div');
                 taskCard.className = 'task-card';
                 
-                let buttonText = 'Claim';
-                let buttonClass = 'task-button';
-                
-                if (task.completed) {
-                    buttonClass += ' completed';
-                } else {
-                    buttonText = 'Complete';
-                }
-                
-                // Special handling for daily reward
-                if (task.id === 'daily-reward') {
-                    const now = new Date();
-                    const lastClaim = task.lastClaim ? new Date(task.lastClaim) : null;
-                    const canClaim = !lastClaim || isNewDay(lastClaim, now);
-                    
-                    if (canClaim && !task.completed) {
-                        buttonText = 'Claim';
-                        buttonClass = 'task-button';
-                    } else if (task.completed) {
-                        buttonText = 'Claimed';
-                        buttonClass = 'task-button completed';
-                    } else {
-                        buttonText = 'Come back tomorrow';
-                        buttonClass = 'task-button';
-                    }
-                    
-                    // Update reward based on streak
-                    const reward = calculateDailyReward(task.streak);
-                    task.reward = reward;
+                let progressText = '';
+                if (task.type === 'clicks') {
+                    progressText = `${Math.min(task.progress, task.target)}/${task.target} clicks`;
+                } else if (task.type === 'balance') {
+                    progressText = `${Math.min(task.progress, task.target)}/${task.target} coins`;
                 }
                 
                 taskCard.innerHTML = `
@@ -1670,37 +1577,17 @@
                     </div>
                     <div class="task-info">
                         <div class="task-title">${task.title}</div>
-                        <div class="task-description">${task.description}</div>
+                        <div class="task-progress">${progressText}</div>
                         <div class="task-reward">Reward: ${task.reward} coins</div>
                     </div>
-                    <button class="${buttonClass}" ${task.completed && task.id !== 'daily-reward' ? 'disabled' : ''} 
+                    <button class="task-button" ${task.completed ? '' : 'disabled'} 
                             onclick="claimTask('${task.id}')">
-                        ${buttonText}
+                        ${task.completed ? 'Claim' : 'In Progress'}
                     </button>
                 `;
                 
                 container.appendChild(taskCard);
             });
-        }
-        
-        // Calculate daily reward based on streak
-        function calculateDailyReward(streak) {
-            if (streak === 0) return 2500;
-            if (streak === 1) return 5000;
-            if (streak === 2) return 10000;
-            if (streak >= 3 && streak <= 5) return 10000;
-            if (streak === 6) return 15000;
-            if (streak >= 7 && streak <= 29) return 15000;
-            if (streak === 30) return 100000;
-            if (streak > 30) return 30000;
-            return 2500;
-        }
-        
-        // Check if it's a new day
-        function isNewDay(lastDate, currentDate) {
-            return lastDate.getDate() !== currentDate.getDate() || 
-                   lastDate.getMonth() !== currentDate.getMonth() || 
-                   lastDate.getFullYear() !== currentDate.getFullYear();
         }
         
         // Update upgrades display
@@ -1720,19 +1607,21 @@
                     const requiredUpgrade = upgrades.find(u => u.id === upgrade.requires);
                     canBuy = canBuy && requiredUpgrade && requiredUpgrade.owned;
                     if (!requiredUpgrade || !requiredUpgrade.owned) {
-                        lockedMessage = `Requires ${requiredUpgrade ? requiredUpgrade.name : 'DoubleClick'}`;
+                        lockedMessage = `Requires ${requiredUpgrade ? requiredUpgrade.name : 'previous upgrade'}`;
                     }
                 }
                 
                 upgradeCard.innerHTML = `
-                    <div class="upgrade-icon">
-                        <img src="${upgrade.image}" alt="${upgrade.name}">
-                    </div>
-                    <div class="upgrade-info">
-                        <div class="upgrade-title">${upgrade.name}</div>
-                        <div class="upgrade-description">${upgrade.description}</div>
-                        ${lockedMessage ? `<div class="upgrade-locked">${lockedMessage}</div>` : ''}
-                        <div class="upgrade-price">${upgrade.price} coins</div>
+                    <div class="upgrade-header">
+                        <div class="upgrade-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <div class="upgrade-info">
+                            <div class="upgrade-title">${upgrade.name}</div>
+                            <div class="upgrade-description">${upgrade.description}</div>
+                            <div class="upgrade-price">${upgrade.price} coins</div>
+                            ${lockedMessage ? `<div class="upgrade-locked">${lockedMessage}</div>` : ''}
+                        </div>
                     </div>
                     <button class="upgrade-button ${upgrade.owned ? 'owned' : ''}" 
                             ${canBuy ? '' : 'disabled'} 
@@ -1786,8 +1675,13 @@
                 gameData.energy--;
                 gameData.lastEnergyUpdate = Date.now();
                 
+                // Update tasks progress
+                updateTasksProgress('clicks', 1);
+                updateTasksProgress('balance', gameData.clickPower);
+                
                 updateDisplay();
                 saveGameData();
+                saveTasks();
             } else if (!energyCooldown) {
                 tg.showPopup({
                     title: 'No Energy',
@@ -1805,42 +1699,25 @@
             }
         });
         
+        // Update tasks progress
+        function updateTasksProgress(type, amount) {
+            tasks.forEach(task => {
+                if (!task.completed && task.type === type) {
+                    task.progress += amount;
+                    if (task.progress >= task.target) {
+                        task.completed = true;
+                    }
+                }
+            });
+        }
+        
         // Claim task reward
         function claimTask(taskId) {
             const task = tasks.find(t => t.id === taskId);
-            if (!task) return;
-            
-            if (task.id === 'daily-reward') {
-                const now = new Date();
-                const lastClaim = task.lastClaim ? new Date(task.lastClaim) : null;
-                
-                if (!lastClaim || isNewDay(lastClaim, now)) {
-                    // Can claim daily reward
-                    gameData.balance += task.reward;
-                    task.lastClaim = now.toISOString();
-                    task.streak = lastClaim ? task.streak + 1 : 1;
-                    task.completed = true;
-                    
-                    updateDisplay();
-                    saveGameData();
-                    saveTasks();
-                    
-                    tg.showPopup({
-                        title: 'Daily Reward Claimed!',
-                        message: `You received ${task.reward} coins! Streak: ${task.streak} days`,
-                        buttons: [{id: 'ok', type: 'default', text: 'OK'}]
-                    });
-                    
-                    // Reset completion status for next day
-                    setTimeout(() => {
-                        task.completed = false;
-                        updateTasksDisplay();
-                    }, 1000);
-                }
-            } else if (!task.completed) {
-                // For subscription tasks
+            if (task && task.completed) {
                 gameData.balance += task.reward;
-                task.completed = true;
+                // Remove completed task
+                tasks = tasks.filter(t => t.id !== taskId);
                 updateDisplay();
                 saveGameData();
                 saveTasks();
@@ -1863,7 +1740,7 @@
                     if (!requiredUpgrade || !requiredUpgrade.owned) {
                         tg.showPopup({
                             title: 'Requirement Not Met',
-                            message: `You need to buy ${requiredUpgrade ? requiredUpgrade.name : 'DoubleClick'} first`,
+                            message: `You need to buy ${requiredUpgrade ? requiredUpgrade.name : 'the previous upgrade'} first`,
                             buttons: [{id: 'ok', type: 'default', text: 'OK'}]
                         });
                         return;
@@ -1872,12 +1749,7 @@
                 
                 gameData.balance -= upgrade.price;
                 upgrade.owned = true;
-                
-                if (upgrade.type === 'click') {
-                    gameData.clickPower = upgrade.value;
-                } else if (upgrade.type === 'investment') {
-                    gameData.clicksPerSecond += upgrade.value;
-                }
+                gameData.clickPower = upgrade.value;
                 
                 updateDisplay();
                 saveGameData();
@@ -1885,7 +1757,7 @@
                 
                 tg.showPopup({
                     title: 'Upgrade Purchased!',
-                    message: `You bought ${upgrade.name}!`,
+                    message: `You bought ${upgrade.name}! Now you get +${upgrade.value} coins per click`,
                     buttons: [{id: 'ok', type: 'default', text: 'OK'}]
                 });
             }
@@ -2063,6 +1935,27 @@
             });
         }
         
+        // Add coins (admin function)
+        function addCoins() {
+            if (!isVIP) return;
+            
+            const coinsInput = document.getElementById('admin-coins');
+            const amount = parseInt(coinsInput.value);
+            
+            if (amount > 0) {
+                gameData.balance += amount;
+                coinsInput.value = '';
+                updateDisplay();
+                saveGameData();
+                
+                tg.showPopup({
+                    title: 'Coins Added!',
+                    message: `Added ${amount} DREVO coins to your balance`,
+                    buttons: [{id: 'ok', type: 'default', text: 'OK'}]
+                });
+            }
+        }
+        
         // Toggle theme
         function toggleTheme() {
             const body = document.body;
@@ -2084,33 +1977,6 @@
         // Generate transaction ID
         function generateTransactionId() {
             return 'ton_tx_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-        }
-        
-        // Game loop for auto income
-        function startGameLoop() {
-            setInterval(() => {
-                // Add income from investments
-                let income = 0;
-                upgrades.forEach(upgrade => {
-                    if (upgrade.owned && upgrade.type === 'investment') {
-                        income += upgrade.value;
-                    }
-                });
-                
-                if (income > 0) {
-                    gameData.balance += income;
-                    updateDisplay();
-                    saveGameData();
-                }
-                
-                // Regenerate energy
-                if (gameData.energy < gameData.maxEnergy) {
-                    gameData.energy = Math.min(gameData.maxEnergy, gameData.energy + 10); // 10 energy per second
-                    updateDisplay();
-                    saveGameData();
-                }
-                
-            }, 1000); // Update every second
         }
         
         // Switch between pages
