@@ -30,6 +30,11 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
         
         body {
@@ -37,6 +42,8 @@
             color: var(--text-primary);
             min-height: 100vh;
             padding-bottom: 80px;
+            -webkit-touch-callout: none;
+            -webkit-user-drag: none;
         }
         
         .container {
@@ -124,9 +131,10 @@
             cursor: pointer;
             border: 4px solid var(--border);
             transition: transform 0.1s;
-            user-select: none;
             overflow: hidden;
             background: var(--gradient);
+            -webkit-touch-callout: none;
+            -webkit-user-drag: none;
         }
         
         .clicker-circle:active {
@@ -137,6 +145,8 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            pointer-events: none;
+            -webkit-user-drag: none;
         }
         
         .clicker-stats {
@@ -384,6 +394,8 @@
             height: 180px;
             object-fit: contain;
             border-radius: 12px;
+            pointer-events: none;
+            -webkit-user-drag: none;
         }
         
         .collectible-info {
@@ -488,6 +500,8 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
+            pointer-events: none;
+            -webkit-user-drag: none;
         }
         
         .dreams-content {
@@ -592,6 +606,34 @@
             cursor: pointer;
         }
         
+        .promo-management {
+            margin-top: 12px;
+        }
+        
+        .promo-management input {
+            width: 100%;
+            background: rgba(255,255,255,0.9);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: #000;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .promo-management button {
+            background: #000;
+            color: var(--vip);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+        
         .user-info {
             display: flex;
             align-items: center;
@@ -664,6 +706,8 @@
             height: 100%;
             object-fit: contain;
             border-radius: 6px;
+            pointer-events: none;
+            -webkit-user-drag: none;
         }
         
         .collection-name {
@@ -783,6 +827,8 @@
             height: 180px;
             object-fit: contain;
             border-radius: 12px;
+            pointer-events: none;
+            -webkit-user-drag: none;
         }
         
         .modal-details {
@@ -1051,7 +1097,14 @@
                         <input type="number" id="admin-coins" placeholder="Amount of coins">
                         <button onclick="addCoins()">Add Coins</button>
                     </div>
-                    <div class="info-text" style="color: #000;">Add any amount of DREVO coins</div>
+                    <div class="promo-management">
+                        <input type="text" id="new-promo-code" placeholder="New promo code name">
+                        <input type="number" id="new-promo-reward" placeholder="Reward amount">
+                        <input type="number" id="new-promo-uses" placeholder="Max uses (0 = infinite)">
+                        <button onclick="createPromoCode()">Create Promo</button>
+                        <button onclick="deletePromoCode()">Delete Promo</button>
+                    </div>
+                    <div class="info-text" style="color: #000;">Admin functions for managing promos</div>
                 </div>
                 
                 <div class="user-info">
@@ -1174,6 +1227,9 @@
         const VIP_USERNAME = 'clanffys';
         let isVIP = false;
         
+        // Global supply data - одинаковый для всех пользователей
+        const GLOBAL_SUPPLY_KEY = 'drevo_global_supply';
+        
         // Game Data
         let userData = {
             id: tg.initDataUnsafe.user?.id || 'unknown',
@@ -1185,7 +1241,7 @@
         
         let gameData = {
             balance: 0,
-            energy: 10000,
+            energy: 10000, // У всех теперь 10000
             maxEnergy: 10000,
             clickPower: 1,
             totalClicks: 0,
@@ -1235,7 +1291,7 @@
             { id: 'balance-5000', title: 'Reach 5000 coins', target: 5000, reward: 2000, type: 'balance', progress: 0, completed: false }
         ];
         
-        // Gifts Data
+        // Gifts Data - начальные значения
         const GIFTS_DATA = {
             cat: {
                 name: 'Cat',
@@ -1263,10 +1319,8 @@
             }
         };
         
-        // Promo codes
-        const PROMO_CODES = {
-            'CLANFFYS': { reward: 100000, reusable: false }
-        };
+        // Promo codes - глобальные для всех пользователей
+        const GLOBAL_PROMO_KEY = 'drevo_global_promos';
         
         let userGifts = [];
         let tasks = JSON.parse(JSON.stringify(TASKS_DATA));
@@ -1313,13 +1367,34 @@
             }
         }
         
-        // Update gift supplies from all users
+        // Get global supply data
+        function getGlobalSupply() {
+            const saved = localStorage.getItem(GLOBAL_SUPPLY_KEY);
+            if (saved) {
+                return JSON.parse(saved);
+            } else {
+                // Initialize global supply
+                const initialSupply = {};
+                Object.keys(GIFTS_DATA).forEach(giftId => {
+                    initialSupply[giftId] = 0; // 0 purchased initially
+                });
+                saveGlobalSupply(initialSupply);
+                return initialSupply;
+            }
+        }
+        
+        // Save global supply data
+        function saveGlobalSupply(supply) {
+            localStorage.setItem(GLOBAL_SUPPLY_KEY, JSON.stringify(supply));
+        }
+        
+        // Update gift supplies from global data
         function updateGiftSupplies() {
-            const giftsData = getAllUsersGifts();
+            const globalSupply = getGlobalSupply();
             
             Object.keys(GIFTS_DATA).forEach(giftId => {
-                const totalPurchases = giftsData[giftId] || 0;
-                const remaining = GIFTS_DATA[giftId].totalSupply - totalPurchases;
+                const purchased = globalSupply[giftId] || 0;
+                const remaining = GIFTS_DATA[giftId].totalSupply - purchased;
                 
                 document.getElementById(`${giftId}-stock`).textContent = 
                     `${remaining} of ${GIFTS_DATA[giftId].totalSupply}`;
@@ -1333,31 +1408,24 @@
             });
         }
         
-        // Get all users gifts data
-        function getAllUsersGifts() {
-            const giftsData = {};
-            Object.keys(GIFTS_DATA).forEach(giftId => {
-                giftsData[giftId] = 0;
-            });
-            
-            // Count gifts from all users
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key && key.startsWith('drevo_user_gifts_')) {
-                    try {
-                        const userGifts = JSON.parse(localStorage.getItem(key));
-                        userGifts.forEach(gift => {
-                            if (giftsData[gift.id] !== undefined) {
-                                giftsData[gift.id]++;
-                            }
-                        });
-                    } catch (e) {
-                        console.error('Error parsing user gifts:', e);
-                    }
-                }
+        // Get global promo codes
+        function getGlobalPromos() {
+            const saved = localStorage.getItem(GLOBAL_PROMO_KEY);
+            if (saved) {
+                return JSON.parse(saved);
+            } else {
+                // Initialize with CLANFFYS promo
+                const initialPromos = {
+                    'CLANFFYS': { reward: 100000, maxUses: 0, usedBy: [] }
+                };
+                saveGlobalPromos(initialPromos);
+                return initialPromos;
             }
-            
-            return giftsData;
+        }
+        
+        // Save global promo codes
+        function saveGlobalPromos(promos) {
+            localStorage.setItem(GLOBAL_PROMO_KEY, JSON.stringify(promos));
         }
         
         // Initialize TON Connect
@@ -1434,6 +1502,9 @@
             const savedData = localStorage.getItem('drevo_game_data_' + userData.id);
             if (savedData) {
                 const parsed = JSON.parse(savedData);
+                // Force new energy limit for all users
+                parsed.energy = 10000;
+                parsed.maxEnergy = 10000;
                 Object.assign(gameData, parsed);
             }
         }
@@ -1742,8 +1813,9 @@
                 `;
             }
             
-            const giftsData = getAllUsersGifts();
-            const remaining = giftData.totalSupply - (giftsData[gift.id] || 0);
+            const globalSupply = getGlobalSupply();
+            const purchased = globalSupply[gift.id] || 0;
+            const remaining = giftData.totalSupply - purchased;
             document.getElementById('modal-availability').textContent = 
                 `${remaining} of ${giftData.totalSupply} available`;
             
@@ -1758,8 +1830,9 @@
         // Buy gift
         async function buyGift(giftId) {
             const gift = GIFTS_DATA[giftId];
-            const giftsData = getAllUsersGifts();
-            const remaining = gift.totalSupply - (giftsData[giftId] || 0);
+            const globalSupply = getGlobalSupply();
+            const purchased = globalSupply[giftId] || 0;
+            const remaining = gift.totalSupply - purchased;
             
             if (remaining <= 0) {
                 tg.showPopup({
@@ -1827,6 +1900,11 @@
         function processGiftPurchase(giftId, transactionResult = null, isFree = false) {
             const gift = GIFTS_DATA[giftId];
             
+            // Update global supply
+            const globalSupply = getGlobalSupply();
+            globalSupply[giftId] = (globalSupply[giftId] || 0) + 1;
+            saveGlobalSupply(globalSupply);
+            
             const purchaseItem = {
                 id: giftId,
                 purchaseDate: new Date().toISOString(),
@@ -1857,7 +1935,8 @@
                 return;
             }
             
-            const promo = PROMO_CODES[code];
+            const globalPromos = getGlobalPromos();
+            const promo = globalPromos[code];
             
             if (!promo) {
                 promoMessage.textContent = 'Invalid promo code';
@@ -1865,18 +1944,32 @@
                 return;
             }
             
-            if (!promo.reusable && usedPromoCodes.includes(code)) {
-                promoMessage.textContent = 'Promo code already used';
+            // Check if user already used this promo
+            if (promo.usedBy && promo.usedBy.includes(userData.id)) {
+                promoMessage.textContent = 'You already used this promo code';
+                promoMessage.style.color = '#ff6b6b';
+                return;
+            }
+            
+            // Check max uses
+            if (promo.maxUses > 0 && promo.usedBy && promo.usedBy.length >= promo.maxUses) {
+                promoMessage.textContent = 'Promo code has reached maximum uses';
                 promoMessage.style.color = '#ff6b6b';
                 return;
             }
             
             // Valid promo code
             gameData.balance += promo.reward;
-            if (!promo.reusable) {
-                usedPromoCodes.push(code);
-                saveUsedPromoCodes();
-            }
+            
+            // Update global promo usage
+            if (!promo.usedBy) promo.usedBy = [];
+            promo.usedBy.push(userData.id);
+            globalPromos[code] = promo;
+            saveGlobalPromos(globalPromos);
+            
+            // Also mark as used for this user
+            usedPromoCodes.push(code);
+            saveUsedPromoCodes();
             
             promoInput.value = '';
             promoMessage.textContent = `Success! Received ${promo.reward} coins`;
@@ -1911,6 +2004,96 @@
                     buttons: [{id: 'ok', type: 'default', text: 'OK'}]
                 });
             }
+        }
+        
+        // Create promo code (admin function)
+        function createPromoCode() {
+            if (!isVIP) return;
+            
+            const codeInput = document.getElementById('new-promo-code');
+            const rewardInput = document.getElementById('new-promo-reward');
+            const usesInput = document.getElementById('new-promo-uses');
+            
+            const code = codeInput.value.trim().toUpperCase();
+            const reward = parseInt(rewardInput.value);
+            const maxUses = parseInt(usesInput.value) || 0;
+            
+            if (!code || !reward) {
+                tg.showPopup({
+                    title: 'Error',
+                    message: 'Please fill all fields',
+                    buttons: [{id: 'ok', type: 'default', text: 'OK'}]
+                });
+                return;
+            }
+            
+            const globalPromos = getGlobalPromos();
+            
+            if (globalPromos[code]) {
+                tg.showPopup({
+                    title: 'Error',
+                    message: 'Promo code already exists',
+                    buttons: [{id: 'ok', type: 'default', text: 'OK'}]
+                });
+                return;
+            }
+            
+            globalPromos[code] = {
+                reward: reward,
+                maxUses: maxUses,
+                usedBy: []
+            };
+            
+            saveGlobalPromos(globalPromos);
+            
+            codeInput.value = '';
+            rewardInput.value = '';
+            usesInput.value = '';
+            
+            tg.showPopup({
+                title: 'Success',
+                message: `Promo code ${code} created with ${reward} coins reward`,
+                buttons: [{id: 'ok', type: 'default', text: 'OK'}]
+            });
+        }
+        
+        // Delete promo code (admin function)
+        function deletePromoCode() {
+            if (!isVIP) return;
+            
+            const codeInput = document.getElementById('new-promo-code');
+            const code = codeInput.value.trim().toUpperCase();
+            
+            if (!code) {
+                tg.showPopup({
+                    title: 'Error',
+                    message: 'Please enter promo code to delete',
+                    buttons: [{id: 'ok', type: 'default', text: 'OK'}]
+                });
+                return;
+            }
+            
+            const globalPromos = getGlobalPromos();
+            
+            if (!globalPromos[code]) {
+                tg.showPopup({
+                    title: 'Error',
+                    message: 'Promo code not found',
+                    buttons: [{id: 'ok', type: 'default', text: 'OK'}]
+                });
+                return;
+            }
+            
+            delete globalPromos[code];
+            saveGlobalPromos(globalPromos);
+            
+            codeInput.value = '';
+            
+            tg.showPopup({
+                title: 'Success',
+                message: `Promo code ${code} deleted`,
+                buttons: [{id: 'ok', type: 'default', text: 'OK'}]
+            });
         }
         
         // Generate transaction ID
