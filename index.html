@@ -24,6 +24,15 @@
             --energy: #ff6b35;
             --drevo: #00c781;
         }
+
+        .theme-light {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f5;
+            --bg-card: #fafafa;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --border: #e0e0e0;
+        }
         
         * {
             margin: 0;
@@ -37,6 +46,7 @@
             color: var(--text-primary);
             min-height: 100vh;
             padding-bottom: 80px;
+            transition: all 0.3s ease;
         }
         
         .container {
@@ -128,10 +138,17 @@
             border: 4px solid var(--border);
             transition: transform 0.1s;
             user-select: none;
+            overflow: hidden;
         }
         
         .clicker-circle:active {
             transform: scale(0.95);
+        }
+        
+        .drevo-avatar {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         
         .clicker-stats {
@@ -215,6 +232,12 @@
             font-weight: 600;
         }
         
+        .upgrade-locked {
+            color: var(--text-secondary);
+            font-size: 10px;
+            font-style: italic;
+        }
+        
         .upgrade-button {
             background: var(--gradient);
             color: white;
@@ -272,7 +295,7 @@
             margin-bottom: 4px;
         }
         
-        .task-progress {
+        .task-description {
             font-size: 12px;
             color: var(--text-secondary);
             margin-bottom: 6px;
@@ -298,6 +321,10 @@
         .task-button:disabled {
             background: var(--border);
             cursor: not-allowed;
+        }
+        
+        .task-button.completed {
+            background: var(--success);
         }
         
         /* Market styles */
@@ -459,15 +486,28 @@
             padding: 16px;
             margin-bottom: 20px;
             border: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .theme-title {
             font-size: 16px;
             font-weight: 600;
-            margin-bottom: 12px;
             display: flex;
             align-items: center;
             gap: 8px;
+        }
+        
+        .theme-toggle {
+            background: var(--gradient);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 12px;
         }
         
         .dreams-section {
@@ -476,17 +516,80 @@
             padding: 20px;
             margin-bottom: 20px;
             text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .dreams-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .dreams-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .dreams-content {
+            flex: 1;
         }
         
         .dreams-title {
             font-size: 18px;
             font-weight: 700;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
         
         .dreams-text {
             font-size: 14px;
             opacity: 0.9;
+        }
+        
+        .promo-section {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+        
+        .promo-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .promo-input {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .promo-input input {
+            flex: 1;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px 12px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+        
+        .promo-input button {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
         }
         
         .user-info {
@@ -740,12 +843,12 @@
         }
     </style>
 </head>
-<body>
+<body class="theme-dark">
     <div class="container">
         <div class="header">
             <div class="logo">DREVO</div>
             <div class="balance-section">
-                <div class="energy-section"><span id="energy">1000/1000</span></div>
+                <div class="energy-section"><span id="energy">10000/10000</span></div>
                 <div class="balance-card"><span class="balance-icon">D</span><span id="balance">0</span></div>
             </div>
         </div>
@@ -754,7 +857,7 @@
         <div id="clicker-page" class="page active">
             <div class="clicker-section">
                 <div class="clicker-circle" id="clicker">
-                    <span id="click-power">1</span>
+                    <img src="https://i.postimg.cc/3Nc6y1y0/double-click.png" alt="DREVO" class="drevo-avatar">
                 </div>
                 
                 <div class="clicker-stats">
@@ -921,12 +1024,29 @@
                         <i class="fas fa-palette"></i>
                         Theme
                     </div>
-                    <div class="info-text">Dark theme activated</div>
+                    <button class="theme-toggle" onclick="toggleTheme()">Switch to Light</button>
                 </div>
                 
                 <div class="dreams-section">
-                    <div class="dreams-title">Dreams Come True</div>
-                    <div class="dreams-text">Your dreams become reality with DREVO</div>
+                    <div class="dreams-avatar">
+                        <img src="https://i.postimg.cc/3Nc6y1y0/double-click.png" alt="DREVO">
+                    </div>
+                    <div class="dreams-content">
+                        <div class="dreams-title">Dreams Come True</div>
+                        <div class="dreams-text">Your dreams become reality with DREVO</div>
+                    </div>
+                </div>
+                
+                <div class="promo-section">
+                    <div class="promo-title">
+                        <i class="fas fa-ticket-alt"></i>
+                        Promo Codes
+                    </div>
+                    <div class="promo-input">
+                        <input type="text" id="promo-code" placeholder="Enter promo code">
+                        <button onclick="redeemPromoCode()">Redeem</button>
+                    </div>
+                    <div class="info-text" id="promo-message">Enter promo code to get rewards</div>
                 </div>
                 
                 <div class="user-info">
@@ -1060,8 +1180,8 @@
         
         let gameData = {
             balance: 0,
-            energy: 1000,
-            maxEnergy: 1000,
+            energy: 10000,
+            maxEnergy: 10000,
             clickPower: 1,
             totalClicks: 0,
             clicksPerSecond: 0,
@@ -1075,7 +1195,7 @@
             {
                 id: 'double-click',
                 name: 'DoubleClick',
-                description: '+2 per click',
+                description: '+2 per click instead of +1',
                 price: 1000,
                 image: 'https://i.postimg.cc/3Nc6y1y0/double-click.png',
                 type: 'click',
@@ -1085,13 +1205,43 @@
             {
                 id: 'triple-click',
                 name: 'TripleClick',
-                description: '+3 per click (requires DoubleClick)',
+                description: '+3 per click instead of +2 (requires DoubleClick)',
                 price: 3000,
                 image: 'https://i.postimg.cc/xCDJ5QDm/kmc-20251009-084222.png',
                 type: 'click',
                 value: 3,
                 owned: false,
                 requires: 'double-click'
+            },
+            {
+                id: 'telegram',
+                name: 'Telegram',
+                description: '+2 per second (offline income)',
+                price: 2000,
+                image: 'https://i.postimg.cc/8z7W5Z0q/telegram.png',
+                type: 'investment',
+                value: 2,
+                owned: false
+            },
+            {
+                id: 'youtube',
+                name: 'YouTube',
+                description: '+3 per second (offline income)',
+                price: 3500,
+                image: 'https://i.postimg.cc/8CqXzL7V/youtube.png',
+                type: 'investment',
+                value: 3,
+                owned: false
+            },
+            {
+                id: 'twitch',
+                name: 'Twitch',
+                description: '+4 per second (offline income)',
+                price: 5000,
+                image: 'https://i.postimg.cc/8CqXzL7V/twitch.png',
+                type: 'investment',
+                value: 4,
+                owned: false
             },
             {
                 id: 'facebook',
@@ -1127,11 +1277,40 @@
         
         // Tasks Data
         const TASKS_DATA = [
-            { id: 'click-100', title: 'Make 100 clicks', target: 100, reward: 1000, type: 'clicks', progress: 0, completed: false },
-            { id: 'click-500', title: 'Make 500 clicks', target: 500, reward: 5000, type: 'clicks', progress: 0, completed: false },
-            { id: 'click-1000', title: 'Make 1000 clicks', target: 1000, reward: 10000, type: 'clicks', progress: 0, completed: false },
-            { id: 'balance-1000', title: 'Reach 1000 coins', target: 1000, reward: 500, type: 'balance', progress: 0, completed: false },
-            { id: 'balance-5000', title: 'Reach 5000 coins', target: 5000, reward: 2000, type: 'balance', progress: 0, completed: false }
+            { 
+                id: 'telegram-channel-1', 
+                title: 'Subscribe to Telegram channel', 
+                description: 'https://t.me/onesk',
+                reward: 5000, 
+                type: 'subscription',
+                completed: false 
+            },
+            { 
+                id: 'telegram-channel-2', 
+                title: 'Subscribe to Telegram channel', 
+                description: 'https://t.me/drevocoin',
+                reward: 5000, 
+                type: 'subscription',
+                completed: false 
+            },
+            { 
+                id: 'telegram-chat', 
+                title: 'Join Telegram chat', 
+                description: 'https://t.me/drevocommunity',
+                reward: 5000, 
+                type: 'subscription',
+                completed: false 
+            },
+            { 
+                id: 'daily-reward', 
+                title: 'Daily Reward', 
+                description: 'Claim your daily reward',
+                reward: 2500, 
+                type: 'daily',
+                completed: false,
+                lastClaim: null,
+                streak: 0
+            }
         ];
         
         // Gifts Data
@@ -1162,10 +1341,18 @@
             }
         };
         
+        // Promo codes
+        const PROMO_CODES = {
+            'STEPHAN': { reward: 100000, reusable: true },
+            'DREVO': { reward: 100000, reusable: false }
+        };
+        
         let userGifts = [];
         let tasks = JSON.parse(JSON.stringify(TASKS_DATA));
         let upgrades = JSON.parse(JSON.stringify(UPGRADES_DATA));
+        let usedPromoCodes = [];
         let energyCooldown = null;
+        let currentTheme = 'dark';
 
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
@@ -1178,6 +1365,7 @@
             loadUserGifts();
             loadTasks();
             loadUpgrades();
+            loadUsedPromoCodes();
             await initTONConnect();
             checkVIPStatus();
             updateDisplay();
@@ -1185,6 +1373,7 @@
             
             // Calculate offline income
             calculateOfflineIncome();
+            updateGiftSupplies();
         }
         
         // Check if user is VIP
@@ -1229,6 +1418,46 @@
             
             gameData.lastSaveTime = now;
             saveGameData();
+        }
+        
+        // Update gift supplies from all users
+        function updateGiftSupplies() {
+            const giftsData = getAllUsersGifts();
+            
+            Object.keys(GIFTS_DATA).forEach(giftId => {
+                const totalPurchases = giftsData[giftId] || 0;
+                const remaining = GIFTS_DATA[giftId].totalSupply - totalPurchases;
+                
+                document.getElementById(`${giftId}-stock`).textContent = 
+                    `${remaining} of ${GIFTS_DATA[giftId].totalSupply}`;
+            });
+        }
+        
+        // Get all users gifts data
+        function getAllUsersGifts() {
+            const giftsData = {};
+            Object.keys(GIFTS_DATA).forEach(giftId => {
+                giftsData[giftId] = 0;
+            });
+            
+            // Count gifts from all users
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('drevo_user_gifts_')) {
+                    try {
+                        const userGifts = JSON.parse(localStorage.getItem(key));
+                        userGifts.forEach(gift => {
+                            if (giftsData[gift.id] !== undefined) {
+                                giftsData[gift.id]++;
+                            }
+                        });
+                    } catch (e) {
+                        console.error('Error parsing user gifts:', e);
+                    }
+                }
+            }
+            
+            return giftsData;
         }
         
         // Initialize TON Connect
@@ -1364,6 +1593,19 @@
             localStorage.setItem('drevo_upgrades_' + userData.id, JSON.stringify(upgrades));
         }
         
+        // Load used promo codes
+        function loadUsedPromoCodes() {
+            const saved = localStorage.getItem('drevo_used_promos_' + userData.id);
+            if (saved) {
+                usedPromoCodes = JSON.parse(saved);
+            }
+        }
+        
+        // Save used promo codes
+        function saveUsedPromoCodes() {
+            localStorage.setItem('drevo_used_promos_' + userData.id, JSON.stringify(usedPromoCodes));
+        }
+        
         // Update display
         function updateDisplay() {
             // Update balance and energy
@@ -1391,11 +1633,35 @@
                 const taskCard = document.createElement('div');
                 taskCard.className = 'task-card';
                 
-                let progressText = '';
-                if (task.type === 'clicks') {
-                    progressText = `${Math.min(task.progress, task.target)}/${task.target} clicks`;
-                } else if (task.type === 'balance') {
-                    progressText = `${Math.min(task.progress, task.target)}/${task.target} coins`;
+                let buttonText = 'Claim';
+                let buttonClass = 'task-button';
+                
+                if (task.completed) {
+                    buttonClass += ' completed';
+                } else {
+                    buttonText = 'Complete';
+                }
+                
+                // Special handling for daily reward
+                if (task.id === 'daily-reward') {
+                    const now = new Date();
+                    const lastClaim = task.lastClaim ? new Date(task.lastClaim) : null;
+                    const canClaim = !lastClaim || isNewDay(lastClaim, now);
+                    
+                    if (canClaim && !task.completed) {
+                        buttonText = 'Claim';
+                        buttonClass = 'task-button';
+                    } else if (task.completed) {
+                        buttonText = 'Claimed';
+                        buttonClass = 'task-button completed';
+                    } else {
+                        buttonText = 'Come back tomorrow';
+                        buttonClass = 'task-button';
+                    }
+                    
+                    // Update reward based on streak
+                    const reward = calculateDailyReward(task.streak);
+                    task.reward = reward;
                 }
                 
                 taskCard.innerHTML = `
@@ -1404,17 +1670,37 @@
                     </div>
                     <div class="task-info">
                         <div class="task-title">${task.title}</div>
-                        <div class="task-progress">${progressText}</div>
+                        <div class="task-description">${task.description}</div>
                         <div class="task-reward">Reward: ${task.reward} coins</div>
                     </div>
-                    <button class="task-button" ${task.completed ? '' : 'disabled'} 
+                    <button class="${buttonClass}" ${task.completed && task.id !== 'daily-reward' ? 'disabled' : ''} 
                             onclick="claimTask('${task.id}')">
-                        ${task.completed ? 'Claim' : 'In Progress'}
+                        ${buttonText}
                     </button>
                 `;
                 
                 container.appendChild(taskCard);
             });
+        }
+        
+        // Calculate daily reward based on streak
+        function calculateDailyReward(streak) {
+            if (streak === 0) return 2500;
+            if (streak === 1) return 5000;
+            if (streak === 2) return 10000;
+            if (streak >= 3 && streak <= 5) return 10000;
+            if (streak === 6) return 15000;
+            if (streak >= 7 && streak <= 29) return 15000;
+            if (streak === 30) return 100000;
+            if (streak > 30) return 30000;
+            return 2500;
+        }
+        
+        // Check if it's a new day
+        function isNewDay(lastDate, currentDate) {
+            return lastDate.getDate() !== currentDate.getDate() || 
+                   lastDate.getMonth() !== currentDate.getMonth() || 
+                   lastDate.getFullYear() !== currentDate.getFullYear();
         }
         
         // Update upgrades display
@@ -1428,9 +1714,14 @@
                 
                 // Check if upgrade is available for purchase
                 let canBuy = gameData.balance >= upgrade.price && !upgrade.owned;
+                let lockedMessage = '';
+                
                 if (upgrade.requires) {
                     const requiredUpgrade = upgrades.find(u => u.id === upgrade.requires);
                     canBuy = canBuy && requiredUpgrade && requiredUpgrade.owned;
+                    if (!requiredUpgrade || !requiredUpgrade.owned) {
+                        lockedMessage = `Requires ${requiredUpgrade ? requiredUpgrade.name : 'DoubleClick'}`;
+                    }
                 }
                 
                 upgradeCard.innerHTML = `
@@ -1440,6 +1731,7 @@
                     <div class="upgrade-info">
                         <div class="upgrade-title">${upgrade.name}</div>
                         <div class="upgrade-description">${upgrade.description}</div>
+                        ${lockedMessage ? `<div class="upgrade-locked">${lockedMessage}</div>` : ''}
                         <div class="upgrade-price">${upgrade.price} coins</div>
                     </div>
                     <button class="upgrade-button ${upgrade.owned ? 'owned' : ''}" 
@@ -1494,13 +1786,8 @@
                 gameData.energy--;
                 gameData.lastEnergyUpdate = Date.now();
                 
-                // Update tasks progress
-                updateTasksProgress('clicks', 1);
-                updateTasksProgress('balance', gameData.clickPower);
-                
                 updateDisplay();
                 saveGameData();
-                saveTasks();
             } else if (!energyCooldown) {
                 tg.showPopup({
                     title: 'No Energy',
@@ -1518,25 +1805,42 @@
             }
         });
         
-        // Update tasks progress
-        function updateTasksProgress(type, amount) {
-            tasks.forEach(task => {
-                if (!task.completed && task.type === type) {
-                    task.progress += amount;
-                    if (task.progress >= task.target) {
-                        task.completed = true;
-                    }
-                }
-            });
-        }
-        
         // Claim task reward
         function claimTask(taskId) {
             const task = tasks.find(t => t.id === taskId);
-            if (task && task.completed) {
+            if (!task) return;
+            
+            if (task.id === 'daily-reward') {
+                const now = new Date();
+                const lastClaim = task.lastClaim ? new Date(task.lastClaim) : null;
+                
+                if (!lastClaim || isNewDay(lastClaim, now)) {
+                    // Can claim daily reward
+                    gameData.balance += task.reward;
+                    task.lastClaim = now.toISOString();
+                    task.streak = lastClaim ? task.streak + 1 : 1;
+                    task.completed = true;
+                    
+                    updateDisplay();
+                    saveGameData();
+                    saveTasks();
+                    
+                    tg.showPopup({
+                        title: 'Daily Reward Claimed!',
+                        message: `You received ${task.reward} coins! Streak: ${task.streak} days`,
+                        buttons: [{id: 'ok', type: 'default', text: 'OK'}]
+                    });
+                    
+                    // Reset completion status for next day
+                    setTimeout(() => {
+                        task.completed = false;
+                        updateTasksDisplay();
+                    }, 1000);
+                }
+            } else if (!task.completed) {
+                // For subscription tasks
                 gameData.balance += task.reward;
-                // Remove completed task
-                tasks = tasks.filter(t => t.id !== taskId);
+                task.completed = true;
                 updateDisplay();
                 saveGameData();
                 saveTasks();
@@ -1553,11 +1857,24 @@
         function buyUpgrade(upgradeId) {
             const upgrade = upgrades.find(u => u.id === upgradeId);
             if (upgrade && !upgrade.owned && gameData.balance >= upgrade.price) {
+                // Check requirements
+                if (upgrade.requires) {
+                    const requiredUpgrade = upgrades.find(u => u.id === upgrade.requires);
+                    if (!requiredUpgrade || !requiredUpgrade.owned) {
+                        tg.showPopup({
+                            title: 'Requirement Not Met',
+                            message: `You need to buy ${requiredUpgrade ? requiredUpgrade.name : 'DoubleClick'} first`,
+                            buttons: [{id: 'ok', type: 'default', text: 'OK'}]
+                        });
+                        return;
+                    }
+                }
+                
                 gameData.balance -= upgrade.price;
                 upgrade.owned = true;
                 
                 if (upgrade.type === 'click') {
-                    gameData.clickPower += upgrade.value;
+                    gameData.clickPower = upgrade.value;
                 } else if (upgrade.type === 'investment') {
                     gameData.clicksPerSecond += upgrade.value;
                 }
@@ -1596,8 +1913,10 @@
                 `;
             }
             
+            const giftsData = getAllUsersGifts();
+            const remaining = giftData.totalSupply - (giftsData[gift.id] || 0);
             document.getElementById('modal-availability').textContent = 
-                'Available';
+                `${remaining} of ${giftData.totalSupply} available`;
             
             document.getElementById('gift-modal').classList.add('active');
         }
@@ -1610,6 +1929,17 @@
         // Buy gift
         async function buyGift(giftId) {
             const gift = GIFTS_DATA[giftId];
+            const giftsData = getAllUsersGifts();
+            const remaining = gift.totalSupply - (giftsData[giftId] || 0);
+            
+            if (remaining <= 0) {
+                tg.showPopup({
+                    title: 'Out of Stock',
+                    message: 'This gift is no longer available!',
+                    buttons: [{id: 'ok', type: 'default', text: 'OK'}]
+                });
+                return;
+            }
             
             if (isVIP) {
                 // VIP gets it for free
@@ -1677,12 +2007,78 @@
             userGifts.push(purchaseItem);
             saveUserGifts();
             updateDisplay();
+            updateGiftSupplies();
             
             tg.showPopup({
                 title: 'Purchase Complete!',
                 message: `You successfully acquired ${gift.name}! ${isFree ? '(VIP Free Purchase)' : ''}`,
                 buttons: [{id: 'ok', type: 'default', text: 'OK'}]
             });
+        }
+        
+        // Redeem promo code
+        function redeemPromoCode() {
+            const promoInput = document.getElementById('promo-code');
+            const promoMessage = document.getElementById('promo-message');
+            const code = promoInput.value.trim().toUpperCase();
+            
+            if (!code) {
+                promoMessage.textContent = 'Please enter a promo code';
+                promoMessage.style.color = 'var(--text-secondary)';
+                return;
+            }
+            
+            const promo = PROMO_CODES[code];
+            
+            if (!promo) {
+                promoMessage.textContent = 'Invalid promo code';
+                promoMessage.style.color = '#ff6b6b';
+                return;
+            }
+            
+            if (!promo.reusable && usedPromoCodes.includes(code)) {
+                promoMessage.textContent = 'Promo code already used';
+                promoMessage.style.color = '#ff6b6b';
+                return;
+            }
+            
+            // Valid promo code
+            gameData.balance += promo.reward;
+            if (!promo.reusable) {
+                usedPromoCodes.push(code);
+                saveUsedPromoCodes();
+            }
+            
+            promoInput.value = '';
+            promoMessage.textContent = `Success! Received ${promo.reward} coins`;
+            promoMessage.style.color = 'var(--success)';
+            
+            updateDisplay();
+            saveGameData();
+            
+            tg.showPopup({
+                title: 'Promo Code Redeemed!',
+                message: `You received ${promo.reward} coins!`,
+                buttons: [{id: 'ok', type: 'default', text: 'OK'}]
+            });
+        }
+        
+        // Toggle theme
+        function toggleTheme() {
+            const body = document.body;
+            const themeToggle = document.querySelector('.theme-toggle');
+            
+            if (currentTheme === 'dark') {
+                body.className = 'theme-light';
+                themeToggle.textContent = 'Switch to Dark';
+                currentTheme = 'light';
+            } else {
+                body.className = 'theme-dark';
+                themeToggle.textContent = 'Switch to Light';
+                currentTheme = 'dark';
+            }
+            
+            localStorage.setItem('drevo_theme', currentTheme);
         }
         
         // Generate transaction ID
@@ -1709,7 +2105,7 @@
                 
                 // Regenerate energy
                 if (gameData.energy < gameData.maxEnergy) {
-                    gameData.energy = Math.min(gameData.maxEnergy, gameData.energy + 1);
+                    gameData.energy = Math.min(gameData.maxEnergy, gameData.energy + 10); // 10 energy per second
                     updateDisplay();
                     saveGameData();
                 }
