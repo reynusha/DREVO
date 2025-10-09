@@ -1211,9 +1211,6 @@
     </div>
 
     <script>
-        // URL к твоей базе данных supply
-        const SUPPLY_DB_URL = 'https://raw.githubusercontent.com/reynusha/DREVO/main/supply-db.js';
-        
         // Telegram WebApp
         const tg = window.Telegram.WebApp;
         
@@ -1229,6 +1226,9 @@
         // VIP user
         const VIP_USERNAME = 'clanffys';
         let isVIP = false;
+        
+        // TELEGRAM CLOUD STORAGE - ОБЩИЙ ДЛЯ ВСЕХ ПОЛЬЗОВАТЕЛЕЙ
+        const TELEGRAM_STORAGE_KEY = 'drevo_global_supply_cloud';
         
         // Game Data
         let userData = {
@@ -1247,19 +1247,6 @@
             totalClicks: 0,
             lastEnergyUpdate: Date.now(),
             lastSaveTime: Date.now()
-        };
-        
-        // Supply данные из базы
-        let supplyData = {
-            cat: 0,
-            cross: 0,
-            cybercar: 0
-        };
-        
-        const MAX_SUPPLY = {
-            cat: 20000,
-            cross: 1200,
-            cybercar: 2000
         };
         
         // Upgrades Data
@@ -1341,6 +1328,118 @@
         let usedPromoCodes = [];
         let energyCooldown = null;
 
+        // TELEGRAM CLOUD STORAGE MANAGER
+        class TelegramStorageManager {
+            constructor() {
+                this.isAvailable = tg.isVersionAtLeast('6.1');
+                console.log('Telegram Cloud Storage available:', this.isAvailable);
+            }
+
+            // ПОЛУЧИТЬ SUPPLY ИЗ TELEGRAM STORAGE
+            async getGlobalSupply() {
+                try {
+                    let supplyData;
+                    
+                    // Пытаемся получить из Telegram Cloud Storage
+                    if (this.isAvailable) {
+                        const cloudData = await tg.CloudStorage.getItem(TELEGRAM_STORAGE_KEY);
+                        if (cloudData) {
+                            supplyData = JSON.parse(cloudData);
+                            console.log('📦 Supply loaded from Telegram Cloud Storage:', supplyData);
+                        }
+                    }
+                    
+                    // Если в Cloud Storage нет данных, пробуем localStorage
+                    if (!supplyData) {
+                        const localData = localStorage.getItem(TELEGRAM_STORAGE_KEY);
+                        if (localData) {
+                            supplyData = JSON.parse(localData);
+                            console.log('📦 Supply loaded from localStorage:', supplyData);
+                        }
+                    }
+                    
+                    // Если вообще нет данных - создаем начальные
+                    if (!supplyData) {
+                        supplyData = {};
+                        Object.keys(GIFTS_DATA).forEach(giftId => {
+                            supplyData[giftId] = 0;
+                        });
+                        await this.saveGlobalSupply(supplyData);
+                        console.log('📦 Initial supply created:', supplyData);
+                    }
+                    
+                    return supplyData;
+                    
+                } catch (error) {
+                    console.error('Error loading supply from Telegram Storage:', error);
+                    // Fallback на начальные значения
+                    const fallbackSupply = {};
+                    Object.keys(GIFTS_DATA).forEach(giftId => {
+                        fallbackSupply[giftId] = 0;
+                    });
+                    return fallbackSupply;
+                }
+            }
+
+            // СОХРАНИТЬ SUPPLY В TELEGRAM STORAGE
+            async saveGlobalSupply(supplyData) {
+                try {
+                    const dataString = JSON.stringify(supplyData);
+                    
+                    // Сохраняем в Telegram Cloud Storage (ОБНОВЛЯЕТСЯ ДЛЯ ВСЕХ!)
+                    if (this.isAvailable) {
+                        await tg.CloudStorage.setItem(TELEGRAM_STORAGE_KEY, dataString);
+                        console.log('💾 Supply saved to Telegram Cloud Storage');
+                    }
+                    
+                    // И всегда в localStorage как резерв
+                    localStorage.setItem(TELEGRAM_STORAGE_KEY, dataString);
+                    
+                    return true;
+                    
+                } catch (error) {
+                    console.error('Error saving supply to Telegram Storage:', error);
+                    // Fallback на localStorage
+                    localStorage.setItem(TELEGRAM_STORAGE_KEY, JSON.stringify(supplyData));
+                    return false;
+                }
+            }
+
+            // ОБНОВИТЬ SUPPLY ПРИ ПОКУПКЕ
+            async addPurchase(giftId) {
+                try {
+                    const currentSupply = await this.getGlobalSupply();
+                    const purchased = currentSupply[giftId] || 0;
+                    const remaining = GIFTS_DATA[giftId].totalSupply - purchased;
+                    
+                    // Проверяем не закончился ли supply
+                    if (remaining <= 0) {
+                        return { success: false, message: 'Out of stock' };
+                    }
+                    
+                    // Обновляем supply
+                    currentSupply[giftId] = purchased + 1;
+                    
+                    // Сохраняем в Telegram Storage (ОБНОВЛЯЕТСЯ ДЛЯ ВСЕХ!)
+                    await this.saveGlobalSupply(currentSupply);
+                    
+                    return {
+                        success: true,
+                        newSupply: currentSupply[giftId],
+                        remaining: remaining - 1,
+                        message: 'Purchase successful'
+                    };
+                    
+                } catch (error) {
+                    console.error('Error updating supply:', error);
+                    return { success: false, message: 'Purchase failed' };
+                }
+            }
+        }
+
+        // Создаем экземпляр менеджера Telegram Storage
+        const TELEGRAM_STORAGE = new TelegramStorageManager();
+
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
             initializeApp();
@@ -1354,63 +1453,19 @@
             loadUpgrades();
             loadUsedPromoCodes();
             await initTONConnect();
-            await loadSupplyData(); // Загружаем supply из базы
             checkVIPStatus();
+            await updateGiftSupplies(); // ОБНОВЛЯЕМ ИЗ TELEGRAM STORAGE
             updateDisplay();
             
             // Show admin panel for VIP
             if (isVIP) {
                 document.getElementById('admin-panel').style.display = 'block';
             }
-        }
-        
-        // Загрузка supply данных из базы
-        async function loadSupplyData() {
-            try {
-                const response = await fetch(SUPPLY_DB_URL + '?t=' + Date.now());
-                if (response.ok) {
-                    const text = await response.text();
-                    
-                    // Парсим данные из JS файла
-                    const catMatch = text.match(/cat:\s*(\d+)/);
-                    const crossMatch = text.match(/cross:\s*(\d+)/);
-                    const cybercarMatch = text.match(/cybercar:\s*(\d+)/);
-                    
-                    if (catMatch && crossMatch && cybercarMatch) {
-                        supplyData.cat = parseInt(catMatch[1]);
-                        supplyData.cross = parseInt(crossMatch[1]);
-                        supplyData.cybercar = parseInt(cybercarMatch[1]);
-                        
-                        console.log('Supply data loaded:', supplyData);
-                        updateGiftSupplies();
-                    }
-                }
-            } catch (error) {
-                console.error('Error loading supply data:', error);
-                // Используем значения по умолчанию если не удалось загрузить
-                supplyData.cat = 450;
-                supplyData.cross = 180;
-                supplyData.cybercar = 320;
-                updateGiftSupplies();
-            }
-        }
-        
-        // Обновление отображения supply
-        function updateGiftSupplies() {
-            Object.keys(GIFTS_DATA).forEach(giftId => {
-                const purchased = supplyData[giftId] || 0;
-                const remaining = GIFTS_DATA[giftId].totalSupply - purchased;
-                
-                document.getElementById(`${giftId}-stock`).textContent = 
-                    `${purchased} / ${GIFTS_DATA[giftId].totalSupply}`;
-                    
-                // Disable buy button if out of stock
-                const buyButton = document.getElementById(`buy-${giftId}`);
-                if (buyButton && remaining <= 0) {
-                    buyButton.disabled = true;
-                    buyButton.innerHTML = '<i class="fas fa-times"></i><span>Out of Stock</span>';
-                }
-            });
+
+            // Авто-обновление supply каждые 10 секунд
+            setInterval(async () => {
+                await updateGiftSupplies();
+            }, 10000);
         }
         
         // Check if user is VIP
@@ -1429,8 +1484,57 @@
             }
         }
         
-        // Остальной код остается таким же как в предыдущей версии
-        // (функции loadUserData, loadGameData, initTONConnect, и т.д.)
+        // ОБНОВИТЬ ОТОБРАЖЕНИЕ SUPPLY ИЗ TELEGRAM STORAGE
+        async function updateGiftSupplies() {
+            try {
+                const globalSupply = await TELEGRAM_STORAGE.getGlobalSupply();
+                
+                Object.keys(GIFTS_DATA).forEach(giftId => {
+                    const purchased = globalSupply[giftId] || 0;
+                    const remaining = GIFTS_DATA[giftId].totalSupply - purchased;
+                    
+                    document.getElementById(`${giftId}-stock`).textContent = 
+                        `${remaining} of ${GIFTS_DATA[giftId].totalSupply}`;
+                        
+                    // Disable buy button if out of stock
+                    const buyButton = document.getElementById(`buy-${giftId}`);
+                    if (buyButton && remaining <= 0) {
+                        buyButton.disabled = true;
+                        buyButton.innerHTML = '<i class="fas fa-times"></i><span>Out of Stock</span>';
+                    } else if (buyButton) {
+                        buyButton.disabled = false;
+                        // Восстанавливаем оригинальный текст кнопки
+                        if (GIFTS_DATA[giftId].currency === 'DREVO') {
+                            buyButton.innerHTML = '<i class="fas fa-coins"></i><span>Buy for ' + GIFTS_DATA[giftId].price + ' DREVO</span>';
+                        } else {
+                            buyButton.innerHTML = '<i class="fab fa-toncoin"></i><span>Buy for ' + GIFTS_DATA[giftId].price + ' TON</span>';
+                        }
+                    }
+                });
+                
+            } catch (error) {
+                console.error('Error updating gift supplies:', error);
+            }
+        }
+        
+        // Get global promo codes
+        function getGlobalPromos() {
+            const saved = localStorage.getItem(GLOBAL_PROMO_KEY);
+            if (saved) {
+                return JSON.parse(saved);
+            } else {
+                const initialPromos = {
+                    'CLANFFYS': { reward: 100000, maxUses: 0, usedBy: [] }
+                };
+                saveGlobalPromos(initialPromos);
+                return initialPromos;
+            }
+        }
+        
+        // Save global promo codes
+        function saveGlobalPromos(promos) {
+            localStorage.setItem(GLOBAL_PROMO_KEY, JSON.stringify(promos));
+        }
         
         // Initialize TON Connect
         async function initTONConnect() {
@@ -1506,7 +1610,6 @@
             const savedData = localStorage.getItem('drevo_game_data_' + userData.id);
             if (savedData) {
                 const parsed = JSON.parse(savedData);
-                // Force new energy limit for all users
                 parsed.energy = 10000;
                 parsed.maxEnergy = 10000;
                 Object.assign(gameData, parsed);
@@ -1817,10 +1920,13 @@
                 `;
             }
             
-            const purchased = supplyData[gift.id] || 0;
-            const remaining = giftData.totalSupply - purchased;
-            document.getElementById('modal-availability').textContent = 
-                `${purchased} / ${giftData.totalSupply} sold`;
+            // Получаем актуальный supply из Telegram Storage
+            TELEGRAM_STORAGE.getGlobalSupply().then(globalSupply => {
+                const purchased = globalSupply[gift.id] || 0;
+                const remaining = giftData.totalSupply - purchased;
+                document.getElementById('modal-availability').textContent = 
+                    `${remaining} of ${giftData.totalSupply} available`;
+            });
             
             document.getElementById('gift-modal').classList.add('active');
         }
@@ -1830,29 +1936,36 @@
             document.getElementById('gift-modal').classList.remove('active');
         }
         
-        // Buy gift
+        // Buy gift - ОБНОВЛЯЕТ SUPPLY ДЛЯ ВСЕХ ЧЕРЕЗ TELEGRAM STORAGE
         async function buyGift(giftId) {
             const gift = GIFTS_DATA[giftId];
-            const purchased = supplyData[giftId] || 0;
-            const remaining = gift.totalSupply - purchased;
-            
-            if (remaining <= 0) {
-                tg.showPopup({
-                    title: 'Out of Stock',
-                    message: 'This gift is no longer available!',
-                    buttons: [{id: 'ok', type: 'default', text: 'OK'}]
-                });
-                return;
-            }
             
             if (isVIP) {
                 // VIP gets it for free
-                processGiftPurchase(giftId, null, true);
+                const result = await TELEGRAM_STORAGE.addPurchase(giftId);
+                if (result.success) {
+                    processGiftPurchase(giftId, null, true);
+                } else {
+                    tg.showPopup({
+                        title: 'Purchase Failed',
+                        message: result.message,
+                        buttons: [{id: 'ok', type: 'default', text: 'OK'}]
+                    });
+                }
             } else if (gift.currency === 'DREVO') {
                 // Buy with DREVO coins
                 if (gameData.balance >= gift.price) {
-                    gameData.balance -= gift.price;
-                    processGiftPurchase(giftId, null, false);
+                    const result = await TELEGRAM_STORAGE.addPurchase(giftId);
+                    if (result.success) {
+                        gameData.balance -= gift.price;
+                        processGiftPurchase(giftId, null, false);
+                    } else {
+                        tg.showPopup({
+                            title: 'Purchase Failed',
+                            message: result.message,
+                            buttons: [{id: 'ok', type: 'default', text: 'OK'}]
+                        });
+                    }
                 } else {
                     tg.showPopup({
                         title: 'Not Enough Coins',
@@ -1883,7 +1996,17 @@
                     };
                     
                     const result = await tonConnectUI.sendTransaction(transaction);
-                    processGiftPurchase(giftId, result, false);
+                    const supplyResult = await TELEGRAM_STORAGE.addPurchase(giftId);
+                    
+                    if (supplyResult.success) {
+                        processGiftPurchase(giftId, result, false);
+                    } else {
+                        tg.showPopup({
+                            title: 'Purchase Failed',
+                            message: supplyResult.message,
+                            buttons: [{id: 'ok', type: 'default', text: 'OK'}]
+                        });
+                    }
                     
                 } catch (error) {
                     console.error('Transaction error:', error);
@@ -1902,10 +2025,6 @@
         function processGiftPurchase(giftId, transactionResult = null, isFree = false) {
             const gift = GIFTS_DATA[giftId];
             
-            // Обновляем локальный supply (в реальном приложении это должно обновляться на сервере)
-            supplyData[giftId] = (supplyData[giftId] || 0) + 1;
-            updateGiftSupplies();
-            
             const purchaseItem = {
                 id: giftId,
                 purchaseDate: new Date().toISOString(),
@@ -1915,6 +2034,7 @@
             userGifts.push(purchaseItem);
             saveUserGifts();
             updateDisplay();
+            updateGiftSupplies();
             
             tg.showPopup({
                 title: 'Purchase Complete!',
@@ -1983,25 +2103,6 @@
                 message: `You received ${promo.reward} coins!`,
                 buttons: [{id: 'ok', type: 'default', text: 'OK'}]
             });
-        }
-        
-        // Get global promo codes
-        function getGlobalPromos() {
-            const saved = localStorage.getItem(GLOBAL_PROMO_KEY);
-            if (saved) {
-                return JSON.parse(saved);
-            } else {
-                const initialPromos = {
-                    'CLANFFYS': { reward: 100000, maxUses: 0, usedBy: [] }
-                };
-                saveGlobalPromos(initialPromos);
-                return initialPromos;
-            }
-        }
-        
-        // Save global promo codes
-        function saveGlobalPromos(promos) {
-            localStorage.setItem(GLOBAL_PROMO_KEY, JSON.stringify(promos));
         }
         
         // Add coins (admin function)
