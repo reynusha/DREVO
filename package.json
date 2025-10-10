@@ -1,11 +1,17 @@
 {
-  "name": "drevo-server",
-  "version": "1.0.0",
-  "type": "module",
+  "name": "drevo-messenger-demo",
+  "version": "0.1.0",
+  "private": true,
   "scripts": {
-    "start": "node server.js"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 5000"
   },
   "dependencies": {
-    "express": "^4.18.2"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
   }
 }
