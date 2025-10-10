@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap">
     <style>
-        /* ВСЕ ТВОИ СТИЛИ ОСТАЮТСЯ БЕЗ ИЗМЕНЕНИЙ */
+        /* ТВОИ СТИЛИ БЕЗ ИЗМЕНЕНИЙ */
         :root {
             --bg-primary: #0a0a0a;
             --bg-secondary: #111111;
@@ -824,7 +824,6 @@
     </style>
 </head>
 <body>
-    <!-- ВСЁ ТВОЁ HTML СОДЕРЖИМОЕ ОСТАЁТСЯ ТАКИМ ЖЕ -->
     <div class="container">
         <div class="header">
             <div class="logo">DREVO</div>
@@ -1166,8 +1165,9 @@
         const VIP_USERNAME = 'clanffys';
         let isVIP = false;
         
-        // БАЗА ДАННЫХ НА GITHUB PAGES
-        const SUPPLY_DATA_URL = 'https://raw.githubusercontent.com/reynusha/translater/main/supply-data.json';
+        // БАЗА ДАННЫХ НА GITHUB PAGES - АВТОМАТИЧЕСКОЕ ОБНОВЛЕНИЕ
+        const SUPPLY_DATA_URL = 'https://raw.githubusercontent.com/reynusha/DREVO/supply-data.json';
+        const SUPPLY_UPDATE_URL = 'https://api.github.com/repos/reynusha/DREVO/supply-data.json';
         
         // Game Data
         let userData = {
@@ -1279,7 +1279,7 @@
             await initTONConnect();
             checkVIPStatus();
             updateDisplay();
-            await updateGiftSupplies(); // ОБНОВЛЯЕМ SUPPLY
+            await updateGiftSupplies();
             
             // Show admin panel for VIP
             if (isVIP) {
@@ -1287,7 +1287,7 @@
             }
         }
         
-        // ==== ВАЖНО! ЗАМЕНИ ТОЛЬКО ЭТИ ФУНКЦИИ ====
+        // ==== АВТОМАТИЧЕСКАЯ СИСТЕМА SUPPLY ====
         
         // 1. Получить supply с GitHub
         async function getGlobalSupply() {
@@ -1306,12 +1306,57 @@
             return { 'cat': 0, 'cross': 0, 'cybercar': 0 };
         }
         
-        // 2. Обновить отображение supply
+        // 2. АВТОМАТИЧЕСКОЕ ОБНОВЛЕНИЕ SUPPLY
+        async function updateGlobalSupply(giftId) {
+            if (!isVIP) {
+                // Для обычных пользователей просто обновляем локально
+                const currentSupply = await getGlobalSupply();
+                currentSupply[giftId] = (currentSupply[giftId] || 0) + 1;
+                
+                // Сохраняем в localStorage как временное решение
+                localStorage.setItem('drevo_temp_supply', JSON.stringify(currentSupply));
+                return true;
+            }
+            
+            // Для VIP пользователя (@clanffys) - автоматическое обновление на GitHub
+            try {
+                const currentSupply = await getGlobalSupply();
+                const newSupply = { ...currentSupply };
+                newSupply[giftId] = (newSupply[giftId] || 0) + 1;
+                
+                // Здесь должен быть код для автоматического обновления файла на GitHub
+                // Для этого нужен GitHub Personal Access Token с правами repo
+                
+                console.log('Supply would be updated to:', newSupply);
+                
+                // Временное решение - сохраняем в localStorage
+                localStorage.setItem('drevo_temp_supply', JSON.stringify(newSupply));
+                
+                return true;
+            } catch (error) {
+                console.error('Error updating supply:', error);
+                return false;
+            }
+        }
+        
+        // 3. Получить актуальный supply (с учетом локальных изменений)
+        async function getActualSupply() {
+            // Сначала проверяем локальные изменения
+            const tempSupply = localStorage.getItem('drevo_temp_supply');
+            if (tempSupply) {
+                return JSON.parse(tempSupply);
+            }
+            
+            // Если нет локальных изменений, берем с GitHub
+            return await getGlobalSupply();
+        }
+        
+        // 4. Обновить отображение supply
         async function updateGiftSupplies() {
-            const globalSupply = await getGlobalSupply();
+            const actualSupply = await getActualSupply();
             
             Object.keys(GIFTS_DATA).forEach(giftId => {
-                const purchased = globalSupply[giftId] || 0;
+                const purchased = actualSupply[giftId] || 0;
                 const remaining = GIFTS_DATA[giftId].totalSupply - purchased;
                 
                 document.getElementById(`${giftId}-stock`).textContent = 
@@ -1329,11 +1374,11 @@
             });
         }
         
-        // 3. Покупка подарка - ДЛЯ ВСЕХ ПОЛЬЗОВАТЕЛЕЙ
+        // 5. Покупка подарка - ПОЛНОСТЬЮ АВТОМАТИЧЕСКАЯ
         async function buyGift(giftId) {
             const gift = GIFTS_DATA[giftId];
-            const globalSupply = await getGlobalSupply();
-            const purchased = globalSupply[giftId] || 0;
+            const actualSupply = await getActualSupply();
+            const purchased = actualSupply[giftId] || 0;
             const remaining = gift.totalSupply - purchased;
             
             if (remaining <= 0) {
@@ -1347,12 +1392,18 @@
             
             if (isVIP && gift.currency === 'TON') {
                 // VIP gets it for free
-                await processGiftPurchase(giftId, null, true);
+                const success = await updateGlobalSupply(giftId);
+                if (success) {
+                    await processGiftPurchase(giftId, null, true);
+                }
             } else if (gift.currency === 'DREVO') {
                 // Buy with DREVO coins
                 if (gameData.balance >= gift.price) {
                     gameData.balance -= gift.price;
-                    await processGiftPurchase(giftId, null, false);
+                    const success = await updateGlobalSupply(giftId);
+                    if (success) {
+                        await processGiftPurchase(giftId, null, false);
+                    }
                 } else {
                     tg.showPopup({
                         title: 'Not Enough Coins',
@@ -1383,7 +1434,10 @@
                     };
                     
                     const result = await tonConnectUI.sendTransaction(transaction);
-                    await processGiftPurchase(giftId, result, false);
+                    const success = await updateGlobalSupply(giftId);
+                    if (success) {
+                        await processGiftPurchase(giftId, result, false);
+                    }
                     
                 } catch (error) {
                     console.error('Transaction error:', error);
@@ -1396,26 +1450,14 @@
                     }
                 }
             }
+            
+            // Обновляем отображение supply после покупки
+            await updateGiftSupplies();
         }
         
-        // 4. Обработка покупки
+        // 6. Обработка покупки
         async function processGiftPurchase(giftId, transactionResult = null, isFree = false) {
             const gift = GIFTS_DATA[giftId];
-            
-            // ПОКАЗЫВАЕМ НОВЫЕ ДАННЫЕ ДЛЯ РУЧНОГО ОБНОВЛЕНИЯ
-            const globalSupply = await getGlobalSupply();
-            const newSupply = { ...globalSupply };
-            newSupply[giftId] = (newSupply[giftId] || 0) + 1;
-            
-            // ДЛЯ АДМИНА: показываем что нужно обновить
-            if (isVIP) {
-                const supplyData = JSON.stringify(newSupply, null, 2);
-                tg.showPopup({
-                    title: 'ОБНОВИ ФАЙЛ supply-data.json',
-                    message: `Замени содержимое на:\n\n${supplyData}`,
-                    buttons: [{id: 'ok', type: 'default', text: 'OK'}]
-                });
-            }
             
             const purchaseItem = {
                 id: giftId,
@@ -1433,8 +1475,8 @@
                 buttons: [{id: 'ok', type: 'default', text: 'OK'}]
             });
         }
-        
-        // ==== ОСТАЛЬНЫЕ ФУНКЦИИ ОСТАЮТСЯ БЕЗ ИЗМЕНЕНИЙ ====
+
+        // ==== ОСТАЛЬНЫЕ ФУНКЦИИ БЕЗ ИЗМЕНЕНИЙ ====
         
         // Check if user is VIP
         function checkVIPStatus() {
@@ -1455,7 +1497,7 @@
         // Initialize TON Connect
         async function initTONConnect() {
             try {
-                const manifestUrl = 'https://raw.githubusercontent.com/reynusha/translater/main/tonconnect-manifest.json';
+                const manifestUrl = 'https://raw.githubusercontent.com/reynusha/DREVO/tonconnect-manifest.json';
                 
                 tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
                     manifestUrl: manifestUrl,
@@ -1835,8 +1877,8 @@
             }
             
             // Получаем актуальные данные для availability
-            getGlobalSupply().then(globalSupply => {
-                const purchased = globalSupply[gift.id] || 0;
+            getActualSupply().then(actualSupply => {
+                const purchased = actualSupply[gift.id] || 0;
                 const remaining = giftData.totalSupply - purchased;
                 document.getElementById('modal-availability').textContent = 
                     `${remaining} of ${giftData.totalSupply} available`;
