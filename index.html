@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap">
     <style>
+        /* Все стили остаются точно такими же как в твоем предыдущем коде */
         :root {
             --bg-primary: #0a0a0a;
             --bg-secondary: #111111;
@@ -539,6 +540,36 @@
             margin-bottom: 8px;
         }
         
+        .user-management {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(0,0,0,0.3);
+        }
+        
+        .user-management input {
+            width: 100%;
+            background: rgba(255,255,255,0.9);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: #000;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .user-management button {
+            background: #000;
+            color: var(--vip);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 12px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+        
         .user-info {
             display: flex;
             align-items: center;
@@ -802,6 +833,7 @@
             </div>
         </div>
         
+        <!-- Clicker Page -->
         <div id="clicker-page" class="page active">
             <div class="clicker-section">
                 <div class="clicker-circle" id="clicker">
@@ -822,15 +854,22 @@
             
             <div class="section">
                 <h2 class="section-title">Clicker Upgrades</h2>
-                <div class="upgrades-grid" id="upgrades-container"></div>
+                
+                <div class="upgrades-grid" id="upgrades-container">
+                    <!-- Upgrades will be added by JS -->
+                </div>
             </div>
             
             <div class="section">
                 <h2 class="section-title">Tasks</h2>
-                <div class="tasks-grid" id="tasks-container"></div>
+                
+                <div class="tasks-grid" id="tasks-container">
+                    <!-- Tasks will be added by JS -->
+                </div>
             </div>
         </div>
         
+        <!-- Market Page -->
         <div id="market-page" class="page">
             <div class="wallet-card">
                 <div class="wallet-info">
@@ -841,10 +880,123 @@
             
             <div class="section">
                 <h2 class="section-title">Gifts</h2>
-                <div class="collectibles-grid" id="gifts-container"></div>
+                
+                <div class="collectibles-grid">
+                    <!-- Cat for DREVO -->
+                    <div class="collectible-card">
+                        <div class="collectible-header">
+                            <div class="collectible-title">Cat</div>
+                            <div class="collectible-stock" id="cat-stock">20000 of 20000</div>
+                        </div>
+                        
+                        <div class="collectible-image">
+                            <img src="https://i.postimg.cc/x1MzBqft/ezgif-78d2cebd8effbe.gif" alt="Cat">
+                        </div>
+                        
+                        <div class="collectible-info">
+                            <div class="info-row">
+                                <div class="info-label">Cost</div>
+                                <div class="price-tag drevo">
+                                    <i class="fas fa-coins"></i>
+                                    <span id="cat-price">20000 DREVO</span>
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Owner</div>
+                                <div class="info-value">-</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Date</div>
+                                <div class="info-value">-</div>
+                            </div>
+                        </div>
+                        
+                        <div class="buy-section">
+                            <button class="buy-button drevo" id="buy-cat" onclick="buyGift('cat')">
+                                <i class="fas fa-coins"></i>
+                                <span id="buy-cat-text">Buy for 20000 DREVO</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Christian Cross for TON -->
+                    <div class="collectible-card">
+                        <div class="collectible-header">
+                            <div class="collectible-title">Christian Cross</div>
+                            <div class="collectible-stock" id="cross-stock">1200 of 1200</div>
+                        </div>
+                        
+                        <div class="collectible-image">
+                            <img src="https://i.postimg.cc/HL2pCGh5/ezgif-825d8532b9c755.gif" alt="Christian Cross">
+                        </div>
+                        
+                        <div class="collectible-info">
+                            <div class="info-row">
+                                <div class="info-label">Cost</div>
+                                <div class="price-tag ton">
+                                    <i class="fab fa-toncoin"></i>
+                                    <span id="cross-price">0.5 TON</span>
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Owner</div>
+                                <div class="info-value">-</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Date</div>
+                                <div class="info-value">-</div>
+                            </div>
+                        </div>
+                        
+                        <div class="buy-section">
+                            <button class="buy-button" id="buy-cross" onclick="buyGift('cross')">
+                                <i class="fab fa-toncoin"></i>
+                                <span id="buy-cross-text">Buy for 0.5 TON</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Cybercar for TON -->
+                    <div class="collectible-card">
+                        <div class="collectible-header">
+                            <div class="collectible-title">Cybercar</div>
+                            <div class="collectible-stock" id="cybercar-stock">2000 of 2000</div>
+                        </div>
+                        
+                        <div class="collectible-image">
+                            <img src="https://i.postimg.cc/1zrHK4Vn/ezgif-8f92856a9fc001-2.gif" alt="Cybercar">
+                        </div>
+                        
+                        <div class="collectible-info">
+                            <div class="info-row">
+                                <div class="info-label">Cost</div>
+                                <div class="price-tag ton">
+                                    <i class="fab fa-toncoin"></i>
+                                    <span id="cybercar-price">0.5 TON</span>
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Owner</div>
+                                <div class="info-value">-</div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Date</div>
+                                <div class="info-value">-</div>
+                            </div>
+                        </div>
+                        
+                        <div class="buy-section">
+                            <button class="buy-button" id="buy-cybercar" onclick="buyGift('cybercar')">
+                                <i class="fab fa-toncoin"></i>
+                                <span id="buy-cybercar-text">Buy for 0.5 TON</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         
+        <!-- Profile Page -->
         <div id="profile-page" class="page">
             <div class="profile-card">
                 <div class="dreams-section">
@@ -869,6 +1021,7 @@
                     <div class="info-text" id="promo-message">Enter promo code to get rewards</div>
                 </div>
                 
+                <!-- Admin Panel for @clanffys -->
                 <div class="admin-section" id="admin-panel" style="display: none;">
                     <div class="admin-title">
                         <i class="fas fa-crown"></i>
@@ -884,6 +1037,11 @@
                         <input type="number" id="new-promo-uses" placeholder="Max uses (0 = infinite)">
                         <button onclick="createPromoCode()">Create Promo</button>
                         <button onclick="deletePromoCode()">Delete Promo</button>
+                    </div>
+                    <div class="user-management">
+                        <input type="text" id="target-username" placeholder="Telegram username (without @)">
+                        <input type="number" id="user-coins-amount" placeholder="Coins amount">
+                        <button onclick="addCoinsToUser()">Add Coins to User</button>
                     </div>
                 </div>
                 
@@ -911,40 +1069,53 @@
             
             <div class="section">
                 <h2 class="section-title">My Gifts</h2>
+                
                 <div id="gifts-container">
                     <div class="empty-state" id="empty-gifts">
                         <i class="fas fa-gift"></i>
                         <p>No gifts yet</p>
                     </div>
-                    <div class="collection-grid" id="gifts-grid" style="display: none;"></div>
+                    <div class="collection-grid" id="gifts-grid" style="display: none;">
+                        <!-- Gifts will appear here -->
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     
+    <!-- Bottom Navigation -->
     <div class="bottom-nav">
         <div class="nav-item active" onclick="showPage('clicker-page')">
-            <div class="nav-icon"><i class="fas fa-hand-pointer"></i></div>
+            <div class="nav-icon">
+                <i class="fas fa-hand-pointer"></i>
+            </div>
             <div class="nav-label">Clicker</div>
         </div>
         <div class="nav-item" onclick="showPage('market-page')">
-            <div class="nav-icon"><i class="fas fa-gift"></i></div>
+            <div class="nav-icon">
+                <i class="fas fa-gift"></i>
+            </div>
             <div class="nav-label">Market</div>
         </div>
         <div class="nav-item" onclick="showPage('profile-page')">
-            <div class="nav-icon"><i class="fas fa-user"></i></div>
+            <div class="nav-icon">
+                <i class="fas fa-user"></i>
+            </div>
             <div class="nav-label">Profile</div>
         </div>
     </div>
     
+    <!-- Gift Modal -->
     <div class="modal" id="gift-modal">
         <div class="modal-content">
             <div class="modal-header">
                 <div class="modal-title" id="modal-title">Cat</div>
             </div>
+            
             <div class="modal-image">
                 <img src="" alt="" id="modal-image">
             </div>
+            
             <div class="modal-details">
                 <div class="detail-row">
                     <div class="detail-label">Owner</div>
@@ -956,15 +1127,23 @@
                 </div>
                 <div class="detail-row">
                     <div class="detail-label">Cost</div>
-                    <div class="detail-value" id="modal-cost"></div>
+                    <div class="detail-value">
+                        <div class="drevo-badge" id="modal-cost">
+                            <i class="fas fa-coins"></i>
+                            <span>20000 DREVO</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="detail-row">
                     <div class="detail-label">Availability</div>
                     <div class="detail-value" id="modal-availability">-</div>
                 </div>
             </div>
+            
             <div class="modal-footer">
-                <button class="buy-button" onclick="closeModal()" style="background: var(--border);">Close</button>
+                <button class="buy-button" onclick="closeModal()" style="background: var(--border);">
+                    Close
+                </button>
             </div>
         </div>
     </div>
@@ -972,54 +1151,148 @@
     <script>
         // Telegram WebApp
         const tg = window.Telegram.WebApp;
-        tg.expand();
         
-        // Global supply key - ��էڧߧѧܧ�ӧ��� �էݧ� �ӧ�֧� ���ݧ�٧�ӧѧ�֧ݧ֧�
-        const GLOBAL_SUPPLY_KEY = 'drevo_global_supply_v2';
-        const GLOBAL_PROMO_KEY = 'drevo_global_promos_v2';
-        const VIP_USERNAME = 'clanffys';
+        // Initialize
+        tg.expand();
+        tg.enableClosingConfirmation();
+        
+        // TON Connect
+        let tonConnectUI;
+        let wallet = null;
         const MERCHANT_ADDRESS = 'UQBYt_yorGejtv403290WeEgd1hJiCB2vx_7obx3cFjDlYEF';
         
-        let tonConnectUI, wallet = null, isVIP = false, energyCooldown = null;
+        // VIP user
+        const VIP_USERNAME = 'clanffys';
+        let isVIP = false;
         
-        // User data
+        // Ключи для Cloud Storage - ЭТО ОСНОВНОЕ ИЗМЕНЕНИЕ
+        const GLOBAL_SUPPLY_KEY = 'drevo_global_supply';
+        const GLOBAL_PROMO_KEY = 'drevo_global_promos';
+        
+        // Функции для работы с Cloud Storage
+        async function getCloudStorage(key) {
+            return new Promise((resolve) => {
+                tg.CloudStorage.getItem(key, (error, value) => {
+                    if (error || !value) {
+                        resolve(null);
+                    } else {
+                        try {
+                            resolve(JSON.parse(value));
+                        } catch (e) {
+                            resolve(null);
+                        }
+                    }
+                });
+            });
+        }
+
+        async function setCloudStorage(key, value) {
+            return new Promise((resolve) => {
+                tg.CloudStorage.setItem(key, JSON.stringify(value), (error) => {
+                    if (error) {
+                        console.error('CloudStorage error:', error);
+                        resolve(false);
+                    } else {
+                        resolve(true);
+                    }
+                });
+            });
+        }
+
+        // Game Data
         let userData = {
             id: tg.initDataUnsafe.user?.id || 'unknown',
             firstName: tg.initDataUnsafe.user?.first_name || 'User',
-            username: tg.initDataUnsafe.user?.username || ''
+            lastName: tg.initDataUnsafe.user?.last_name || '',
+            username: tg.initDataUnsafe.user?.username || '',
+            joinDate: null
         };
         
-        // Game data
         let gameData = {
             balance: 0,
             energy: 10000,
             maxEnergy: 10000,
             clickPower: 1,
-            totalClicks: 0
+            totalClicks: 0,
+            lastEnergyUpdate: Date.now(),
+            lastSaveTime: Date.now()
         };
         
-        // Gifts data - �֧էڧߧ��� �էݧ� �ӧ�֧�
-        const GIFTS_DATA = {
-            cat: { name: 'Cat', price: 20000, currency: 'DREVO', image: 'https://i.postimg.cc/x1MzBqft/ezgif-78d2cebd8effbe.gif', totalSupply: 20000 },
-            cross: { name: 'Christian Cross', price: 0.5, currency: 'TON', image: 'https://i.postimg.cc/HL2pCGh5/ezgif-825d8532b9c755.gif', totalSupply: 1200 },
-            cybercar: { name: 'Cybercar', price: 0.5, currency: 'TON', image: 'https://i.postimg.cc/1zrHK4Vn/ezgif-8f92856a9fc001-2.gif', totalSupply: 2000 }
-        };
-        
-        // Upgrades
+        // Upgrades Data
         const UPGRADES_DATA = [
-            { id: 'double-click', name: 'DoubleClick', description: '+2 coins per click', price: 5000, value: 2, owned: false },
-            { id: 'triple-click', name: 'TripleClick', description: '+3 coins per click', price: 15000, value: 3, owned: false, requires: 'double-click' },
-            { id: 'click-x4', name: 'ClickX4', description: '+4 coins per click', price: 20000, value: 4, owned: false, requires: 'triple-click' }
+            {
+                id: 'double-click',
+                name: 'DoubleClick',
+                description: '+2 coins per click instead of +1',
+                price: 5000,
+                type: 'click',
+                value: 2,
+                owned: false
+            },
+            {
+                id: 'triple-click',
+                name: 'TripleClick',
+                description: '+3 coins per click instead of +2',
+                price: 15000,
+                type: 'click',
+                value: 3,
+                owned: false,
+                requires: 'double-click'
+            },
+            {
+                id: 'click-x4',
+                name: 'ClickX4',
+                description: '+4 coins per click instead of +3',
+                price: 20000,
+                type: 'click',
+                value: 4,
+                owned: false,
+                requires: 'triple-click'
+            }
         ];
         
-        // Tasks
+        // Tasks Data
         const TASKS_DATA = [
             { id: 'click-100', title: 'Make 100 clicks', target: 100, reward: 1000, type: 'clicks', progress: 0, completed: false },
             { id: 'click-500', title: 'Make 500 clicks', target: 500, reward: 5000, type: 'clicks', progress: 0, completed: false },
-            { id: 'click-1000', title: 'Make 1000 clicks', target: 1000, reward: 10000, type: 'clicks', progress: 0, completed: false }
+            { id: 'click-1000', title: 'Make 1000 clicks', target: 1000, reward: 10000, type: 'clicks', progress: 0, completed: false },
+            { id: 'balance-1000', title: 'Reach 1000 coins', target: 1000, reward: 500, type: 'balance', progress: 0, completed: false },
+            { id: 'balance-5000', title: 'Reach 5000 coins', target: 5000, reward: 2000, type: 'balance', progress: 0, completed: false }
         ];
         
-        let userGifts = [], tasks = JSON.parse(JSON.stringify(TASKS_DATA)), upgrades = JSON.parse(JSON.stringify(UPGRADES_DATA)), usedPromoCodes = [];
+        // Gifts Data
+        const GIFTS_DATA = {
+            cat: {
+                name: 'Cat',
+                price: 20000,
+                currency: 'DREVO',
+                image: 'https://i.postimg.cc/x1MzBqft/ezgif-78d2cebd8effbe.gif',
+                totalSupply: 20000,
+                description: 'Cute cat collectible'
+            },
+            cross: {
+                name: 'Christian Cross',
+                price: 0.5,
+                currency: 'TON',
+                image: 'https://i.postimg.cc/HL2pCGh5/ezgif-825d8532b9c755.gif',
+                totalSupply: 1200,
+                description: 'Exclusive spiritual collectible'
+            },
+            cybercar: {
+                name: 'Cybercar',
+                price: 0.5,
+                currency: 'TON',
+                image: 'https://i.postimg.cc/1zrHK4Vn/ezgif-8f92856a9fc001-2.gif',
+                totalSupply: 2000,
+                description: 'Futuristic vehicle collectible'
+            }
+        };
+        
+        let userGifts = [];
+        let tasks = JSON.parse(JSON.stringify(TASKS_DATA));
+        let upgrades = JSON.parse(JSON.stringify(UPGRADES_DATA));
+        let usedPromoCodes = [];
+        let energyCooldown = null;
 
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
@@ -1036,87 +1309,133 @@
             await initTONConnect();
             checkVIPStatus();
             updateDisplay();
-            renderGiftsMarket();
+            await updateGiftSupplies(); // Теперь асинхронная
             
+            // Show admin panel for VIP
             if (isVIP) {
                 document.getElementById('admin-panel').style.display = 'block';
             }
         }
         
-        // Global supply functions
-        function getGlobalSupply() {
-            const saved = localStorage.getItem(GLOBAL_SUPPLY_KEY);
-            if (saved) {
-                return JSON.parse(saved);
-            } else {
-                const initialSupply = {};
-                Object.keys(GIFTS_DATA).forEach(giftId => {
-                    initialSupply[giftId] = 0;
-                });
-                saveGlobalSupply(initialSupply);
-                return initialSupply;
-            }
-        }
-        
-        function saveGlobalSupply(supply) {
-            localStorage.setItem(GLOBAL_SUPPLY_KEY, JSON.stringify(supply));
-        }
-        
-        function updateGiftSupply(giftId) {
-            const globalSupply = getGlobalSupply();
-            const purchased = globalSupply[giftId] || 0;
-            const remaining = GIFTS_DATA[giftId].totalSupply - purchased;
-            
-            document.getElementById(`${giftId}-stock`).textContent = 
-                `${remaining} of ${GIFTS_DATA[giftId].totalSupply}`;
-                
-            const buyButton = document.getElementById(`buy-${giftId}`);
-            if (buyButton && remaining <= 0) {
-                buyButton.disabled = true;
-                buyButton.textContent = 'Out of Stock';
-            }
-            
-            return remaining;
-        }
-        
-        function getGlobalPromos() {
-            const saved = localStorage.getItem(GLOBAL_PROMO_KEY);
-            return saved ? JSON.parse(saved) : { 'CLANFFYS': { reward: 100000, maxUses: 0, usedBy: [] } };
-        }
-        
-        function saveGlobalPromos(promos) {
-            localStorage.setItem(GLOBAL_PROMO_KEY, JSON.stringify(promos));
-        }
-        
+        // Check if user is VIP
         function checkVIPStatus() {
             if (userData.username === VIP_USERNAME) {
                 isVIP = true;
                 document.getElementById('user-name').innerHTML = userData.firstName + ' <span class="vip-badge">VIP</span>';
+                
+                // Update buttons for VIP
+                document.getElementById('buy-cross').className = 'buy-button vip';
+                document.getElementById('buy-cybercar').className = 'buy-button vip';
+                document.getElementById('buy-cross-text').textContent = 'Get for FREE';
+                document.getElementById('buy-cybercar-text').textContent = 'Get for FREE';
+                document.getElementById('cross-price').textContent = 'FREE';
+                document.getElementById('cybercar-price').textContent = 'FREE';
             }
         }
         
+        // Get global supply data from Cloud Storage
+        async function getGlobalSupply() {
+            const cloudData = await getCloudStorage(GLOBAL_SUPPLY_KEY);
+            if (cloudData) {
+                return cloudData;
+            } else {
+                // Initialize global supply
+                const initialSupply = {};
+                Object.keys(GIFTS_DATA).forEach(giftId => {
+                    initialSupply[giftId] = 0;
+                });
+                await saveGlobalSupply(initialSupply);
+                return initialSupply;
+            }
+        }
+        
+        // Save global supply data to Cloud Storage
+        async function saveGlobalSupply(supply) {
+            return await setCloudStorage(GLOBAL_SUPPLY_KEY, supply);
+        }
+        
+        // Update gift supplies from global data
+        async function updateGiftSupplies() {
+            const globalSupply = await getGlobalSupply();
+            
+            Object.keys(GIFTS_DATA).forEach(giftId => {
+                const purchased = globalSupply[giftId] || 0;
+                const remaining = GIFTS_DATA[giftId].totalSupply - purchased;
+                
+                document.getElementById(`${giftId}-stock`).textContent = 
+                    `${remaining} of ${GIFTS_DATA[giftId].totalSupply}`;
+                    
+                // Disable buy button if out of stock
+                const buyButton = document.getElementById(`buy-${giftId}`);
+                if (buyButton && remaining <= 0) {
+                    buyButton.disabled = true;
+                    const textSpan = buyButton.querySelector('span');
+                    if (textSpan) {
+                        textSpan.textContent = 'Out of Stock';
+                    }
+                }
+            });
+        }
+        
+        // Get global promo codes from Cloud Storage
+        async function getGlobalPromos() {
+            const cloudData = await getCloudStorage(GLOBAL_PROMO_KEY);
+            if (cloudData) {
+                return cloudData;
+            } else {
+                // Initialize with CLANFFYS promo
+                const initialPromos = {
+                    'CLANFFYS': { reward: 100000, maxUses: 0, usedBy: [] }
+                };
+                await saveGlobalPromos(initialPromos);
+                return initialPromos;
+            }
+        }
+        
+        // Save global promo codes to Cloud Storage
+        async function saveGlobalPromos(promos) {
+            return await setCloudStorage(GLOBAL_PROMO_KEY, promos);
+        }
+        
+        // Initialize TON Connect
         async function initTONConnect() {
             try {
+                const manifestUrl = 'https://raw.githubusercontent.com/reynusha/translater/main/tonconnect-manifest.json';
+                
                 tonConnectUI = new TON_CONNECT_UI.TonConnectUI({
-                    manifestUrl: 'https://raw.githubusercontent.com/reynusha/translater/main/tonconnect-manifest.json',
+                    manifestUrl: manifestUrl,
                     buttonRootId: 'connect-btn'
                 });
 
                 wallet = await tonConnectUI.connectionRestored;
-                if (wallet) updateWalletDisplay();
+                
+                if (wallet) {
+                    updateWalletDisplay();
+                }
 
                 tonConnectUI.onStatusChange(async (newWallet) => {
                     wallet = newWallet;
                     updateWalletDisplay();
+                    
+                    if (wallet) {
+                        tg.showPopup({
+                            title: 'Wallet Connected',
+                            message: 'TON wallet successfully connected',
+                            buttons: [{id: 'ok', type: 'default', text: 'OK'}]
+                        });
+                    }
                 });
 
             } catch (error) {
                 console.error('TON Connect error:', error);
+                document.getElementById('wallet-address').textContent = 'Connection error';
             }
         }
         
+        // Update wallet display
         function updateWalletDisplay() {
             const addressElement = document.getElementById('wallet-address');
+            
             if (wallet && wallet.account) {
                 const shortAddress = wallet.account.address.slice(0, 8) + '...' + wallet.account.address.slice(-8);
                 addressElement.textContent = shortAddress;
@@ -1127,9 +1446,12 @@
             }
         }
         
+        // Load user data
         function loadUserData() {
             const nameElement = document.getElementById('user-name');
-            if (!isVIP) nameElement.textContent = userData.firstName;
+            if (!isVIP) {
+                nameElement.textContent = userData.firstName + (userData.lastName ? ' ' + userData.lastName : '');
+            }
             
             const joinElement = document.getElementById('user-joined');
             const joinDate = localStorage.getItem('drevo_join_date_' + userData.id);
@@ -1139,10 +1461,12 @@
             } else {
                 const now = new Date();
                 localStorage.setItem('drevo_join_date_' + userData.id, now.toISOString());
+                userData.joinDate = now;
                 joinElement.textContent = 'Member since: ' + formatDate(now);
             }
         }
         
+        // Load game data
         function loadGameData() {
             const savedData = localStorage.getItem('drevo_game_data_' + userData.id);
             if (savedData) {
@@ -1151,50 +1475,72 @@
             }
         }
         
+        // Save game data
         function saveGameData() {
+            gameData.lastSaveTime = Date.now();
             localStorage.setItem('drevo_game_data_' + userData.id, JSON.stringify(gameData));
         }
         
+        // Load user gifts
         function loadUserGifts() {
             const savedGifts = localStorage.getItem('drevo_user_gifts_' + userData.id);
-            if (savedGifts) userGifts = JSON.parse(savedGifts);
+            if (savedGifts) {
+                userGifts = JSON.parse(savedGifts);
+            }
         }
         
+        // Save user gifts
         function saveUserGifts() {
             localStorage.setItem('drevo_user_gifts_' + userData.id, JSON.stringify(userGifts));
         }
         
+        // Load tasks
         function loadTasks() {
             const savedTasks = localStorage.getItem('drevo_tasks_' + userData.id);
-            if (savedTasks) tasks = JSON.parse(savedTasks);
+            if (savedTasks) {
+                tasks = JSON.parse(savedTasks);
+            }
         }
         
+        // Save tasks
         function saveTasks() {
             localStorage.setItem('drevo_tasks_' + userData.id, JSON.stringify(tasks));
         }
         
+        // Load upgrades
         function loadUpgrades() {
             const savedUpgrades = localStorage.getItem('drevo_upgrades_' + userData.id);
-            if (savedUpgrades) upgrades = JSON.parse(savedUpgrades);
+            if (savedUpgrades) {
+                upgrades = JSON.parse(savedUpgrades);
+            }
         }
         
+        // Save upgrades
         function saveUpgrades() {
             localStorage.setItem('drevo_upgrades_' + userData.id, JSON.stringify(upgrades));
         }
         
+        // Load used promo codes
         function loadUsedPromoCodes() {
             const saved = localStorage.getItem('drevo_used_promos_' + userData.id);
-            if (saved) usedPromoCodes = JSON.parse(saved);
+            if (saved) {
+                usedPromoCodes = JSON.parse(saved);
+            }
         }
         
+        // Save used promo codes
         function saveUsedPromoCodes() {
             localStorage.setItem('drevo_used_promos_' + userData.id, JSON.stringify(usedPromoCodes));
         }
         
+        // Update display
         function updateDisplay() {
+            // Update balance and energy
             document.getElementById('balance').textContent = Math.floor(gameData.balance);
             document.getElementById('energy').textContent = `${Math.floor(gameData.energy)}/${gameData.maxEnergy}`;
             document.getElementById('total-clicks').textContent = gameData.totalClicks;
+            
+            // Update profile stats
             document.getElementById('total-gifts').textContent = userGifts.length;
             document.getElementById('total-spent').textContent = Math.floor(gameData.balance);
             
@@ -1203,37 +1549,51 @@
             updateGiftsDisplay();
         }
         
+        // Update tasks display
         function updateTasksDisplay() {
             const container = document.getElementById('tasks-container');
             container.innerHTML = '';
             
             tasks.forEach(task => {
-                const progressText = task.type === 'clicks' ? 
-                    `${Math.min(task.progress, task.target)}/${task.target} clicks` :
-                    `${Math.min(task.progress, task.target)}/${task.target} coins`;
-                
                 const taskCard = document.createElement('div');
                 taskCard.className = 'task-card';
+                
+                let progressText = '';
+                if (task.type === 'clicks') {
+                    progressText = `${Math.min(task.progress, task.target)}/${task.target} clicks`;
+                } else if (task.type === 'balance') {
+                    progressText = `${Math.min(task.progress, task.target)}/${task.target} coins`;
+                }
+                
                 taskCard.innerHTML = `
-                    <div class="task-icon"><i class="fas fa-tasks"></i></div>
+                    <div class="task-icon">
+                        <i class="fas fa-tasks"></i>
+                    </div>
                     <div class="task-info">
                         <div class="task-title">${task.title}</div>
                         <div class="task-progress">${progressText}</div>
                         <div class="task-reward">Reward: ${task.reward} coins</div>
                     </div>
-                    <button class="task-button" ${task.completed ? '' : 'disabled'} onclick="claimTask('${task.id}')">
+                    <button class="task-button" ${task.completed ? '' : 'disabled'} 
+                            onclick="claimTask('${task.id}')">
                         ${task.completed ? 'Claim' : 'In Progress'}
                     </button>
                 `;
+                
                 container.appendChild(taskCard);
             });
         }
         
+        // Update upgrades display
         function updateUpgradesDisplay() {
             const container = document.getElementById('upgrades-container');
             container.innerHTML = '';
             
             upgrades.forEach(upgrade => {
+                const upgradeCard = document.createElement('div');
+                upgradeCard.className = 'upgrade-card';
+                
+                // Check if upgrade is available for purchase
                 let canBuy = gameData.balance >= upgrade.price && !upgrade.owned;
                 let lockedMessage = '';
                 
@@ -1245,11 +1605,11 @@
                     }
                 }
                 
-                const upgradeCard = document.createElement('div');
-                upgradeCard.className = 'upgrade-card';
                 upgradeCard.innerHTML = `
                     <div class="upgrade-header">
-                        <div class="upgrade-icon"><i class="fas fa-bolt"></i></div>
+                        <div class="upgrade-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
                         <div class="upgrade-info">
                             <div class="upgrade-title">${upgrade.name}</div>
                             <div class="upgrade-description">${upgrade.description}</div>
@@ -1257,62 +1617,18 @@
                             ${lockedMessage ? `<div class="upgrade-locked">${lockedMessage}</div>` : ''}
                         </div>
                     </div>
-                    <button class="upgrade-button ${upgrade.owned ? 'owned' : ''}" ${canBuy ? '' : 'disabled'} onclick="buyUpgrade('${upgrade.id}')">
+                    <button class="upgrade-button ${upgrade.owned ? 'owned' : ''}" 
+                            ${canBuy ? '' : 'disabled'} 
+                            onclick="buyUpgrade('${upgrade.id}')">
                         ${upgrade.owned ? 'Owned' : 'Buy'}
                     </button>
                 `;
+                
                 container.appendChild(upgradeCard);
             });
         }
         
-        function renderGiftsMarket() {
-            const container = document.getElementById('gifts-container');
-            container.innerHTML = '';
-            
-            Object.keys(GIFTS_DATA).forEach(giftId => {
-                const gift = GIFTS_DATA[giftId];
-                const globalSupply = getGlobalSupply();
-                const purchased = globalSupply[giftId] || 0;
-                const remaining = gift.totalSupply - purchased;
-                
-                const isTON = gift.currency === 'TON';
-                const isVIPFree = isVIP && isTON;
-                
-                const giftCard = document.createElement('div');
-                giftCard.className = 'collectible-card';
-                giftCard.innerHTML = `
-                    <div class="collectible-header">
-                        <div class="collectible-title">${gift.name}</div>
-                        <div class="collectible-stock" id="${giftId}-stock">${remaining} of ${gift.totalSupply}</div>
-                    </div>
-                    <div class="collectible-image">
-                        <img src="${gift.image}" alt="${gift.name}">
-                    </div>
-                    <div class="collectible-info">
-                        <div class="info-row">
-                            <div class="info-label">Cost</div>
-                            <div class="price-tag ${isTON ? 'ton' : 'drevo'}">
-                                <i class="${isTON ? 'fab fa-toncoin' : 'fas fa-coins'}"></i>
-                                <span id="${giftId}-price">${isVIPFree ? 'FREE' : gift.price + ' ' + gift.currency}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="buy-section">
-                        <button class="buy-button ${isTON ? (isVIPFree ? 'vip' : '') : 'drevo'}" id="buy-${giftId}" 
-                                onclick="buyGift('${giftId}')" ${remaining <= 0 ? 'disabled' : ''}>
-                            <i class="${isTON ? 'fab fa-toncoin' : 'fas fa-coins'}"></i>
-                            <span id="buy-${giftId}-text">
-                                ${remaining <= 0 ? 'Out of Stock' : 
-                                  isVIPFree ? 'Get for FREE' : 
-                                  `Buy for ${gift.price} ${gift.currency}`}
-                            </span>
-                        </button>
-                    </div>
-                `;
-                container.appendChild(giftCard);
-            });
-        }
-        
+        // Update gifts display
         function updateGiftsDisplay() {
             const emptyGifts = document.getElementById('empty-gifts');
             const giftsGrid = document.getElementById('gifts-grid');
@@ -1322,19 +1638,21 @@
                 giftsGrid.style.display = 'grid';
                 giftsGrid.innerHTML = '';
                 
-                userGifts.forEach(gift => {
+                userGifts.forEach((gift, index) => {
                     const giftData = GIFTS_DATA[gift.id];
                     if (!giftData) return;
                     
                     const giftItem = document.createElement('div');
                     giftItem.className = 'collection-item';
                     giftItem.onclick = () => showGiftModal(gift);
+                    
                     giftItem.innerHTML = `
                         <div class="collection-image">
                             <img src="${giftData.image}" alt="${giftData.name}">
                         </div>
                         <div class="collection-name">${giftData.name}</div>
                     `;
+                    
                     giftsGrid.appendChild(giftItem);
                 });
             } else {
@@ -1343,13 +1661,15 @@
             }
         }
         
-        // Event handlers
+        // Click handler
         document.getElementById('clicker').addEventListener('click', function() {
             if (gameData.energy > 0) {
                 gameData.balance += gameData.clickPower;
                 gameData.totalClicks++;
                 gameData.energy--;
+                gameData.lastEnergyUpdate = Date.now();
                 
+                // Update tasks progress
                 updateTasksProgress('clicks', 1);
                 updateTasksProgress('balance', gameData.clickPower);
                 
@@ -1359,19 +1679,21 @@
             } else if (!energyCooldown) {
                 tg.showPopup({
                     title: 'No Energy',
-                    message: 'Wait for energy to recharge',
+                    message: 'Wait 30 minutes for energy to recharge',
                     buttons: [{id: 'ok', type: 'default', text: 'OK'}]
                 });
                 
+                // Start energy cooldown
                 energyCooldown = setTimeout(() => {
                     gameData.energy = gameData.maxEnergy;
                     energyCooldown = null;
                     updateDisplay();
                     saveGameData();
-                }, 30 * 60 * 1000);
+                }, 30 * 60 * 1000); // 30 minutes
             }
         });
         
+        // Update tasks progress
         function updateTasksProgress(type, amount) {
             tasks.forEach(task => {
                 if (!task.completed && task.type === type) {
@@ -1383,10 +1705,12 @@
             });
         }
         
+        // Claim task reward
         function claimTask(taskId) {
             const task = tasks.find(t => t.id === taskId);
             if (task && task.completed) {
                 gameData.balance += task.reward;
+                // Remove completed task
                 tasks = tasks.filter(t => t.id !== taskId);
                 updateDisplay();
                 saveGameData();
@@ -1400,9 +1724,11 @@
             }
         }
         
+        // Buy upgrade
         function buyUpgrade(upgradeId) {
             const upgrade = upgrades.find(u => u.id === upgradeId);
             if (upgrade && !upgrade.owned && gameData.balance >= upgrade.price) {
+                // Check requirements
                 if (upgrade.requires) {
                     const requiredUpgrade = upgrades.find(u => u.id === upgrade.requires);
                     if (!requiredUpgrade || !requiredUpgrade.owned) {
@@ -1431,9 +1757,52 @@
             }
         }
         
+        // Show gift modal
+        function showGiftModal(gift) {
+            const giftData = GIFTS_DATA[gift.id];
+            if (!giftData) return;
+            
+            document.getElementById('modal-title').textContent = giftData.name;
+            document.getElementById('modal-image').src = giftData.image;
+            document.getElementById('modal-owner').textContent = userData.firstName;
+            document.getElementById('modal-date').textContent = formatDateTime(new Date(gift.purchaseDate));
+            
+            if (giftData.currency === 'DREVO') {
+                document.getElementById('modal-cost').innerHTML = `
+                    <i class="fas fa-coins"></i>
+                    <span>${isVIP ? 'FREE' : giftData.price + ' DREVO'}</span>
+                `;
+            } else {
+                document.getElementById('modal-cost').innerHTML = `
+                    <i class="fab fa-toncoin"></i>
+                    <span>${isVIP ? 'FREE' : giftData.price + ' TON'}</span>
+                `;
+            }
+            
+            // Получаем актуальные данные для availability
+            getGlobalSupply().then(globalSupply => {
+                const purchased = globalSupply[gift.id] || 0;
+                const remaining = giftData.totalSupply - purchased;
+                document.getElementById('modal-availability').textContent = 
+                    `${remaining} of ${giftData.totalSupply} available`;
+            });
+            
+            document.getElementById('gift-modal').classList.add('active');
+        }
+        
+        // Close modal
+        function closeModal() {
+            document.getElementById('gift-modal').classList.remove('active');
+        }
+        
+        // Buy gift - ОСНОВНАЯ ФУНКЦИЯ С СИНХРОНИЗАЦИЕЙ
         async function buyGift(giftId) {
             const gift = GIFTS_DATA[giftId];
-            const remaining = updateGiftSupply(giftId);
+            
+            // Получаем актуальные данные из Cloud Storage
+            const globalSupply = await getGlobalSupply();
+            const purchased = globalSupply[giftId] || 0;
+            const remaining = gift.totalSupply - purchased;
             
             if (remaining <= 0) {
                 tg.showPopup({
@@ -1445,23 +1814,26 @@
             }
             
             if (isVIP && gift.currency === 'TON') {
-                processGiftPurchase(giftId, null, true);
+                // VIP gets it for free
+                await processGiftPurchase(giftId, null, true);
             } else if (gift.currency === 'DREVO') {
+                // Buy with DREVO coins
                 if (gameData.balance >= gift.price) {
                     gameData.balance -= gift.price;
-                    processGiftPurchase(giftId, null, false);
+                    await processGiftPurchase(giftId, null, false);
                 } else {
                     tg.showPopup({
                         title: 'Not Enough Coins',
-                        message: `You need ${gift.price} DREVO coins`,
+                        message: `You need ${gift.price} DREVO coins to buy this gift`,
                         buttons: [{id: 'ok', type: 'default', text: 'OK'}]
                     });
                 }
             } else {
+                // Buy with TON
                 if (!wallet) {
                     tg.showPopup({
                         title: 'Wallet Not Connected',
-                        message: 'Please connect your TON wallet',
+                        message: 'Please connect your TON wallet to make purchases.',
                         buttons: [{id: 'ok', type: 'default', text: 'OK'}]
                     });
                     return;
@@ -1470,20 +1842,23 @@
                 try {
                     const transaction = {
                         validUntil: Math.floor(Date.now() / 1000) + 600,
-                        messages: [{
-                            address: MERCHANT_ADDRESS,
-                            amount: '500000000'
-                        }]
+                        messages: [
+                            {
+                                address: MERCHANT_ADDRESS,
+                                amount: '500000000' // 0.5 TON in nanotons
+                            }
+                        ]
                     };
                     
                     const result = await tonConnectUI.sendTransaction(transaction);
-                    processGiftPurchase(giftId, result, false);
+                    await processGiftPurchase(giftId, result, false);
                     
                 } catch (error) {
+                    console.error('Transaction error:', error);
                     if (error.message !== 'User rejected the transaction') {
                         tg.showPopup({
                             title: 'Transaction Failed',
-                            message: 'Payment was not completed',
+                            message: 'Payment was not completed. Please try again.',
                             buttons: [{id: 'ok', type: 'default', text: 'OK'}]
                         });
                     }
@@ -1491,13 +1866,14 @@
             }
         }
         
-        function processGiftPurchase(giftId, transactionResult = null, isFree = false) {
+        // Process gift purchase - ОБНОВЛЯЕТ CLOUD STORAGE
+        async function processGiftPurchase(giftId, transactionResult = null, isFree = false) {
             const gift = GIFTS_DATA[giftId];
             
-            // Update global supply - ���� �ܧݧ��֧ӧ�� �ާ�ާ֧ߧ�!
-            const globalSupply = getGlobalSupply();
+            // Update global supply в Cloud Storage
+            const globalSupply = await getGlobalSupply();
             globalSupply[giftId] = (globalSupply[giftId] || 0) + 1;
-            saveGlobalSupply(globalSupply);
+            await saveGlobalSupply(globalSupply);
             
             const purchaseItem = {
                 id: giftId,
@@ -1508,16 +1884,17 @@
             userGifts.push(purchaseItem);
             saveUserGifts();
             updateDisplay();
-            renderGiftsMarket();
+            await updateGiftSupplies(); // Обновляем отображение supply
             
             tg.showPopup({
                 title: 'Purchase Complete!',
-                message: `You successfully acquired ${gift.name}! ${isFree ? '(VIP Free)' : ''}`,
+                message: `You successfully acquired ${gift.name}! ${isFree ? '(VIP Free Purchase)' : ''}`,
                 buttons: [{id: 'ok', type: 'default', text: 'OK'}]
             });
         }
         
-        function redeemPromoCode() {
+        // Redeem promo code
+        async function redeemPromoCode() {
             const promoInput = document.getElementById('promo-code');
             const promoMessage = document.getElementById('promo-message');
             const code = promoInput.value.trim().toUpperCase();
@@ -1528,7 +1905,7 @@
                 return;
             }
             
-            const globalPromos = getGlobalPromos();
+            const globalPromos = await getGlobalPromos();
             const promo = globalPromos[code];
             
             if (!promo) {
@@ -1537,25 +1914,30 @@
                 return;
             }
             
+            // Check if user already used this promo
             if (promo.usedBy && promo.usedBy.includes(userData.id)) {
                 promoMessage.textContent = 'You already used this promo code';
                 promoMessage.style.color = '#ff6b6b';
                 return;
             }
             
+            // Check max uses
             if (promo.maxUses > 0 && promo.usedBy && promo.usedBy.length >= promo.maxUses) {
                 promoMessage.textContent = 'Promo code has reached maximum uses';
                 promoMessage.style.color = '#ff6b6b';
                 return;
             }
             
+            // Valid promo code
             gameData.balance += promo.reward;
             
+            // Update global promo usage в Cloud Storage
             if (!promo.usedBy) promo.usedBy = [];
             promo.usedBy.push(userData.id);
             globalPromos[code] = promo;
-            saveGlobalPromos(globalPromos);
+            await saveGlobalPromos(globalPromos);
             
+            // Also mark as used for this user
             usedPromoCodes.push(code);
             saveUsedPromoCodes();
             
@@ -1573,6 +1955,7 @@
             });
         }
         
+        // Add coins (admin function)
         function addCoins() {
             if (!isVIP) return;
             
@@ -1587,13 +1970,47 @@
                 
                 tg.showPopup({
                     title: 'Coins Added!',
-                    message: `Added ${amount} DREVO coins`,
+                    message: `Added ${amount} DREVO coins to your balance`,
                     buttons: [{id: 'ok', type: 'default', text: 'OK'}]
                 });
             }
         }
         
-        function createPromoCode() {
+        // Add coins to specific user (admin function)
+        async function addCoinsToUser() {
+            if (!isVIP) return;
+            
+            const usernameInput = document.getElementById('target-username');
+            const coinsInput = document.getElementById('user-coins-amount');
+            const username = usernameInput.value.trim().toLowerCase();
+            const amount = parseInt(coinsInput.value);
+            
+            if (!username || !amount || amount <= 0) {
+                tg.showPopup({
+                    title: 'Error',
+                    message: 'Please enter valid username and amount',
+                    buttons: [{id: 'ok', type: 'default', text: 'OK'}]
+                });
+                return;
+            }
+            
+            // Сохраняем в localStorage по username
+            const userCoinsKey = `drevo_user_coins_${username}`;
+            const currentCoins = parseInt(localStorage.getItem(userCoinsKey) || '0');
+            localStorage.setItem(userCoinsKey, (currentCoins + amount).toString());
+            
+            usernameInput.value = '';
+            coinsInput.value = '';
+            
+            tg.showPopup({
+                title: 'Coins Sent!',
+                message: `Added ${amount} DREVO coins to user @${username}`,
+                buttons: [{id: 'ok', type: 'default', text: 'OK'}]
+            });
+        }
+        
+        // Create promo code (admin function)
+        async function createPromoCode() {
             if (!isVIP) return;
             
             const codeInput = document.getElementById('new-promo-code');
@@ -1613,7 +2030,7 @@
                 return;
             }
             
-            const globalPromos = getGlobalPromos();
+            const globalPromos = await getGlobalPromos();
             
             if (globalPromos[code]) {
                 tg.showPopup({
@@ -1630,7 +2047,7 @@
                 usedBy: []
             };
             
-            saveGlobalPromos(globalPromos);
+            await saveGlobalPromos(globalPromos);
             
             codeInput.value = '';
             rewardInput.value = '';
@@ -1643,7 +2060,8 @@
             });
         }
         
-        function deletePromoCode() {
+        // Delete promo code (admin function)
+        async function deletePromoCode() {
             if (!isVIP) return;
             
             const codeInput = document.getElementById('new-promo-code');
@@ -1658,7 +2076,7 @@
                 return;
             }
             
-            const globalPromos = getGlobalPromos();
+            const globalPromos = await getGlobalPromos();
             
             if (!globalPromos[code]) {
                 tg.showPopup({
@@ -1670,7 +2088,7 @@
             }
             
             delete globalPromos[code];
-            saveGlobalPromos(globalPromos);
+            await saveGlobalPromos(globalPromos);
             
             codeInput.value = '';
             
@@ -1681,65 +2099,48 @@
             });
         }
         
-        function showGiftModal(gift) {
-            const giftData = GIFTS_DATA[gift.id];
-            if (!giftData) return;
-            
-            document.getElementById('modal-title').textContent = giftData.name;
-            document.getElementById('modal-image').src = giftData.image;
-            document.getElementById('modal-owner').textContent = userData.firstName;
-            document.getElementById('modal-date').textContent = formatDateTime(new Date(gift.purchaseDate));
-            
-            const isTON = giftData.currency === 'TON';
-            const isVIPFree = isVIP && isTON;
-            
-            document.getElementById('modal-cost').innerHTML = `
-                <div class="${isTON ? 'ton-badge' : 'drevo-badge'}">
-                    <i class="${isTON ? 'fab fa-toncoin' : 'fas fa-coins'}"></i>
-                    <span>${isVIPFree ? 'FREE' : giftData.price + ' ' + giftData.currency}</span>
-                </div>
-            `;
-            
-            const globalSupply = getGlobalSupply();
-            const purchased = globalSupply[gift.id] || 0;
-            const remaining = giftData.totalSupply - purchased;
-            document.getElementById('modal-availability').textContent = 
-                `${remaining} of ${giftData.totalSupply} available`;
-            
-            document.getElementById('gift-modal').classList.add('active');
-        }
-        
-        function closeModal() {
-            document.getElementById('gift-modal').classList.remove('active');
-        }
-        
+        // Generate transaction ID
         function generateTransactionId() {
             return 'ton_tx_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         }
         
+        // Switch between pages
         function showPage(pageId) {
-            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
             document.getElementById(pageId).classList.add('active');
             
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
             if (pageId === 'clicker-page') {
                 document.querySelectorAll('.nav-item')[0].classList.add('active');
-            } else if (pageId === 'market-page') {
-                document.querySelectorAll('.nav-item')[1].classList.add('active');
             } else if (pageId === 'profile-page') {
                 document.querySelectorAll('.nav-item')[2].classList.add('active');
+            } else if (pageId === 'market-page') {
+                document.querySelectorAll('.nav-item')[1].classList.add('active');
             }
         }
         
+        // Format date
         function formatDate(date) {
-            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return date.toLocaleDateString('en-US', options);
         }
         
+        // Format date and time
         function formatDateTime(date) {
-            return date.toLocaleDateString('en-US', { 
-                year: 'numeric', month: 'long', day: 'numeric',
-                hour: '2-digit', minute: '2-digit'
-            });
+            const options = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            return date.toLocaleDateString('en-US', options);
         }
     </script>
 </body>
