@@ -1166,8 +1166,8 @@
         let isVIP = false;
         
         // БАЗА ДАННЫХ НА GITHUB PAGES - АВТОМАТИЧЕСКОЕ ОБНОВЛЕНИЕ
-        const SUPPLY_DATA_URL = 'https://raw.githubusercontent.com/reynusha/DREVO/supply-data.json';
-        const SUPPLY_UPDATE_URL = 'https://api.github.com/repos/reynusha/DREVO/supply-data.json';
+        const SUPPLY_DATA_URL = '/api/supply';
+        const SUPPLY_UPDATE_URL = '/api/buy';
         
         // Game Data
         let userData = {
@@ -1290,14 +1290,25 @@
         // ==== АВТОМАТИЧЕСКАЯ СИСТЕМА SUPPLY ====
         
         // 1. Получить supply с GitHub
-        async function getGlobalSupply() {
-            try {
-                const response = await fetch(SUPPLY_DATA_URL + '?t=' + Date.now());
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log('Supply data loaded:', data);
-                    return data;
-                }
+        
+async function getGlobalSupply() {
+        try {
+            const response = await fetch(SUPPLY_DATA_URL + '?t=' + Date.now(), {cache: 'no-store'});
+            if (response.ok) {
+                const data = await response.json();
+                // data format: { cat: <number>, cross: <number>, cybercar: <number> }
+                console.log('Supply data loaded (server):', data);
+                return data;
+            } else {
+                console.warn('Failed to load supply from server, status', response.status);
+            }
+        } catch (error) {
+            console.log('Error loading supply from server, using fallback', error);
+        }
+        // Fallback to zeros
+        return { 'cat': 0, 'cross': 0, 'cybercar': 0 };
+    }
+
             } catch (error) {
                 console.log('Error loading supply, using local fallback');
             }
@@ -1307,16 +1318,29 @@
         }
         
         // 2. АВТОМАТИЧЕСКОЕ ОБНОВЛЕНИЕ SUPPLY
-        async function updateGlobalSupply(giftId) {
-            if (!isVIP) {
-                // Для обычных пользователей просто обновляем локально
-                const currentSupply = await getGlobalSupply();
-                currentSupply[giftId] = (currentSupply[giftId] || 0) + 1;
-                
-                // Сохраняем в localStorage как временное решение
-                localStorage.setItem('drevo_temp_supply', JSON.stringify(currentSupply));
+        
+async function updateGlobalSupply(giftId) {
+        // Call server API to register a purchase (increment purchased count)
+        try {
+            const res = await fetch(SUPPLY_UPDATE_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: giftId })
+            });
+            if (res.ok) {
+                const data = await res.json();
+                console.log('Server updated supply:', data);
                 return true;
+            } else {
+                console.warn('Server buy failed', res.status);
+                return false;
             }
+        } catch (err) {
+            console.error('Error updating supply on server', err);
+            return false;
+        }
+    }
+
             
             // Для VIP пользователя (@clanffys) - автоматическое обновление на GitHub
             try {
@@ -1340,12 +1364,12 @@
         }
         
         // 3. Получить актуальный supply (с учетом локальных изменений)
-        async function getActualSupply() {
-            // Сначала проверяем локальные изменения
-            const tempSupply = localStorage.getItem('drevo_temp_supply');
-            if (tempSupply) {
-                return JSON.parse(tempSupply);
-            }
+        
+async function getActualSupply() {
+        // Always read authoritative server state
+        return await getGlobalSupply();
+    }
+
             
             // Если нет локальных изменений, берем с GitHub
             return await getGlobalSupply();
