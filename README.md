@@ -1,25 +1,24 @@
 
-DREVO — working version with server-backed supply counter.
+DREVO Messenger Demo (React + Vite)
+----------------------------------
 
-Files included:
-- index.html (your original UI, modified only to call local API endpoints)
-- server.js (Express server exposing /api/supply and /api/buy)
-- supply-data.json (stores purchased counts for items)
-- package.json
+This is a local demo app imitating a messenger UI (Feed, Profile, Chats, Shop) with:
+- Simulated Telegram Mini App auth (localStorage)
+- Feed where users can create posts (stored in localStorage and synced across tabs/windows)
+- Profile editor (change avatar initial, name, username, bio)
+- Chats simulated with BroadcastChannel for multi-tab messaging and presence
+- Shop placeholder
 
-How it works:
-- The frontend calls GET /api/supply to get purchased counts {cat, cross, cybercar}.
-- Remaining = GIFTS_DATA.totalSupply - purchased.
-- When a user buys a gift, frontend calls POST /api/buy with {id: "<giftId>"}.
-- Server increments purchased count for that id and saves supply-data.json.
-- Frontend polls /api/supply every 3 seconds (existing code) so all users see updated counts.
-
-Run locally:
-1. cd DREVO_project
-2. npm install
-3. npm start
-4. Open http://localhost:3000
+How to run:
+1. unzip the package
+2. cd into project folder
+3. npm install
+4. npm run dev
+5. open http://localhost:5173 (or the address Vite reports)
 
 Notes:
-- This implementation uses simple file-based storage (supply-data.json). For production, use a proper DB or atomic counter.
-- I left your UI unchanged except for replacing GitHub raw fetch with local API endpoints.
+- This is a **demo**. No server or real Telegram API is used.
+- For multi-tab demo of chat and feed sync, open the app in two browser tabs.
+- Username 'clanffys' gets a blue checkmark and "Owner" style display.
+
+Enjoy!
